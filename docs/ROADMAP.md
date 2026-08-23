@@ -15,10 +15,12 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Acceptance:** svi postojeći čitljivi DOCX-ovi imaju Markdown snapshot; prazni/oštećeni izvori su označeni; nijedan nedokumentirani ekran nije proglašen spremnim.
 
-## 0.2 Product/domain glossary — TODO
+## 0.2 Product/domain glossary — DONE
 **Cilj:** zaključati značenje ključnih pojmova: Teacher, Student, Guardian, Group, Program, Grade/Level, Session, Material, Activity, Knowledge Component, Evidence Event, Readiness itd.
 
 **Acceptance:** jedan canonical naziv i definicija po pojmu; uklonjene kontradikcije među specifikacijama.
+
+**Dovršeno 2026-08-23:** canonical nazivi, hrvatski/UI nazivi, definicije i zaključane terminološke razlike zapisani su u `DOMAIN_GLOSSARY.md`. Nedokumentirane kardinalnosti, permissions i algoritmi ostavljeni su svojim ROADMAP gateovima.
 
 ## 0.3 Technology architecture decision — READY
 **Preduvjet:** **ZADOVOLJEN 2026-08-23** — vlasnik projekta zaključao React + TypeScript frontend, C# / ASP.NET Core .NET backend, SQL Server persistence i Docker baseline.

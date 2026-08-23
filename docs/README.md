@@ -7,20 +7,21 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
 1. `PROJECT_RULES.md`
 2. `AI_DEVELOPER_SYSTEM_PROMPT.md`
 3. `PRODUCT_SCOPE.md`
-4. `ARCHITECTURE_BASELINE.md`
-5. relevantni tehnički standardi:
+4. `DOMAIN_GLOSSARY.md`
+5. `ARCHITECTURE_BASELINE.md`
+6. relevantni tehnički standardi:
    - `DATABASE_DESIGN_STANDARD.md`
    - `BACKEND_ENGINEERING_STANDARD.md`
    - `FRONTEND_ENGINEERING_STANDARD.md`
    - `SECURITY_ENGINEERING_STANDARD.md`
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
-6. `SCREEN_SPEC_STATUS.md`
-7. `ROADMAP.md`
-8. relevantne datoteke iz `source_specs/`
-9. `DECISION_LOG.md`
-10. zadnji dovršeni phase summary iz `summaries/`
-11. prije completiona `ENGINEERING_CHECKLIST.md`
+7. `SCREEN_SPEC_STATUS.md`
+8. `ROADMAP.md`
+9. relevantne datoteke iz `source_specs/`
+10. `DECISION_LOG.md`
+11. zadnji dovršeni phase summary iz `summaries/`
+12. prije completiona `ENGINEERING_CHECKLIST.md`
 
 ## Najvažnije pravilo
 
