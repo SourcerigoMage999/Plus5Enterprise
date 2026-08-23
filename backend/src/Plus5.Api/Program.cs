@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Plus5.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddValidatedConfiguration();
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["live"]);

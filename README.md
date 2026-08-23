@@ -100,9 +100,13 @@ Domain ne ovisi o drugim PLUS 5 projektima. Application ovisi samo o Domainu. Ar
 
 ## Konfiguracija i tajne
 
-- secrets se ne spremaju u Git
-- lokalne tajne za backend koriste .NET user-secrets kada se uvedu
-- frontend ne smije sadržavati server secrets; `VITE_*` vrijednosti ulaze u client bundle
-- environment-specific konfiguracija uvodi se u ROADMAP fazi 1.1
+- podržani API environmenti su `Development`, `Staging` i `Production`; nepoznata vrijednost prekida startup
+- `AllowedHosts` mora biti eksplicitni host allowlist; wildcard vrijednosti nisu dopuštene
+- obavezni backend `Frontend__PublicOrigin` koristi tipiziranu startup validaciju
+- lokalne backend tajne koriste .NET user-secrets; trenutačni runtime još nema obaveznih secreta
+- frontend `VITE_API_BASE_URL` je javna vrijednost s defaultom `/api/v1`; `VITE_*` nikada ne smije sadržavati secret
+- lokalni frontend primjer nalazi se u `frontend/.env.example`, dok stvarne `.env` datoteke ostaju izvan Gita
+
+Puni contract, precedence i pravila za Development/Staging/Production opisani su u [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
 
 Prije svake implementacije slijediti [`docs/PROJECT_RULES.md`](docs/PROJECT_RULES.md) i obavezni redoslijed čitanja iz [`docs/README.md`](docs/README.md).

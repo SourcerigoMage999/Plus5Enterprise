@@ -44,7 +44,9 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 # PHASE 1 — Cross-cutting Application Foundation
 
-## 1.1 Configuration, environments & secrets — TODO
+## 1.1 Configuration, environments & secrets — DONE
+**Dovršeno 2026-08-23:** zaključan je environment/configuration contract za Development, Staging i Production; API koristi strongly typed startup validation za javni frontend origin, eksplicitni host allowlist i odbija nepodržane environmente, frontend ima centralni validirani public-config boundary bez secreta, a Development/Compose primjeri i user-secrets pravila dokumentirani su u `CONFIGURATION.md`. Backend/frontend testovi, buildovi, auditi i Docker runtime smoke test prolaze.
+
 ## 1.2 Database/persistence foundation — TODO
 ## 1.3 API conventions, validation & error contract — TODO
 ## 1.4 Logging/telemetry foundation — TODO

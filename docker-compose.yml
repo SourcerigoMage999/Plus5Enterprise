@@ -6,6 +6,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
+      AllowedHosts: localhost;127.0.0.1;api
+      Frontend__PublicOrigin: http://localhost:8081
     ports:
       - "8080:8080"
     healthcheck:
