@@ -15,7 +15,7 @@ Ovdje se zapisuju arhitekturne i trajne implementacijske odluke.
 
 ---
 
-Trenutačno nema zaključanih tehničkih ADR-ova izvedenih samo iz ovog ZIP-a.
+Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-0005.
 
 ## Accepted decisions
 

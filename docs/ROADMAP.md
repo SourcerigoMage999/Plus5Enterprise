@@ -22,12 +22,14 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-23:** canonical nazivi, hrvatski/UI nazivi, definicije i zaključane terminološke razlike zapisani su u `DOMAIN_GLOSSARY.md`. Nedokumentirane kardinalnosti, permissions i algoritmi ostavljeni su svojim ROADMAP gateovima.
 
-## 0.3 Technology architecture decision — READY
+## 0.3 Technology architecture decision — DONE
 **Preduvjet:** **ZADOVOLJEN 2026-08-23** — vlasnik projekta zaključao React + TypeScript frontend, C# / ASP.NET Core .NET backend, SQL Server persistence i Docker baseline.
 
 **Deliverable:** ažuriran `ARCHITECTURE_BASELINE.md`, obavezni engineering standardi + ADR zapisi u `DECISION_LOG.md`.
 
 **Mora zaključati:** backend, frontend, DB, API, testing, Docker/deployment baseline, configuration/secrets i security baseline. Detaljni business auth contract i file policy ostaju eksplicitni gateovi za njihove ROADMAP faze, bez blokiranja bootstrap arhitekture.
+
+**Dovršeno 2026-08-23:** baseline je zaključan u `ARCHITECTURE_BASELINE.md`, obavezni standardi u zasebnim engineering dokumentima, a trajne odluke u ADR-0001–ADR-0005. U fazi 0.3 validirana je njihova međusobna usklađenost i lokalna dostupnost .NET 10, Node/npm i Docker toolchaina.
 
 ## 0.4 Repository/bootstrap — TODO
 **Cilj:** stvoriti minimalan buildable/testable repo prema zaključanoj arhitekturi.
