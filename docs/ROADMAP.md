@@ -31,12 +31,14 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-23:** baseline je zaključan u `ARCHITECTURE_BASELINE.md`, obavezni standardi u zasebnim engineering dokumentima, a trajne odluke u ADR-0001–ADR-0005. U fazi 0.3 validirana je njihova međusobna usklađenost i lokalna dostupnost .NET 10, Node/npm i Docker toolchaina.
 
-## 0.4 Repository/bootstrap — TODO
+## 0.4 Repository/bootstrap — DONE
 **Cilj:** stvoriti minimalan buildable/testable repo prema zaključanoj arhitekturi.
 
 **Out of scope:** feature business logika.
 
 **Acceptance:** clean checkout → build + test prolaze; osnovni README/dev setup postoji.
+
+**Dovršeno 2026-08-23:** dodani su .NET 10 modularni backend, React + TypeScript + Vite frontend, architecture testovi, reproducibilni dependency/toolchain lockovi, non-root Docker imageovi, lokalni Compose i root development README. Release buildovi, testovi, health smoke testovi, dependency auditi i stvarni container build/runtime provjere prolaze.
 
 ---
 
