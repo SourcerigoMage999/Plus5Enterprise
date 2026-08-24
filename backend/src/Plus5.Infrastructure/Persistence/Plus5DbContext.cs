@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Plus5.Domain.Identity;
+using Plus5.Domain.Teaching;
 
 namespace Plus5.Infrastructure.Persistence;
 
@@ -14,6 +15,14 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
     public DbSet<AuthenticatedSession> AuthenticatedSessions => Set<AuthenticatedSession>();
 
     public DbSet<AccountToken> AccountTokens => Set<AccountToken>();
+
+    public DbSet<Program> Programs => Set<Program>();
+
+    public DbSet<SchoolGrade> SchoolGrades => Set<SchoolGrade>();
+
+    public DbSet<ProficiencyLevel> ProficiencyLevels => Set<ProficiencyLevel>();
+
+    public DbSet<Curriculum> Curricula => Set<Curriculum>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

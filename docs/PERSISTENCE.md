@@ -2,7 +2,7 @@
 
 ## Status
 
-**LOCKED — implementirano i runtime provjereno 2026-08-24**
+**LOCKED — implementirano i runtime provjereno 2026-08-25**
 
 Ovaj dokument definira persistence contract Phase 1.2 prema ADR-0003 i obaveznim database, security i Docker standardima.
 
@@ -86,3 +86,14 @@ Migracija `AddTeacherAuthenticationFoundation` dodaje:
 - `DataProtectionKeys` — framework-managed shared ASP.NET Core Data Protection key ring za cookie encryption/signing preko restarta i više API instanci; key XML se izvan Developmenta štiti deployment certifikatom
 
 Obje child tablice imaju restriktivni FK prema `UserAccounts`. Indeksi pokrivaju normalized e-mail lookup, token hash lookup, najviše jedan nepotrošen token po account/purpose kombinaciji te account/purpose/expiry i account/session expiry queryje. Check constrainti ograničavaju statuse i token purpose vrijednosti. Migracija ne stvara roleove ni tablice za Student, Guardian ili Administrator account.
+
+## Phase 2.1 core teaching reference schema
+
+Phase 2.1 dodaje četiri odvojena 3NF korijena:
+
+- `Programs` — Teacher-owned pedagoška ponuda; restriktivni FK na `UserAccounts` i case-insensitive jedinstveni normalizirani naziv unutar Teacher scopea
+- `SchoolGrades` — globalni code/name/sort referentni katalog bez seed pretpostavki
+- `ProficiencyLevels` — globalni framework/code/name/sort katalog; CEFR nije hardkodiran kao jedini okvir
+- `Curricula` — globalni code/name/version korijen s jedinstvenom code/version kombinacijom
+
+Program nema SchoolGrade, ProficiencyLevel ni Curriculum FK. Nema Student/Group/Material veza, CurriculumOutcome hijerarhije, seed podataka ni feature API-ja. Detaljni contract je u `CORE_TEACHING_FOUNDATION.md`.

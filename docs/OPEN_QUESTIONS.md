@@ -14,6 +14,10 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 
 ## Dokumentacijski nedostaci prije kasnijih modula
 
+- prije Program management UI/API-ja zaključati rename/status/archive/delete lifecycle i permissions
+- prije prvog unosa stvarnih referentnih podataka odobriti SchoolGrade, ProficiencyLevel framework i Curriculum katalog/import source
+- prije Phase 5.1 zaključati CurriculumOutcome hijerarhiju, službene identifikatore, vremensku valjanost i mapiranje na Knowledge Model
+
 - detaljni 4.4 i 4.5
 - 5.1–5.7 Lesson Builder
 - 6.1–6.5 PLUS 5 Ploča

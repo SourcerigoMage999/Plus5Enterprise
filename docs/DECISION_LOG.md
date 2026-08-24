@@ -99,3 +99,12 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Razlozi:** dokumentirani proizvod trenutno je Teacher application; uvođenje Administrator rolea ili Student/Guardian accounta stvorilo bi nedokumentirani scope. Revocable cookie session podržava siguran first-party web flow, password/session invalidation i horizontalno skaliranje bez izlaganja bearer credentials browser storageu.
 - **Posljedice:** Phase 1.6 je READY; implementacija mora slijediti `AUTHENTICATION_REQUIREMENTS.md` i `AUTHENTICATION_ARCHITECTURE.md`. Password change/reset i deaktivacija opozivaju sve sesije; login/recovery imaju abuse protection; CSRF je obavezan za state-changing cookie-authenticated requestove. Budući Student/Guardian account, external login, MFA ili Administrator role zahtijevaju zasebnu business odluku i po potrebi novi ADR.
 - **Alternative:** administrator-created Teacher accounti, invitation-only onboarding, Student/Guardian accounti u početnom scopeu i SPA JWT bearer tokeni u browser storageu nisu odabrani.
+
+### ADR-0010 — Odvojeni Teacher Program i globalni grade/level/curriculum referentni korijeni
+- **Datum:** 2026-08-25
+- **Status:** Accepted
+- **Kontekst:** Student, Group, Material i budući Knowledge Model trebaju stabilne pojmove Program, SchoolGrade, ProficiencyLevel i Curriculum, ali source specifikacije ih izričito koriste kao odvojene dimenzije i još ne definiraju njihove feature veze ni katalog sadržaj.
+- **Odluka:** `Program` je Teacher-owned pedagoška ponuda s jedinstvenim nazivom unutar Teacher scopea. `SchoolGrade`, `ProficiencyLevel` i verzionirani `Curriculum` su zajednički referentni korijeni. Nijedan Program ne sadrži grade, level ili curriculum FK. Phase 2.1 ne seeda kataloge i ne uvodi curriculum ishode/hijerarhiju.
+- **Razlozi:** model čuva zaključane glossary razlike, sprječava cross-Teacher IDOR granicu, ostaje u 3NF i ne zaključava nedokumentirane Student/Group/Material kardinalnosti ni hrvatski/CEFR katalog prije odobrenja sadržaja.
+- **Posljedice:** buduće veze moraju referencirati zasebne entitete i poštovati Teacher ownership. Program lifecycle/management, reference-data provisioning i curriculum hijerarhija ostaju svojim dokumentacijskim/ROADMAP gateovima.
+- **Alternative:** globalni shared Program, jedno polje `GradeLevel`, grade/level/curriculum stupci na Programu, hardkodirani enum/seed katalozi i preuranjeni CurriculumOutcome model nisu prihvaćeni.

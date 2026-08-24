@@ -16,6 +16,7 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - JSON stdout logovi, W3C trace korelacija te vendor-neutral OpenTelemetry traces/metrics temelj
 - responsive frontend app shell, centralna SPA navigacija, pristupačni route placeholderi i CSS design tokeni
 - Teacher-only account lifecycle, revocable cookie autentikacija, CSRF zaštita i auth/recovery UI flowovi
+- odvojeni Teacher Program, SchoolGrade, ProficiencyLevel i verzionirani Curriculum domain/persistence temelj
 
 Feature business entiteti i ekrani iz Phase 2+ još nisu implementirani.
 

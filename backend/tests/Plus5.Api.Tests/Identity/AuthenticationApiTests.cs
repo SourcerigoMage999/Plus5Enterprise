@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
@@ -143,6 +144,7 @@ public sealed class AuthenticationApiTests
         builder.Logging.ClearProviders();
         builder.Services.AddApiConventions();
         builder.Services.AddTeacherIdentity(isDevelopment: true, "http://frontend.test");
+        builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
         var databaseName = Guid.NewGuid().ToString("N");
         builder.Services.AddDbContext<Plus5DbContext>(options =>
             options.UseInMemoryDatabase(databaseName));

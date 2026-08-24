@@ -72,8 +72,16 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 # PHASE 2 — Core Teaching Domain
 
-## 2.1 Program, grade/level and curriculum foundation — TODO
-Definirati osnovne entitete koje kasnije koriste učenici, grupe, materijali i Knowledge Model.
+## 2.1 Program, grade/level and curriculum foundation — DONE
+**Cilj:** definirati osnovne entitete koje kasnije koriste učenici, grupe, materijali i Knowledge Model.
+
+**Scope:** Teacher-owned `Program` te odvojeni globalni `SchoolGrade`, `ProficiencyLevel` i verzionirani `Curriculum` referentni korijeni, domenske invariante, 3NF persistence i migracija.
+
+**Out of scope:** Program CRUD/UI/lifecycle, seed/import katalozi, Student/Group/Material veze, CurriculumOutcome hijerarhija, Knowledge Model i readiness/evidence logika.
+
+**Acceptance:** canonical razlike iz glossaryja ostaju očuvane; ownership, unique i check constrainti postoje u bazi; clean/idempotent migration i regression suite prolaze; contract i odgođene odluke su dokumentirani.
+
+**Dovršeno 2026-08-25:** zaključan je `CORE_TEACHING_FOUNDATION.md` i ADR-0010. Dodani su odvojeni `Program`, `SchoolGrade`, `ProficiencyLevel` i `Curriculum` domain/persistence modeli bez seed pretpostavki ili preuranjenih veza. Migracija `AddCoreTeachingFoundation` na stvarnom SQL Serveru stvara četiri tablice, restriktivni Teacher ownership FK, četiri natural-key unique indeksa i dva sort-order CHECK constrainta. Release build, 92 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime prolaze.
 
 ## 2.2 Student aggregate / profile foundation — TODO
 Podaci potrebni za 2.1, 2.2, 2.3 i 2.6 bez readiness logike.
