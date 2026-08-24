@@ -16,13 +16,14 @@ Security pravila vrijede od prve faze. Security review nije događaj samo pred r
 
 ## 2. Authentication
 
-Detaljni auth flow zaključava se u ROADMAP fazi 1.6, ali implementacija mora slijediti:
+Detaljni auth flow zaključan je za ROADMAP Phase 1.6 u `AUTHENTICATION_REQUIREMENTS.md` i `AUTHENTICATION_ARCHITECTURE.md`. Implementacija mora slijediti:
 
 - standardne ASP.NET Core/Identity/kriptografske primitive; ne izmišljati vlastitu kriptografiju
 - password hashing kroz provjerenu framework implementaciju
 - email/account recovery tokene tretirati kao secrets
 - session/token revocation mora biti moguća kada business flow to zahtijeva
 - cookie/token transport mora biti siguran za odabrani model
+- auth/CSRF Data Protection key ring mora biti dijeljen između API instanci i trajan preko restarta; key material mora biti šifriran certifikatom izvan Developmenta
 
 ## 3. Authorization
 

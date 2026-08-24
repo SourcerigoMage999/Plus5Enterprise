@@ -15,16 +15,18 @@ Glossary definira pojmove, ali ne zaključava nedokumentirane kardinalnosti, per
 3. Ne koristi se zajednički model ili polje `GradeLevel`: školski razred i CEFR razina odvojeni su pojmovi.
 4. Ne koristi se `Lesson` kao tehnički sinonim za termin, pripremu sata i izvedenu nastavnu aktivnost. Koristi se precizniji pojam iz ovog dokumenta.
 5. Ne koristi se `Activity` za atomsko pitanje/zadatak niti `Tag` za komponentu znanja.
-6. Naziv entiteta ne pretpostavlja da osoba ima korisnički račun. Identity i permissions model zaključavaju se u ROADMAP 1.6.
+6. Naziv entiteta ne pretpostavlja da osoba ima korisnički račun. Phase 1.6 zaključava da UserAccount trenutno ima samo Teacher; buduće vrste računa zahtijevaju zasebnu odluku.
 
 ## Actors and people
 
 | Canonical term | Hrvatski/UI naziv | Definicija i granica |
 |---|---|---|
-| `Teacher` | Učitelj | Primarni korisnički akter trenutačno dokumentirane aplikacije koji organizira učenike, grupe, termine, materijale i nastavu. Točan identity i permissions contract još nije definiran. |
-| `Student` | Učenik | Osoba koju učitelj podučava i za koju se vode administrativni, nastavni i knowledge/evidence podaci. `Student` nije sinonim za korisnički račun. |
-| `Guardian` | Roditelj/skrbnik | Komunikacijski kontakt povezan s učenikom. `Guardian` je canonical naziv jer obuhvaća roditelja i drugog skrbnika. Specifikacija još ne potvrđuje da Guardian ima vlastiti račun niti definira permissions. |
-| `UserAccount` | Korisnički račun | Autentikacijski identitet koji omogućuje pristup sustavu. Ne poistovjećuje se automatski s Teacher, Student ili Guardian zapisom dok se auth model ne zaključa. |
+| `Teacher` | Učitelj | Primarni korisnički akter trenutačno dokumentirane aplikacije koji organizira učenike, grupe, termine, materijale i nastavu. U Phase 1.6 jedini akter koji ima `UserAccount` i autentificirani pristup. |
+| `Student` | Učenik | Osoba koju učitelj podučava i za koju se vode administrativni, nastavni i knowledge/evidence podaci. U Phase 1.6 `Student` nije `UserAccount` i nema login. |
+| `Guardian` | Roditelj/skrbnik | Komunikacijski kontakt povezan s učenikom. `Guardian` je canonical naziv jer obuhvaća roditelja i drugog skrbnika. U Phase 1.6 nije `UserAccount` i nema login. |
+| `UserAccount` | Korisnički račun | Sigurnosni identitet koji omogućuje autentificirani pristup aplikaciji. U Phase 1.6 UserAccount ima samo Teacher. Budući Student/Guardian accounti zahtijevaju zasebnu odluku. |
+| `AccountStatus` | Status računa | Security/business stanje Teacher UserAccounta: `PendingEmailVerification`, `Active` ili `Deactivated`. |
+| `AuthenticatedSession` | Autentificirana sesija | Opoziva server-side kontrolirana sesija aktivnog Teacher accounta. Nije isto što i nastavnički `Session`/termin. |
 
 ## Teaching organization
 
@@ -110,7 +112,7 @@ Glossary definira pojmove, ali ne zaključava nedokumentirane kardinalnosti, per
 
 ## Otvorene granice koje glossary namjerno ne rješava
 
-- authentication, vrste računa i permissions model
+- budući Student/Guardian/Admin accounti i permissions izvan Teacher-only Phase 1.6 scopea
 - kardinalnost i vremenska valjanost veze Student–Program–Group
 - model redovitog rasporeda, serije termina i iznimki
 - algoritam za MasteryEstimate, ReadinessEstimate i ConfidenceLevel

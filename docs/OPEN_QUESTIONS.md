@@ -5,7 +5,7 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 ## Blocking
 
 1. ~~Koji je službeni tehnološki stack i ciljane verzije?~~ **RIJEŠENO 2026-08-23:** React + TypeScript + Vite frontend; C# + ASP.NET Core/.NET 10 backend; SQL Server + EF Core; Docker. Vidi `ARCHITECTURE_BASELINE.md` i ADR-0001–0005.
-2. Koji je detaljni authentication model, vrste korisnika i permissions model? Tehnološki security baseline je definiran, ali business auth contract ostaje gate za ROADMAP 1.6.
+2. ~~Koji je detaljni authentication model, vrste korisnika i permissions model?~~ **RIJEŠENO 2026-08-24:** samo Teacher ima account u Phase 1.6; javna Teacher registracija s potvrdom e-maila; Student/Guardian bez accounta u ovoj fazi; nema Administrator rolea; revocable secure cookie auth i deny-by-default ownership authorization. Vidi `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md` i ADR-0009.
 3. `4.1 Biblioteka materijala.docx` je 0 B. Potrebno je obnoviti/ponovno spremiti opis 4.1.
 4. Koji je točan algoritam readiness procjene iz Evidence Eventa (weighting, decay, broj dokaza, confidence, thresholds)?
 5. Kako se modeliraju redoviti termini grupe naspram konkretnih instanci termina i promjena serije?
@@ -25,6 +25,10 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 - 12.x Postavke
 - 13.1 Obavijesti
 - 14.x Profil/Auth
+
+## Operativne odluke prije produkcijskog releasea
+
+- odabrati produkcijski SMTP provider, verificiranu sender domenu/adresu, SPF/DKIM/DMARC postavke i secret provisioning; Phase 1.6 zadržava provider-neutralni TLS SMTP adapter i lokalni capture contract
 
 ## Pravilo
 

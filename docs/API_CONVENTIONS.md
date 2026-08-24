@@ -120,6 +120,25 @@ Svaki novi javni endpoint mora imati:
 - eksplicitni request/response contract
 - server-side validation
 - kontrolirani status/error mapping
-- authorization kada Phase 1.6 zaključa identity contract
+- authorization prema deny-by-default Phase 1.6 identity contractu
 - bounded pagination za potencijalno veliku listu
 - API contract/integration test za success i relevantne failure grane
+
+## Phase 1.6 authentication API
+
+Svi endpointi koriste `/api/v1/auth`. Anonymous pristup je eksplicitno ograničen na `csrf`, registraciju, verifikaciju, login i recovery. `session`, `logout` i `change-password` zahtijevaju aktivnu Teacher sesiju.
+
+| Metoda i ruta | Auth | Svrha |
+|---|---|---|
+| `GET /api/v1/auth/csrf` | anonymous | izdaje request token i `HttpOnly` anti-forgery cookie |
+| `POST /api/v1/auth/register` | anonymous + CSRF + rate limit | Teacher self-registration |
+| `POST /api/v1/auth/verify-email` | anonymous + CSRF + rate limit | jednokratna potvrda e-maila |
+| `POST /api/v1/auth/resend-verification` | anonymous + CSRF + rate limit | generički resend flow |
+| `POST /api/v1/auth/login` | anonymous + CSRF + rate limit | e-mail/password login i session cookie |
+| `POST /api/v1/auth/forgot-password` | anonymous + CSRF + rate limit | generički enumeration-safe odgovor |
+| `POST /api/v1/auth/reset-password` | anonymous + CSRF + rate limit | jednokratni reset i opoziv svih sesija |
+| `GET /api/v1/auth/session` | Teacher | current session/account state |
+| `POST /api/v1/auth/logout` | Teacher + CSRF | opoziv aktualne sesije |
+| `POST /api/v1/auth/change-password` | Teacher + CSRF | promjena lozinke i opoziv svih sesija |
+
+Browser client koristi `credentials: include` i za svaki write prvo dohvaća CSRF token. Auth cookie nije javni JavaScript contract i ne smije se kopirati u browser storage. Neaktivna/istekla/opozvana sesija vraća `401`; postojeći authorization denial vraća `403`.

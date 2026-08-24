@@ -12,7 +12,7 @@ Ovaj dokument definira persistence contract Phase 1.2 prema ADR-0003 i obaveznim
 - Entity Framework Core SQL Server + Design `10.0.11`
 - `Plus5DbContext` u Infrastructure sloju
 - EF Core migracije su jedini schema source of truth
-- nema business tablica, entiteta, seeda ni repository apstrakcija u foundation fazi
+- Phase 1.6 dodaje samo Teacher identity/session/token tablice; nema Student/Guardian/Admin accounta, role matrice ni feature business tablica
 - DbContext je scoped; command timeout je 30 sekundi
 
 ## Početna migracija
@@ -75,3 +75,14 @@ Prije prihvaćanja svake schema promjene obavezno je:
 - constraint/index/delete/concurrency/security review prema stvarnom modelu
 
 Phase 1.2 clean apply, ponovljeni idempotent apply, named-volume restart, readiness i least-privilege provjere izvršene su na stvarnom SQL Server 2025 containeru.
+
+## Phase 1.6 identity schema
+
+Migracija `AddTeacherAuthenticationFoundation` dodaje:
+
+- `UserAccounts` — immutable ID, canonical/normalized unique e-mail, framework password hash, ograničeni `AccountStatus`, security stamp i UTC audit vremena
+- `AuthenticatedSessions` — server-side opoziva session identity, konačan expiry i security-stamp snapshot
+- `AccountTokens` — purpose, expiry, consumption i samo SHA-256 representation CSPRNG verification/reset tokena; raw secret nije spremljen
+- `DataProtectionKeys` — framework-managed shared ASP.NET Core Data Protection key ring za cookie encryption/signing preko restarta i više API instanci; key XML se izvan Developmenta štiti deployment certifikatom
+
+Obje child tablice imaju restriktivni FK prema `UserAccounts`. Indeksi pokrivaju normalized e-mail lookup, token hash lookup, najviše jedan nepotrošen token po account/purpose kombinaciji te account/purpose/expiry i account/session expiry queryje. Check constrainti ograničavaju statuse i token purpose vrijednosti. Migracija ne stvara roleove ni tablice za Student, Guardian ili Administrator account.

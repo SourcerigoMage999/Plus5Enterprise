@@ -70,6 +70,10 @@ services:
         Password=${PLUS5_SQL_APP_PASSWORD:?Set PLUS5_SQL_APP_PASSWORD in the local .env file};
         Encrypt=True;TrustServerCertificate=True;Connect Timeout=5
       Frontend__PublicOrigin: http://localhost:8081
+      Email__Host: host.docker.internal
+      Email__Port: 1025
+      Email__UseSsl: "false"
+      Email__FromAddress: no-reply@plus5.local
     ports:
       - "8080:8080"
     healthcheck:

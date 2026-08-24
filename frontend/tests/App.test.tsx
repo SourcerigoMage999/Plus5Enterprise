@@ -2,21 +2,22 @@ import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { AppRoutes } from '../src/app/AppRoutes.tsx'
+import { AuthProvider } from '../src/auth/AuthContext.tsx'
 import { findNavigationItem, navigationItems } from '../src/app/navigation.ts'
 
 function renderRoute(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <AppRoutes />
+      <AuthProvider><AppRoutes /></AuthProvider>
     </MemoryRouter>,
   )
 }
 
 describe('application shell', () => {
-  it('renders every documented primary navigation item in canonical order', () => {
+  it('renders every documented primary navigation item in canonical order', async () => {
     renderRoute('/')
 
-    const navigation = screen.getByRole('navigation', { name: 'Glavna navigacija' })
+    const navigation = await screen.findByRole('navigation', { name: 'Glavna navigacija' })
     const links = within(navigation).getAllByRole('link')
 
     expect(links).toHaveLength(navigationItems.length)
@@ -25,18 +26,18 @@ describe('application shell', () => {
     )
   })
 
-  it('marks the current route and renders its neutral foundation state', () => {
+  it('marks the current route and renders its neutral foundation state', async () => {
     renderRoute('/students')
 
-    expect(screen.getByRole('link', { name: /Učenici/ })).toHaveAttribute('aria-current', 'page')
+    expect(await screen.findByRole('link', { name: /Učenici/ })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('heading', { level: 1, name: 'Učenici' })).toBeInTheDocument()
     expect(screen.getByText(/Bez lažnih podataka/)).toBeInTheDocument()
   })
 
-  it('provides a skip link and a named main navigation landmark', () => {
+  it('provides a skip link and a named main navigation landmark', async () => {
     renderRoute('/')
 
-    expect(screen.getByRole('link', { name: 'Preskoči na glavni sadržaj' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'Preskoči na glavni sadržaj' })).toHaveAttribute(
       'href',
       '#main-content',
     )
@@ -44,11 +45,11 @@ describe('application shell', () => {
     expect(screen.getByRole('navigation')).toHaveAccessibleName('Glavna navigacija')
   })
 
-  it('renders an explicit not-found state with a safe return route', () => {
+  it('renders an explicit not-found state with a safe return route', async () => {
     renderRoute('/not-a-defined-module')
 
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Stranica nije pronađena' }),
+      await screen.findByRole('heading', { level: 1, name: 'Stranica nije pronađena' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Povratak na Radni stol' })).toHaveAttribute(
       'href',

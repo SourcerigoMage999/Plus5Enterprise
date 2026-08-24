@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Plus5.Infrastructure.Identity;
 
 namespace Plus5.Api.Configuration;
 
@@ -21,9 +22,21 @@ public static class ConfigurationExtensions
         EnsureAllowedHostsAreRestricted(builder.Configuration["AllowedHosts"]);
 
         builder.Services.AddSingleton<IValidateOptions<FrontendOptions>, FrontendOptionsValidator>();
+        builder.Services.AddSingleton<IValidateOptions<EmailDeliveryOptions>, EmailDeliveryOptionsValidator>();
+        builder.Services.AddSingleton<
+            IValidateOptions<DataProtectionPersistenceOptions>,
+            DataProtectionPersistenceOptionsValidator>();
         builder.Services
             .AddOptions<FrontendOptions>()
             .Bind(builder.Configuration.GetSection(FrontendOptions.SectionName))
+            .ValidateOnStart();
+        builder.Services
+            .AddOptions<EmailDeliveryOptions>()
+            .Bind(builder.Configuration.GetSection(EmailDeliveryOptions.SectionName))
+            .ValidateOnStart();
+        builder.Services
+            .AddOptions<DataProtectionPersistenceOptions>()
+            .Bind(builder.Configuration.GetSection(DataProtectionPersistenceOptions.SectionName))
             .ValidateOnStart();
 
         return builder;

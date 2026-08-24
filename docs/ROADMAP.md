@@ -55,8 +55,18 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 **Dovršeno 2026-08-24:** API zapisuje strukturirane JSON stdout logove, vraća i propagira W3C `X-Trace-Id`, bilježi sigurne route-template completion događaje te registrira OpenTelemetry ASP.NET Core traces/metrics i runtime metrike s opcionalnim validiranim OTLP exportom. Osjetljivi URL/query/user-agent tagovi uklanjaju se prije exporta, live health buka je potisnuta, a buildovi, 54 backend i 4 frontend testa, auditi i izolirani Docker runtime/log contract prolaze.
 ## 1.5 Frontend app shell, routing & design tokens — DONE
 **Dovršeno 2026-08-24:** uvedeni su responsive učiteljski app shell, centralni registry svih 11 dokumentiranih glavnih ruta, aktivna SPA navigacija, eksplicitni 404, skip-link/landmark/focus accessibility temelj i centralni CSS design tokeni. Svi moduli ostaju jasno označeni neutralni placeholderi bez fake podataka, autha ili feature logike. Vitest + Testing Library component-test temelj, 9 frontend i 54 backend testa, lint/typecheck/build, dependency auditi, browser desktop/mobile review te non-root frontend Docker runtime prolaze.
-## 1.6 Authentication & authorization — BLOCKED
-**Gate:** posebni auth/business zahtjevi još nisu detaljno definirani u dostavljenoj dokumentaciji.
+## 1.6 Authentication & authorization — DONE
+**Preduvjet:** **ZADOVOLJEN 2026-08-24** — business auth contract zaključan je u `AUTHENTICATION_REQUIREMENTS.md`, a tehnički baseline u `AUTHENTICATION_ARCHITECTURE.md`.
+
+**Cilj:** implementirati samo Teacher account/authentication/authorization foundation bez uvođenja budućih korisničkih uloga ili modula.
+
+**Scope:** javna Teacher registracija, potvrda e-maila, login e-mailom i lozinkom, sigurna revocable cookie sesija, logout, forgot/reset/change password, session invalidation, deny-by-default API authorization, Teacher ownership boundary, rate limiting i obavezna frontend auth stanja.
+
+**Out of scope:** Student/Guardian/Admin accounti, admin-created ili invitation onboarding, JWT bearer auth u browser storageu, social login, MFA, Remember me i permissions budućih modula.
+
+**Acceptance:** svi kriteriji iz `AUTHENTICATION_REQUIREMENTS.md` i test obligations iz `AUTHENTICATION_ARCHITECTURE.md` prolaze; protected API je zatvoren po defaultu; auth secrets se ne logiraju niti spremaju u browser storage; phase summary je obavezan.
+
+**Dovršeno 2026-08-24:** implementiran je isključivo Teacher account lifecycle: javna registracija, obavezna potvrda e-maila, login/logout, forgot/reset/change password, revocable server-side cookie sesije, CSRF, rate limiting i deny-by-default authorization. Dodani su potpuni auth UI flowovi bez browser token storagea, SQL migracije za identity/session/token podatke i trajni shared Data Protection key ring koji izvan Developmenta zahtijeva zaštitu certifikatom. Release build, 86 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF migration provjere, desktop/mobile browser review te čisti non-root Docker runtime prolaze.
 
 ---
 

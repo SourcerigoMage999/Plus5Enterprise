@@ -17,6 +17,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `FRONTEND_ENGINEERING_STANDARD.md`
    - `FRONTEND_FOUNDATION.md` nakon Phase 1.5 za svaki frontend route, app-shell ili design-token zahvat
    - `SECURITY_ENGINEERING_STANDARD.md`
+   - `AUTHENTICATION_REQUIREMENTS.md` + `AUTHENTICATION_ARCHITECTURE.md` za Phase 1.6 i svaki kasniji auth/authorization zahvat
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`

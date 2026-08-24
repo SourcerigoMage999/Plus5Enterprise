@@ -1,9 +1,17 @@
-import { NavLink, Outlet, useLocation } from 'react-router'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { findNavigationItem, navigationItems } from './navigation.ts'
+import { useAuth } from '../auth/authContextState.ts'
 
 export function AppShell() {
   const location = useLocation()
   const currentPage = findNavigationItem(location.pathname)
+  const { state, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    await signOut()
+    navigate('/auth/login', { replace: true })
+  }
 
   return (
     <>
@@ -43,7 +51,9 @@ export function AppShell() {
 
           <div className="shell-boundary-note">
             <strong>Korisnički profil</strong>
-            <span>Bit će dostupan nakon zaključavanja auth contracta.</span>
+            <span>{state.status === 'authenticated' ? state.session.email : 'Teacher'}</span>
+            <Link to="/account/security">Sigurnost računa</Link>
+            <button type="button" onClick={() => void handleLogout()}>Odjava</button>
           </div>
         </aside>
 
@@ -51,9 +61,9 @@ export function AppShell() {
           <header className="shell-header">
             <div>
               <p className="shell-header__context">PLUS 5 Enterprise</p>
-              <p className="shell-header__title">{currentPage?.label ?? 'Stranica nije pronađena'}</p>
+              <p className="shell-header__title">{currentPage?.label ?? (location.pathname === '/account/security' ? 'Sigurnost računa' : 'Stranica nije pronađena')}</p>
             </div>
-            <span className="foundation-badge">Foundation 1.5</span>
+            <span className="foundation-badge">Foundation 1.6</span>
           </header>
 
           <main className="shell-main" id="main-content" tabIndex={-1}>

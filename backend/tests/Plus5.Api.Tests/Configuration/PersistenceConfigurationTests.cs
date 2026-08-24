@@ -57,11 +57,43 @@ public sealed class PersistenceConfigurationTests
 
         services.AddPersistence(
             SecureConnectionString,
-            allowUntrustedServerCertificate: false);
+            allowUntrustedServerCertificate: false,
+            dataProtectionCertificatePath: null,
+            dataProtectionCertificatePassword: null,
+            allowUnprotectedDataProtectionKeys: true);
 
         Assert.Contains(
             services,
             descriptor => descriptor.ServiceType == typeof(Plus5DbContext)
                 && descriptor.Lifetime == ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void UnprotectedDataProtectionKeysFailOutsideDevelopment()
+    {
+        var services = new ServiceCollection();
+
+        Assert.Throws<InvalidOperationException>(() => services.AddPersistence(
+            SecureConnectionString,
+            allowUntrustedServerCertificate: false,
+            dataProtectionCertificatePath: null,
+            dataProtectionCertificatePassword: null,
+            allowUnprotectedDataProtectionKeys: false));
+    }
+
+    [Fact]
+    public void CertificateLoadFailureDoesNotExposeConfiguredPath()
+    {
+        var services = new ServiceCollection();
+        var sensitivePath = Path.GetFullPath("sensitive-production-certificate.pfx");
+
+        var exception = Assert.Throws<InvalidOperationException>(() => services.AddPersistence(
+            SecureConnectionString,
+            allowUntrustedServerCertificate: false,
+            dataProtectionCertificatePath: sensitivePath,
+            dataProtectionCertificatePassword: "test-only-password",
+            allowUnprotectedDataProtectionKeys: false));
+
+        Assert.DoesNotContain(sensitivePath, exception.Message, StringComparison.Ordinal);
     }
 }

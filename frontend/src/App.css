@@ -132,6 +132,23 @@
   display: block;
 }
 
+.shell-boundary-note a,
+.shell-boundary-note button {
+  display: inline-block;
+  margin-top: var(--space-3);
+  border: 0;
+  color: var(--color-accent-300);
+  background: transparent;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.shell-boundary-note button {
+  margin-left: var(--space-3);
+}
+
 .shell-boundary-note strong {
   font-size: var(--font-size-sm);
 }
@@ -406,4 +423,171 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.auth-layout {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--space-6);
+  background:
+    radial-gradient(circle at 15% 15%, var(--color-accent-100), transparent 28rem),
+    var(--color-surface-canvas);
+}
+
+.auth-card {
+  width: min(31rem, 100%);
+  padding: clamp(var(--space-6), 7vw, var(--space-12));
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-brand {
+  color: var(--color-brand-900);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.auth-brand span {
+  color: var(--color-accent-500);
+  font-size: var(--font-size-3xl);
+}
+
+.auth-eyebrow {
+  margin: var(--space-8) 0 var(--space-2);
+  color: var(--color-brand-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.auth-card h1 {
+  margin: 0;
+  font-size: var(--font-size-3xl);
+  letter-spacing: -0.035em;
+}
+
+.auth-description {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.auth-form {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+
+.auth-form label {
+  display: grid;
+  gap: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.auth-form input {
+  width: 100%;
+  min-height: 3rem;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  background: var(--color-surface-raised);
+  font: inherit;
+}
+
+.auth-form input:focus {
+  border-color: var(--color-focus-ring);
+  outline: var(--focus-ring-width) solid color-mix(in srgb, var(--color-focus-ring) 25%, transparent);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.auth-form small {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  line-height: var(--line-height-relaxed);
+}
+
+.auth-button {
+  min-height: 3rem;
+  padding: var(--space-3) var(--space-5);
+  border: 0;
+  border-radius: var(--radius-lg);
+  color: var(--color-text-inverse);
+  background: var(--color-brand-800);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.auth-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.auth-button--link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--space-6);
+  text-decoration: none;
+}
+
+.auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  font-size: var(--font-size-sm);
+}
+
+.auth-links a,
+.auth-inline-action button {
+  color: var(--color-brand-700);
+}
+
+.auth-feedback {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.auth-feedback--error {
+  color: #8b1e2d;
+  background: #fff0f2;
+}
+
+.auth-feedback--success {
+  color: #145c3e;
+  background: #eaf8f1;
+}
+
+.auth-inline-action {
+  margin-top: var(--space-6);
+}
+
+.auth-inline-action button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.auth-inline-action .auth-feedback {
+  margin-top: var(--space-3);
+}
+
+.account-security h1 {
+  max-width: none;
+  font-size: var(--font-size-4xl);
 }

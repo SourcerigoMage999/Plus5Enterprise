@@ -15,8 +15,9 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - versionirani `/api/v1` contract, built-in validation i standardizirani sigurni `ProblemDetails` odgovori
 - JSON stdout logovi, W3C trace korelacija te vendor-neutral OpenTelemetry traces/metrics temelj
 - responsive frontend app shell, centralna SPA navigacija, pristupačni route placeholderi i CSS design tokeni
+- Teacher-only account lifecycle, revocable cookie autentikacija, CSRF zaštita i auth/recovery UI flowovi
 
-Business entiteti, auth i feature ekrani još nisu implementirani.
+Feature business entiteti i ekrani iz Phase 2+ još nisu implementirani.
 
 ## Preduvjeti
 
@@ -47,7 +48,7 @@ npm run build
 
 ## Pokretanje u developmentu
 
-API za lokalni host development zahtijeva valjani `ConnectionStrings:Plus5` kroz user-secrets i dostupnu migriranu SQL Server bazu. Najjednostavniji potpuni razvojni workflow je Docker Compose opisan niže.
+API za lokalni host development zahtijeva valjani `ConnectionStrings:Plus5` kroz user-secrets, dostupnu migriranu SQL Server bazu i lokalni SMTP capture server na `localhost:1025` za verifikacijske/recovery poruke. Najjednostavniji database/container workflow je Docker Compose opisan niže; SMTP provider ostaje deployment konfiguracija i nije ugrađen u Compose.
 
 API nakon konfiguriranja baze:
 
@@ -85,6 +86,8 @@ docker compose up --build --wait
 - API: `http://localhost:8080`
 - SQL Server: `127.0.0.1:1433` (samo lokalni loopback)
 
+Za auth e-mail journey pokrenuti lokalni SMTP capture alat na host portu `1025`; API container koristi `host.docker.internal:1025`. Staging/Production moraju postaviti stvarni TLS SMTP host i credentials kroz secrets sloj.
+
 Compose redoslijed je `database` → `database-init` → jednokratni `migrations` → `api` → `frontend`. Migracije se ne izvršavaju na startupu svake API instance. Named volume `plus5-sql-data` čuva lokalne DB podatke nakon `docker compose down`.
 
 Detaljni migration, identity i schema contract nalazi se u [`docs/PERSISTENCE.md`](docs/PERSISTENCE.md).
@@ -94,6 +97,8 @@ Versioning, validation, error i pagination pravila nalaze se u [`docs/API_CONVEN
 Logging, trace ID, telemetry privacy i opcionalni OTLP contract nalaze se u [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md).
 
 Frontend shell, route registry, design tokeni i accessibility foundation nalaze se u [`docs/FRONTEND_FOUNDATION.md`](docs/FRONTEND_FOUNDATION.md).
+
+Teacher account, cookie/session, CSRF i recovery contract nalazi se u [`docs/AUTHENTICATION_REQUIREMENTS.md`](docs/AUTHENTICATION_REQUIREMENTS.md) i [`docs/AUTHENTICATION_ARCHITECTURE.md`](docs/AUTHENTICATION_ARCHITECTURE.md).
 
 ## Struktura
 
@@ -127,6 +132,7 @@ Domain ne ovisi o drugim PLUS 5 projektima. Application ovisi samo o Domainu. Ar
 - `AllowedHosts` mora biti eksplicitni host allowlist; wildcard vrijednosti nisu dopuštene
 - obavezni backend `Frontend__PublicOrigin` koristi tipiziranu startup validaciju
 - `ConnectionStrings__Plus5` je obavezni backend secret; ne zapisuje se u `appsettings`, Compose source ni frontend
+- `Email__Host`, `Email__Port`, `Email__UseSsl` i `Email__FromAddress` definiraju SMTP transport; opcionalni `Email__UserName`/`Email__Password` su deployment secrets i izvan source controla
 - lokalni Compose koristi odvojene `sa`, migration i least-privilege application lozinke iz necommitane `.env` datoteke
 - frontend `VITE_API_BASE_URL` je javna vrijednost s defaultom `/api/v1`; `VITE_*` nikada ne smije sadržavati secret
 - lokalni frontend primjer nalazi se u `frontend/.env.example`, dok stvarne `.env` datoteke ostaju izvan Gita

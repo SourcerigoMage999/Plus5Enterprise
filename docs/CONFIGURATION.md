@@ -29,12 +29,24 @@ ASP.NET Core defaultni redoslijed izvora ostaje canonical: bazni `appsettings.js
 | `ConnectionStrings:Plus5` | `ConnectionStrings__Plus5` | da | **da** | SQL Server database + runtime identity; `Encrypt=True`; nepouzdani certifikat samo u Developmentu |
 | `Observability:TraceSamplingRatio` | `Observability__TraceSamplingRatio` | ne | ne | default `0.1`, Development `1.0`; raspon `(0, 1]` |
 | `Observability:OtlpEndpoint` | `Observability__OtlpEndpoint` | ne | ne | prazno isključuje export; apsolutni HTTP(S) URI bez credentialsa/queryja/fragmenta; HTTPS izvan Developmenta |
+| `Email:Host` | `Email__Host` | da | ne | SMTP host; Development default `localhost`, Compose `host.docker.internal` |
+| `Email:Port` | `Email__Port` | da | ne | SMTP port 1–65535; Development default `1025` |
+| `Email:UseSsl` | `Email__UseSsl` | da | ne | mora biti `true` izvan Developmenta |
+| `Email:FromAddress` | `Email__FromAddress` | da | ne | valjana sender adresa |
+| `Email:UserName` | `Email__UserName` | prema provideru | **da** | mora biti zadan zajedno s passwordom |
+| `Email:Password` | `Email__Password` | prema provideru | **da** | mora biti zadan zajedno s usernameom |
+| `DataProtection:CertificatePath` | `DataProtection__CertificatePath` | Staging/Production | ne | apsolutni path do montiranog PKCS#12 certifikata; zajedno s passwordom |
+| `DataProtection:CertificatePassword` | `DataProtection__CertificatePassword` | Staging/Production | **da** | password certifikata; isključivo secrets sloj |
 | `ASPNETCORE_ENVIRONMENT` | isto | da | ne | `Development`, `Staging` ili `Production` |
 | ASP.NET Core hosting URL/port | `ASPNETCORE_URLS` / `ASPNETCORE_HTTP_PORTS` | prema hostu | ne | runtime/deployment vrijednost, ne hardcodirati production URL u source |
 
 `Frontend:PublicOrigin` je tipiziran i validira se na startupu. Development default je `http://localhost:5173`; Compose ga nadjačava s `http://localhost:8081`. `AllowedHosts` je u Developmentu ograničen na lokalne hostove. `ConnectionStrings:Plus5` nikada nema committed default vrijednost. Staging i Production moraju sve obavezne vrijednosti dati kroz environment/deployment sloj.
 
 Observability options su tipizirani i validiraju se prije pokretanja listenera. OTLP exporter nije registriran dok endpoint nije postavljen; repo ne sadrži observability credentials niti preuranjeni collector. Puni logging/telemetry contract nalazi se u `OBSERVABILITY.md`.
+
+SMTP options su tipizirani i validiraju se pri startupu. Development očekuje lokalni SMTP capture server na host portu `1025`; Compose ne uvodi nedokumentirani produkcijski mail servis. Staging/Production moraju dostaviti TLS SMTP konfiguraciju, a credentials isključivo kroz environment/secrets sloj. Verifikacijski i recovery token nikada se ne logiraju.
+
+ASP.NET Core Data Protection key ring dijeli se kroz bazu kako bi auth i CSRF cookieji ostali valjani nakon restarta i između više API instanci. Development smije spremiti nezaštićeni key XML u lokalnu bazu. Staging/Production moraju montirati PKCS#12 certifikat i dostaviti njegov password kroz secrets sloj; startup se prekida ako certifikat nedostaje, nije dostupan ili se ne može učitati. Certifikat i password nikada se ne spremaju u image, Git ili appsettings datoteke.
 
 ## Frontend javna konfiguracija
 

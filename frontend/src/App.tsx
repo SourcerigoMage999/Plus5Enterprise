@@ -1,11 +1,14 @@
 import './App.css'
 import { BrowserRouter } from 'react-router'
 import { AppRoutes } from './app/AppRoutes.tsx'
+import { AuthProvider } from './auth/AuthContext.tsx'
 
 function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   )
 }

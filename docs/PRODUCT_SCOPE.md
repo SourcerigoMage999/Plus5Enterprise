@@ -22,6 +22,18 @@ Trenutačno je dokumentiran prvenstveno **Teacher application**. Stalna glavna n
 
 Dodatno postoje Centar obavijesti i korisnički/auth ekrani.
 
+## Authentication scope
+
+Za trenutni implementacijski scope:
+
+- `Teacher` je jedini akter s korisničkim računom i interaktivnim pristupom aplikaciji
+- Teacher se javno samostalno registrira te potvrđuje e-mail prije punog pristupa
+- `Student` i `Guardian` nemaju korisnički račun niti login u Phase 1.6
+- `Administrator` role/account nije dio trenutnog product scopea
+- budući Student/Guardian accounti nisu zabranjeni, ali zahtijevaju zasebnu dokumentacijsku odluku prije implementacije
+
+Detaljni business contract je u `AUTHENTICATION_REQUIREMENTS.md`.
+
 ## Ključni poslovni koncepti koji se već vide u specifikaciji
 
 - Učitelj
