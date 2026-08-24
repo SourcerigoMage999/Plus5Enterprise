@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Plus5.Api.Observability;
 
 namespace Plus5.Api.Conventions;
 
@@ -25,7 +25,7 @@ internal static class ApiProblemDetailsDefaults
         problemDetails.Status = status;
         problemDetails.Extensions[CodeExtensionName] = code;
         problemDetails.Extensions[TraceIdExtensionName] =
-            Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
+            TraceContext.GetTraceId(context.HttpContext);
         problemDetails.Instance ??= context.HttpContext.Request.Path.Value;
 
         if (!hasExplicitCode || string.IsNullOrWhiteSpace(problemDetails.Type))

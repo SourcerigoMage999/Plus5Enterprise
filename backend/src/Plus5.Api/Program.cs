@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Plus5.Api.Conventions;
 using Plus5.Api.Configuration;
+using Plus5.Api.Observability;
 using Plus5.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddValidatedConfiguration();
+builder.AddObservability();
 builder.Services.AddApiConventions();
 
 builder.Services.AddPersistence(
@@ -25,6 +27,7 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
+app.UseObservability();
 app.UseApiConventions();
 
 if (!app.Environment.IsDevelopment())

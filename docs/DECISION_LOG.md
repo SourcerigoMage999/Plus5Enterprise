@@ -72,3 +72,12 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Razlozi:** službeni framework primitives smanjuju dependency i maintenance rizik; stabilni machine code odvaja klijenta od teksta; URL versioning štiti buduću kompatibilnost; bounded pagination sprječava neograničene list queryje.
 - **Posljedice:** budući endpointi moraju koristiti canonical route group, kontrolirani validation/error mapping i `PagedResponse<T>` gdje je lista potencijalno velika. Neočekivani 500 ne izlaže interne detalje. Cursor pagination ili druga breaking promjena zahtijeva eksplicitnu novu odluku.
 - **Alternative:** custom error envelope i third-party validation/versioning paketi nisu uvedeni jer built-in .NET 10 mogućnosti pokrivaju trenutni scope.
+
+### ADR-0007 — JSON stdout i vendor-neutral OpenTelemetry temelj
+- **Datum:** 2026-08-24
+- **Status:** Accepted
+- **Kontekst:** Containerizirani API treba zajedničku korelaciju logova, HTTP odgovora, traceova i osnovnih metrika prije uvođenja business endpointa, ali produkcijski observability vendor i topology još nisu odabrani.
+- **Odluka:** API zapisuje strukturirane JSON logove na stdout, koristi W3C trace ID kao javni correlation contract te OpenTelemetry ASP.NET Core/runtime instrumentaciju. OTLP export je opcionalan i isključen bez validiranog endpointa; collector ili vendor servis nije dio trenutnog Composea.
+- **Razlozi:** stdout odgovara container runtimeu; W3C i OTLP su interoperabilni standardi; route-template logging i sanitizacija smanjuju privacy, secret i high-cardinality rizik; odgođeni backend izbor izbjegava preuranjeni operativni lock-in.
+- **Posljedice:** novi backend request log/enrichment mora koristiti canonical trace ID, low-cardinality strukturirana polja i pravila iz `OBSERVABILITY.md`. Production endpoint mora koristiti HTTPS, a exporter credentials, retention, dashboardi i alerting zahtijevaju deployment/security odluku.
+- **Alternative:** vendor-specific logging SDK, committed collector stack, raw request logging i puni URL/query tagovi nisu prihvaćeni u foundation fazi.

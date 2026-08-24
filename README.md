@@ -13,6 +13,7 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - SQL Server 2025 + EF Core persistence foundation
 - kontrolirane EF Core migracije i database-aware readiness
 - versionirani `/api/v1` contract, built-in validation i standardizirani sigurni `ProblemDetails` odgovori
+- JSON stdout logovi, W3C trace korelacija te vendor-neutral OpenTelemetry traces/metrics temelj
 
 Business entiteti, auth i feature ekrani još nisu implementirani.
 
@@ -88,6 +89,8 @@ Compose redoslijed je `database` → `database-init` → jednokratni `migrations
 Detaljni migration, identity i schema contract nalazi se u [`docs/PERSISTENCE.md`](docs/PERSISTENCE.md).
 
 Versioning, validation, error i pagination pravila nalaze se u [`docs/API_CONVENTIONS.md`](docs/API_CONVENTIONS.md).
+
+Logging, trace ID, telemetry privacy i opcionalni OTLP contract nalaze se u [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md).
 
 ## Struktura
 

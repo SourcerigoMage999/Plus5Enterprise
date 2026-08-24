@@ -51,7 +51,8 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 **Dovršeno 2026-08-24:** uvedeni su SQL Server 2025 i EF Core 10 persistence temelj, prazna početna migracija bez business sheme, odvojeni bootstrap/migration/runtime identiteti, non-root one-shot migration image, kontrolirani Compose dependency redoslijed i database-aware readiness. Release buildovi, 33 backend/frontend testa, format/lint/typecheck, clean i ponovljeni migration apply, migration history, least-privilege ovlasti, persistent-volume restart, health endpointi i non-root runtime provjere prolaze.
 ## 1.3 API conventions, validation & error contract — DONE
 **Dovršeno 2026-08-24:** zaključani su `/api/v1` Minimal API route group, built-in .NET 10 server validation, sigurni RFC `ProblemDetails` odgovori sa stabilnim `code` i `traceId` poljima, globalni exception boundary bez curenja internih detalja te bounded pagination contract. Release build, 36 backend i 4 frontend testa, format/lint/typecheck, dependency auditi i izolirani Docker runtime contract test prolaze.
-## 1.4 Logging/telemetry foundation — TODO
+## 1.4 Logging/telemetry foundation — DONE
+**Dovršeno 2026-08-24:** API zapisuje strukturirane JSON stdout logove, vraća i propagira W3C `X-Trace-Id`, bilježi sigurne route-template completion događaje te registrira OpenTelemetry ASP.NET Core traces/metrics i runtime metrike s opcionalnim validiranim OTLP exportom. Osjetljivi URL/query/user-agent tagovi uklanjaju se prije exporta, live health buka je potisnuta, a buildovi, 54 backend i 4 frontend testa, auditi i izolirani Docker runtime/log contract prolaze.
 ## 1.5 Frontend app shell, routing & design tokens — TODO
 ## 1.6 Authentication & authorization — BLOCKED
 **Gate:** posebni auth/business zahtjevi još nisu detaljno definirani u dostavljenoj dokumentaciji.

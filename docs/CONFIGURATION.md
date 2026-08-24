@@ -27,10 +27,14 @@ ASP.NET Core defaultni redoslijed izvora ostaje canonical: bazni `appsettings.js
 | `Frontend:PublicOrigin` | `Frontend__PublicOrigin` | da | ne | apsolutni HTTP(S) origin bez credentialsa, patha, queryja ili fragmenta |
 | `AllowedHosts` | `AllowedHosts` | da | ne | eksplicitni `;`-odvojeni host allowlist; `*` i `+` wildcardi nisu dopušteni |
 | `ConnectionStrings:Plus5` | `ConnectionStrings__Plus5` | da | **da** | SQL Server database + runtime identity; `Encrypt=True`; nepouzdani certifikat samo u Developmentu |
+| `Observability:TraceSamplingRatio` | `Observability__TraceSamplingRatio` | ne | ne | default `0.1`, Development `1.0`; raspon `(0, 1]` |
+| `Observability:OtlpEndpoint` | `Observability__OtlpEndpoint` | ne | ne | prazno isključuje export; apsolutni HTTP(S) URI bez credentialsa/queryja/fragmenta; HTTPS izvan Developmenta |
 | `ASPNETCORE_ENVIRONMENT` | isto | da | ne | `Development`, `Staging` ili `Production` |
 | ASP.NET Core hosting URL/port | `ASPNETCORE_URLS` / `ASPNETCORE_HTTP_PORTS` | prema hostu | ne | runtime/deployment vrijednost, ne hardcodirati production URL u source |
 
 `Frontend:PublicOrigin` je tipiziran i validira se na startupu. Development default je `http://localhost:5173`; Compose ga nadjačava s `http://localhost:8081`. `AllowedHosts` je u Developmentu ograničen na lokalne hostove. `ConnectionStrings:Plus5` nikada nema committed default vrijednost. Staging i Production moraju sve obavezne vrijednosti dati kroz environment/deployment sloj.
+
+Observability options su tipizirani i validiraju se prije pokretanja listenera. OTLP exporter nije registriran dok endpoint nije postavljen; repo ne sadrži observability credentials niti preuranjeni collector. Puni logging/telemetry contract nalazi se u `OBSERVABILITY.md`.
 
 ## Frontend javna konfiguracija
 

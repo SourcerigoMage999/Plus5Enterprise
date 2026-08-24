@@ -13,6 +13,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `DATABASE_DESIGN_STANDARD.md`
    - `BACKEND_ENGINEERING_STANDARD.md`
    - `API_CONVENTIONS.md` nakon Phase 1.3 za svaki API endpoint
+   - `OBSERVABILITY.md` nakon Phase 1.4 za svaki backend log, trace i metric enrichment
    - `FRONTEND_ENGINEERING_STANDARD.md`
    - `SECURITY_ENGINEERING_STANDARD.md`
    - `DOCKER_DEPLOYMENT_STANDARD.md`

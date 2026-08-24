@@ -1,9 +1,9 @@
-using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Plus5.Api.Observability;
 
 namespace Plus5.Api.Conventions;
 
@@ -22,7 +22,7 @@ internal sealed partial class GlobalExceptionHandler(
         ArgumentNullException.ThrowIfNull(httpContext);
         ArgumentNullException.ThrowIfNull(exception);
 
-        var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+        var traceId = TraceContext.GetTraceId(httpContext);
         LogUnhandledException(
             logger,
             exception.GetType().FullName,
