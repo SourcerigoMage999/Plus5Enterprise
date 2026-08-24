@@ -63,3 +63,12 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Razlozi:** reproducibilan environment, jednostavniji deployment i kasniji scaling path.
 - **Posljedice:** image mora biti non-root, bez secreta; DB mora ostati private; backup/restore i TLS su production gateovi.
 - **Alternative:** manual host deployment bez containera nije standardni put.
+
+### ADR-0006 — Versionirani Minimal API i ProblemDetails contract
+- **Datum:** 2026-08-24
+- **Status:** Accepted
+- **Kontekst:** Budući PLUS 5 moduli trebaju zajednički HTTP trust boundary prije prvog business endpointa, bez vezanja na third-party validation/error framework.
+- **Odluka:** Javni business API koristi ASP.NET Core Minimal API route group `/api/v1`, built-in .NET 10 validation i RFC `ProblemDetails` proširen stabilnim `code` i `traceId` poljima. Potencijalno velike liste počinju bounded page/pageSize contractom (default 25, maksimum 100).
+- **Razlozi:** službeni framework primitives smanjuju dependency i maintenance rizik; stabilni machine code odvaja klijenta od teksta; URL versioning štiti buduću kompatibilnost; bounded pagination sprječava neograničene list queryje.
+- **Posljedice:** budući endpointi moraju koristiti canonical route group, kontrolirani validation/error mapping i `PagedResponse<T>` gdje je lista potencijalno velika. Neočekivani 500 ne izlaže interne detalje. Cursor pagination ili druga breaking promjena zahtijeva eksplicitnu novu odluku.
+- **Alternative:** custom error envelope i third-party validation/versioning paketi nisu uvedeni jer built-in .NET 10 mogućnosti pokrivaju trenutni scope.

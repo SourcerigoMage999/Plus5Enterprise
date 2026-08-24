@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Plus5.Api.Conventions;
 using Plus5.Api.Configuration;
 using Plus5.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddValidatedConfiguration();
+builder.Services.AddApiConventions();
 
 builder.Services.AddPersistence(
     builder.Configuration.GetConnectionString("Plus5"),
@@ -22,6 +24,8 @@ builder.Services.AddHealthChecks()
             !(await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).Any());
 
 var app = builder.Build();
+
+app.UseApiConventions();
 
 if (!app.Environment.IsDevelopment())
 {

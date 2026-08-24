@@ -12,6 +12,7 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - Docker build za API i frontend
 - SQL Server 2025 + EF Core persistence foundation
 - kontrolirane EF Core migracije i database-aware readiness
+- versionirani `/api/v1` contract, built-in validation i standardizirani sigurni `ProblemDetails` odgovori
 
 Business entiteti, auth i feature ekrani još nisu implementirani.
 
@@ -85,6 +86,8 @@ docker compose up --build --wait
 Compose redoslijed je `database` → `database-init` → jednokratni `migrations` → `api` → `frontend`. Migracije se ne izvršavaju na startupu svake API instance. Named volume `plus5-sql-data` čuva lokalne DB podatke nakon `docker compose down`.
 
 Detaljni migration, identity i schema contract nalazi se u [`docs/PERSISTENCE.md`](docs/PERSISTENCE.md).
+
+Versioning, validation, error i pagination pravila nalaze se u [`docs/API_CONVENTIONS.md`](docs/API_CONVENTIONS.md).
 
 ## Struktura
 
