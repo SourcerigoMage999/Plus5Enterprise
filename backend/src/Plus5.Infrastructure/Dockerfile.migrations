@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine@sha256:620e765fe18186c08399f7aa978f79f04b6bbf0ee1b3b8a91e2d5c9619e59da1
+WORKDIR /src
+
+ENV DOTNET_CLI_HOME=/home/app
+ENV NUGET_PACKAGES=/home/app/.nuget/packages
+
+COPY ["Directory.Build.props", "."]
+COPY ["global.json", "."]
+COPY [".config/dotnet-tools.json", ".config/"]
+COPY ["backend/src/Plus5.Domain/Plus5.Domain.csproj", "backend/src/Plus5.Domain/"]
+COPY ["backend/src/Plus5.Application/Plus5.Application.csproj", "backend/src/Plus5.Application/"]
+COPY ["backend/src/Plus5.Infrastructure/Plus5.Infrastructure.csproj", "backend/src/Plus5.Infrastructure/"]
+RUN dotnet restore "backend/src/Plus5.Infrastructure/Plus5.Infrastructure.csproj" && \
+    dotnet tool restore
+
+COPY backend/src backend/src
+RUN dotnet build "backend/src/Plus5.Infrastructure/Plus5.Infrastructure.csproj" \
+    --configuration Release \
+    --no-restore && \
+    chown -R "$APP_UID:$APP_UID" \
+        /home/app \
+        backend/src/Plus5.Infrastructure/bin \
+        backend/src/Plus5.Infrastructure/obj
+
+USER $APP_UID
+ENTRYPOINT ["dotnet", "tool", "run", "dotnet-ef", "--"]
+CMD ["database", "update", "--project", "backend/src/Plus5.Infrastructure/Plus5.Infrastructure.csproj", "--configuration", "Release", "--no-build"]

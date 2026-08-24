@@ -4,15 +4,16 @@ PLUS 5 je aplikacija za organizaciju i izvođenje instrukcija/nastave. Repozitor
 
 ## Trenutačni status
 
-Repository bootstrap sadrži samo tehnički temelj:
+Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 
 - .NET 10 modularni backend
 - React + TypeScript + Vite frontend
 - architecture testove za backend dependency smjer
 - Docker build za API i frontend
-- lokalni Docker Compose bez baze podataka
+- SQL Server 2025 + EF Core persistence foundation
+- kontrolirane EF Core migracije i database-aware readiness
 
-Business entiteti, persistence, auth i feature ekrani namjerno nisu dio ove faze.
+Business entiteti, auth i feature ekrani još nisu implementirani.
 
 ## Preduvjeti
 
@@ -27,6 +28,7 @@ Backend:
 
 ```powershell
 dotnet restore .\Plus5Enterprise.sln
+dotnet tool restore
 dotnet build .\Plus5Enterprise.sln --no-restore --configuration Release
 dotnet test .\Plus5Enterprise.sln --no-build --configuration Release
 ```
@@ -42,7 +44,9 @@ npm run build
 
 ## Pokretanje u developmentu
 
-API:
+API za lokalni host development zahtijeva valjani `ConnectionStrings:Plus5` kroz user-secrets i dostupnu migriranu SQL Server bazu. Najjednostavniji potpuni razvojni workflow je Docker Compose opisan niže.
+
+API nakon konfiguriranja baze:
 
 ```powershell
 dotnet run --project .\backend\src\Plus5.Api\Plus5.Api.csproj
@@ -58,20 +62,29 @@ npm run dev
 API health endpointi:
 
 - `GET /health/live` — proces je aktivan
-- `GET /health/ready` — aplikacija je spremna posluživati promet za trenutačni bootstrap scope
+- `GET /health/ready` — SQL Server je dostupan i nema neprimijenjenih EF Core migracija
 
 ## Docker
 
-Iz root direktorija:
+Kopirati lokalni secret primjer i postaviti tri različite snažne lozinke:
 
 ```powershell
-docker compose up --build
+Copy-Item .\.env.example .\.env
+```
+
+Zatim iz root direktorija:
+
+```powershell
+docker compose up --build --wait
 ```
 
 - frontend: `http://localhost:8081`
 - API: `http://localhost:8080`
+- SQL Server: `127.0.0.1:1433` (samo lokalni loopback)
 
-Compose u ovoj fazi ne pokreće SQL Server jer persistence foundation pripada ROADMAP fazi 1.2.
+Compose redoslijed je `database` → `database-init` → jednokratni `migrations` → `api` → `frontend`. Migracije se ne izvršavaju na startupu svake API instance. Named volume `plus5-sql-data` čuva lokalne DB podatke nakon `docker compose down`.
+
+Detaljni migration, identity i schema contract nalazi se u [`docs/PERSISTENCE.md`](docs/PERSISTENCE.md).
 
 ## Struktura
 
@@ -83,6 +96,7 @@ backend/
     Plus5.Infrastructure/  implementacije vanjskih/persistence adaptera
     Plus5.Api/             HTTP i composition root
   tests/
+    Plus5.Api.Tests/
     Plus5.ArchitectureTests/
 frontend/                  React + TypeScript + Vite
 docs/                      izvršna projektna dokumentacija
@@ -103,7 +117,8 @@ Domain ne ovisi o drugim PLUS 5 projektima. Application ovisi samo o Domainu. Ar
 - podržani API environmenti su `Development`, `Staging` i `Production`; nepoznata vrijednost prekida startup
 - `AllowedHosts` mora biti eksplicitni host allowlist; wildcard vrijednosti nisu dopuštene
 - obavezni backend `Frontend__PublicOrigin` koristi tipiziranu startup validaciju
-- lokalne backend tajne koriste .NET user-secrets; trenutačni runtime još nema obaveznih secreta
+- `ConnectionStrings__Plus5` je obavezni backend secret; ne zapisuje se u `appsettings`, Compose source ni frontend
+- lokalni Compose koristi odvojene `sa`, migration i least-privilege application lozinke iz necommitane `.env` datoteke
 - frontend `VITE_API_BASE_URL` je javna vrijednost s defaultom `/api/v1`; `VITE_*` nikada ne smije sadržavati secret
 - lokalni frontend primjer nalazi se u `frontend/.env.example`, dok stvarne `.env` datoteke ostaju izvan Gita
 

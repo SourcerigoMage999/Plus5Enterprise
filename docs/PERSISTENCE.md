@@ -1,0 +1,77 @@
+# Database & persistence foundation
+
+## Status
+
+**LOCKED — implementirano i runtime provjereno 2026-08-24**
+
+Ovaj dokument definira persistence contract Phase 1.2 prema ADR-0003 i obaveznim database, security i Docker standardima.
+
+## Stack i granice
+
+- SQL Server 2025 (17.x) za lokalni Compose, službeni Microsoft image pinnan digestom
+- Entity Framework Core SQL Server + Design `10.0.11`
+- `Plus5DbContext` u Infrastructure sloju
+- EF Core migracije su jedini schema source of truth
+- nema business tablica, entiteta, seeda ni repository apstrakcija u foundation fazi
+- DbContext je scoped; command timeout je 30 sekundi
+
+## Početna migracija
+
+`InitialPersistenceFoundation` je namjerno prazna business migracija. Ona zaključava migration assembly, EF provider/version i reproducibilan clean migration path, a u bazi stvara samo EF `__EFMigrationsHistory` infrastrukturu.
+
+Nova schema promjena mora dobiti novu smislenu migraciju. API nikada ne poziva `Database.Migrate()` na startupu. Migration se izvršava kao odvojeni kontrolirani korak prije pokretanja verzije API-ja koja ovisi o shemi.
+
+## Identiteti i ovlasti
+
+Lokalni Compose koristi tri odvojena identiteta:
+
+| Identitet | Namjena | Ovlasti |
+|---|---|---|
+| `sa` | inicijalno stvaranje baze i loginova | bootstrap samo; API ga ne koristi |
+| `plus5_migrator` | EF Core schema migracije | `db_owner` lokalne Plus5 baze |
+| `plus5_app` | API runtime | `db_datareader` + `db_datawriter`, bez schema-owner ovlasti |
+
+Produkcijski deployment mora zasebno dostaviti migration i runtime credentials kroz secrets sloj. DB port ne smije biti javno izložen.
+
+## Local Compose workflow
+
+1. Kopirati `.env.example` u necommitani `.env`.
+2. Postaviti tri različite snažne SQL lozinke. Zbog SQLCMD lokalnog init boundaryja ne koristiti `'` ni `;`.
+3. Pokrenuti `docker compose up --build --wait`.
+4. Compose čeka SQL health, idempotentno inicijalizira bazu/logine, izvršava jednokratnu EF migraciju te tek onda pokreće API i frontend.
+5. `docker compose down` uklanja containere i mrežu, ali čuva named volume `plus5-sql-data`.
+
+Brisanje volumea briše lokalnu bazu i nije normalan shutdown workflow.
+
+## Host migration workflow
+
+Za kontroliranu migraciju iz hosta:
+
+```powershell
+dotnet tool restore
+$env:PLUS5_MIGRATION_CONNECTION_STRING = "<migration connection string>"
+dotnet tool run dotnet-ef -- database update --project .\backend\src\Plus5.Infrastructure\Plus5.Infrastructure.csproj
+Remove-Item Env:PLUS5_MIGRATION_CONNECTION_STRING
+```
+
+Lokalni container s nepouzdanim development certifikatom dodatno zahtijeva privremeni `PLUS5_MIGRATION_ALLOW_UNTRUSTED_CERTIFICATE=true`. Ta zastavica nije dopuštena za Staging/Production.
+
+## Readiness
+
+- `/health/live` provjerava samo proces i ne ovisi o SQL Serveru.
+- `/health/ready` koristi EF Core DbContext probe i vraća healthy samo kada se može pristupiti bazi i nema pending migracija.
+- Vanjski DB kvar ne smije uzrokovati liveness restart storm.
+
+## Migration quality gate
+
+Prije prihvaćanja svake schema promjene obavezno je:
+
+- Release build + test
+- `dotnet ef migrations has-pending-model-changes`
+- pregled generiranog migration C# i idempotent SQL scripta
+- clean SQL Server apply
+- ponovljeni/idempotent apply
+- upgrade provjera kada postoje prethodni podaci
+- constraint/index/delete/concurrency/security review prema stvarnom modelu
+
+Phase 1.2 clean apply, ponovljeni idempotent apply, named-volume restart, readiness i least-privilege provjere izvršene su na stvarnom SQL Server 2025 containeru.

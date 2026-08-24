@@ -16,7 +16,7 @@ RUN dotnet publish "backend/src/Plus5.Api/Plus5.Api.csproj" \
     --output /app/publish \
     /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine@sha256:c4b29bf368004ad9076c1ab9bc91fb373561e3905b4345637e14e8b8c57e3be8 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine-extra@sha256:58ec3158d8581044c9ba2115994770118ffd1697fdc49391ad83bd81e7bcd4af AS runtime
 WORKDIR /app
 ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080

@@ -1,12 +1,74 @@
 services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2025-latest@sha256:86cc6144ef39bb0fbed2329e1ad79b13ee82e7b2e4739213a0db0800e668a74a
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${PLUS5_SQL_SA_PASSWORD:?Set PLUS5_SQL_SA_PASSWORD in the local .env file}
+    ports:
+      - "127.0.0.1:1433:1433"
+    volumes:
+      - plus5-sql-data:/var/opt/mssql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "SELECT 1" -o /dev/null
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  database-init:
+    image: mcr.microsoft.com/mssql/server:2025-latest@sha256:86cc6144ef39bb0fbed2329e1ad79b13ee82e7b2e4739213a0db0800e668a74a
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${PLUS5_SQL_SA_PASSWORD:?Set PLUS5_SQL_SA_PASSWORD in the local .env file}
+      PLUS5_SQL_MIGRATION_PASSWORD: ${PLUS5_SQL_MIGRATION_PASSWORD:?Set PLUS5_SQL_MIGRATION_PASSWORD in the local .env file}
+      PLUS5_SQL_APP_PASSWORD: ${PLUS5_SQL_APP_PASSWORD:?Set PLUS5_SQL_APP_PASSWORD in the local .env file}
+    volumes:
+      - ./docker/sqlserver/init.sql:/scripts/init.sql:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - >-
+        /opt/mssql-tools18/bin/sqlcmd
+        -S database -U sa -P "$$MSSQL_SA_PASSWORD" -C -b
+        -v MigrationPassword="$$PLUS5_SQL_MIGRATION_PASSWORD"
+        ApplicationPassword="$$PLUS5_SQL_APP_PASSWORD"
+        -i /scripts/init.sql
+    restart: "no"
+
+  migrations:
+    build:
+      context: .
+      dockerfile: backend/src/Plus5.Infrastructure/Dockerfile.migrations
+    depends_on:
+      database-init:
+        condition: service_completed_successfully
+    environment:
+      PLUS5_MIGRATION_CONNECTION_STRING: >-
+        Server=database,1433;Database=Plus5;User ID=plus5_migrator;
+        Password=${PLUS5_SQL_MIGRATION_PASSWORD:?Set PLUS5_SQL_MIGRATION_PASSWORD in the local .env file};
+        Encrypt=True;TrustServerCertificate=True;Connect Timeout=5
+      PLUS5_MIGRATION_ALLOW_UNTRUSTED_CERTIFICATE: "true"
+    restart: "no"
+
   api:
     build:
       context: .
       dockerfile: backend/src/Plus5.Api/Dockerfile
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
       AllowedHosts: localhost;127.0.0.1;api
+      ConnectionStrings__Plus5: >-
+        Server=database,1433;Database=Plus5;User ID=plus5_app;
+        Password=${PLUS5_SQL_APP_PASSWORD:?Set PLUS5_SQL_APP_PASSWORD in the local .env file};
+        Encrypt=True;TrustServerCertificate=True;Connect Timeout=5
       Frontend__PublicOrigin: http://localhost:8081
     ports:
       - "8080:8080"
@@ -26,3 +88,6 @@ services:
     depends_on:
       api:
         condition: service_healthy
+
+volumes:
+  plus5-sql-data:

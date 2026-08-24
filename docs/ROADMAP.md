@@ -47,7 +47,8 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 ## 1.1 Configuration, environments & secrets — DONE
 **Dovršeno 2026-08-23:** zaključan je environment/configuration contract za Development, Staging i Production; API koristi strongly typed startup validation za javni frontend origin, eksplicitni host allowlist i odbija nepodržane environmente, frontend ima centralni validirani public-config boundary bez secreta, a Development/Compose primjeri i user-secrets pravila dokumentirani su u `CONFIGURATION.md`. Backend/frontend testovi, buildovi, auditi i Docker runtime smoke test prolaze.
 
-## 1.2 Database/persistence foundation — TODO
+## 1.2 Database/persistence foundation — DONE
+**Dovršeno 2026-08-24:** uvedeni su SQL Server 2025 i EF Core 10 persistence temelj, prazna početna migracija bez business sheme, odvojeni bootstrap/migration/runtime identiteti, non-root one-shot migration image, kontrolirani Compose dependency redoslijed i database-aware readiness. Release buildovi, 33 backend/frontend testa, format/lint/typecheck, clean i ponovljeni migration apply, migration history, least-privilege ovlasti, persistent-volume restart, health endpointi i non-root runtime provjere prolaze.
 ## 1.3 API conventions, validation & error contract — TODO
 ## 1.4 Logging/telemetry foundation — TODO
 ## 1.5 Frontend app shell, routing & design tokens — TODO
