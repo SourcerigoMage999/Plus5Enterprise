@@ -81,3 +81,12 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Razlozi:** stdout odgovara container runtimeu; W3C i OTLP su interoperabilni standardi; route-template logging i sanitizacija smanjuju privacy, secret i high-cardinality rizik; odgođeni backend izbor izbjegava preuranjeni operativni lock-in.
 - **Posljedice:** novi backend request log/enrichment mora koristiti canonical trace ID, low-cardinality strukturirana polja i pravila iz `OBSERVABILITY.md`. Production endpoint mora koristiti HTTPS, a exporter credentials, retention, dashboardi i alerting zahtijevaju deployment/security odluku.
 - **Alternative:** vendor-specific logging SDK, committed collector stack, raw request logging i puni URL/query tagovi nisu prihvaćeni u foundation fazi.
+
+### ADR-0008 — Minimalni declarative frontend router i CSS token foundation
+- **Datum:** 2026-08-24
+- **Status:** Accepted
+- **Kontekst:** Prije prvog feature ekrana učiteljska aplikacija treba stabilan responsive shell, URL navigation state, aktivne linkove, centralne design tokene i testabilan component boundary, bez uvođenja business sadržaja ili preuranjenog frontend framework modea.
+- **Odluka:** React SPA koristi React Router 8 u declarative modu s centralnim route registryjem, nested `AppShell` outletom i client-side 404 stanjem. Vizualni foundation koristi CSS custom-property tokene i lokalni CSS bez UI frameworka. Component testovi koriste Vitest, jsdom i Testing Library.
+- **Razlozi:** standardni browser history/link/active-state primitive smanjuje custom routing rizik; declarative mode pokriva trenutačni scope uz najmanju kompleksnost; CSS tokeni čuvaju vizualnu konzistentnost bez vendor lock-ina; Testing Library provjerava korisnički vidljiv i accessibility contract.
+- **Posljedice:** glavni routeovi i labeli mijenjaju se centralno; feature stranice ostaju unutar zajedničkog shella; URL state se ne duplicira u storeu; data-router/framework mode, global state i UI library zahtijevaju stvarnu buduću potrebu i review.
+- **Alternative:** vlastiti History API router, route-by-conditional-JSX, full React Router framework/data mode, global store i gotovi UI framework nisu uvedeni jer povećavaju rizik ili scope bez trenutačnog benefita.

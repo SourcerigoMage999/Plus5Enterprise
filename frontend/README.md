@@ -1,5 +1,19 @@
 # PLUS 5 frontend
 
-Minimal React + TypeScript + Vite bootstrap. Product routes, app shell, design tokens and feature screens are intentionally deferred to their ROADMAP phases.
+React + TypeScript + Vite SPA s Phase 1.5 application foundationom:
 
-Use the root repository `README.md` for setup and verification commands.
+- responsive učiteljski app shell
+- React Router centralni route registry
+- neutralni placeholderi bez fake business podataka
+- centralni CSS design tokeni
+- Vitest + Testing Library component testovi
+
+```powershell
+npm ci
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+Canonical contract nalazi se u `../docs/FRONTEND_FOUNDATION.md`, a root `README.md` opisuje potpuni repository workflow.

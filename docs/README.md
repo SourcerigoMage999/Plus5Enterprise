@@ -15,6 +15,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `API_CONVENTIONS.md` nakon Phase 1.3 za svaki API endpoint
    - `OBSERVABILITY.md` nakon Phase 1.4 za svaki backend log, trace i metric enrichment
    - `FRONTEND_ENGINEERING_STANDARD.md`
+   - `FRONTEND_FOUNDATION.md` nakon Phase 1.5 za svaki frontend route, app-shell ili design-token zahvat
    - `SECURITY_ENGINEERING_STANDARD.md`
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
