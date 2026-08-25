@@ -106,3 +106,12 @@ Phase 2.2 dodaje dva 3NF modela bez feature endpointa:
 - `Guardians` — opcionalni Student-owned kontakti bez accounta, uz filtered unique zaštitu najviše jednog primarnog kontakta po Studentu
 
 Svi FK-ovi su restriktivni. Composite Student/Program FK uključuje `TeacherAccountId` i zato na razini baze odbija povezivanje Studenta s Programom drugog Teachera. Nema Group/GroupMembership, fotografije, messaginga, bilješki, knowledge/readiness polja, seeda ni backfilla. Detaljni contract je u `STUDENT_FOUNDATION.md`.
+
+## Phase 2.3 Group schema
+
+Phase 2.3 dodaje dva normalizirana modela bez feature endpointa:
+
+- `Groups` — Teacher-owned grupa s obaveznim same-Teacher Programom, globalnim SchoolGradeom, pozitivnim kapacitetom, operativnim statusom, arhivskim vremenom i SQL Server `rowversion` concurrency tokenom
+- `GroupMemberships` — vremenski zapis članstva Studenta u grupi s početkom i opcionalnim završetkom
+
+Composite FK-ovi s mirrored `TeacherAccountId` fizički odbijaju cross-Teacher Program, Group i Student veze. Filtered unique indeks nad aktivnim članstvom dopušta najviše jednu grupu po Studentu, a CHECK constrainti štite kapacitet, statuse, arhiviranje i valjan vremenski interval. Brojanje članova naspram kapaciteta ostaje transakcijska poslovna invarijanta: budući use case mora zaključati/izmijeniti `Group` u istoj transakciji kako bi `rowversion` detektirao konkurentne upise. Nema rasporeda, termina, lokacije, materijala, ciljeva, bilješki, seeda ni backfilla. Detaljni contract je u `GROUP_FOUNDATION.md`.

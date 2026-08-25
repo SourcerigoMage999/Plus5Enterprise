@@ -77,6 +77,13 @@ internal sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
             })
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasAlternateKey(student => new
+        {
+            student.TeacherAccountId,
+            student.Id,
+        })
+            .HasName("AK_Students_Teacher_Id");
+
         builder.HasIndex(student => new
         {
             student.TeacherAccountId,

@@ -106,6 +106,30 @@ public sealed class Student
         UpdatedAtUtc = archivedAtUtc;
     }
 
+    public void AssignToGroupProgram(Guid programId, DateTimeOffset updatedAtUtc)
+    {
+        EnsureIdentifier(programId, nameof(programId));
+        EnsureCanUpdate(updatedAtUtc);
+
+        ProgramId = programId;
+        DeliveryMode = Plus5.Domain.Students.DeliveryMode.Group;
+        UpdatedAtUtc = updatedAtUtc;
+    }
+
+    public void MoveToIndividual(DateTimeOffset updatedAtUtc)
+    {
+        EnsureCanUpdate(updatedAtUtc);
+
+        if (!ProgramId.HasValue)
+        {
+            throw new InvalidOperationException(
+                "A student without a program cannot use individual delivery.");
+        }
+
+        DeliveryMode = Plus5.Domain.Students.DeliveryMode.Individual;
+        UpdatedAtUtc = updatedAtUtc;
+    }
+
     private static void EnsureIdentifier(Guid value, string parameterName)
     {
         if (value == Guid.Empty)
@@ -149,6 +173,23 @@ public sealed class Student
         if (value.Offset != TimeSpan.Zero)
         {
             throw new ArgumentException("Timestamp must be UTC.", parameterName);
+        }
+    }
+
+    private void EnsureCanUpdate(DateTimeOffset updatedAtUtc)
+    {
+        EnsureUtc(updatedAtUtc, nameof(updatedAtUtc));
+
+        if (ArchivedAtUtc.HasValue)
+        {
+            throw new InvalidOperationException("An archived student cannot be changed.");
+        }
+
+        if (updatedAtUtc < UpdatedAtUtc)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(updatedAtUtc),
+                "Update timestamp cannot precede the last update.");
         }
     }
 

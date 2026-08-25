@@ -18,6 +18,7 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - Teacher-only account lifecycle, revocable cookie autentikacija, CSRF zaštita i auth/recovery UI flowovi
 - odvojeni Teacher Program, SchoolGrade, ProficiencyLevel i verzionirani Curriculum domain/persistence temelj
 - Teacher-owned Student profil, opcionalni Guardian kontakti, same-owner Program veza i sigurno arhiviranje
+- Teacher-owned Group, vremenska povijest članstva, one-active-group zaštita i concurrency-safe kapacitet
 
 Feature API endpointi i ekrani iz Phase 3+ još nisu implementirani.
 
@@ -102,7 +103,7 @@ Frontend shell, route registry, design tokeni i accessibility foundation nalaze 
 
 Teacher account, cookie/session, CSRF i recovery contract nalazi se u [`docs/AUTHENTICATION_REQUIREMENTS.md`](docs/AUTHENTICATION_REQUIREMENTS.md) i [`docs/AUTHENTICATION_ARCHITECTURE.md`](docs/AUTHENTICATION_ARCHITECTURE.md).
 
-Program/grade/level/curriculum granice nalaze se u [`docs/CORE_TEACHING_FOUNDATION.md`](docs/CORE_TEACHING_FOUNDATION.md), a Student/Guardian/status/archive contract u [`docs/STUDENT_FOUNDATION.md`](docs/STUDENT_FOUNDATION.md).
+Program/grade/level/curriculum granice nalaze se u [`docs/CORE_TEACHING_FOUNDATION.md`](docs/CORE_TEACHING_FOUNDATION.md), Student/Guardian/status/archive contract u [`docs/STUDENT_FOUNDATION.md`](docs/STUDENT_FOUNDATION.md), a Group i membership contract u [`docs/GROUP_FOUNDATION.md`](docs/GROUP_FOUNDATION.md).
 
 ## Struktura
 

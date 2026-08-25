@@ -38,8 +38,13 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 ## Odgođene Student odluke
 
 - odobriti kontrolirani Gender katalog ili potvrditi trajni free-text contract prije nego se taj podatak koristi za filtere, izvještaje ili automatizaciju
-- Group faza mora zaključati vremensku valjanost i kardinalnost `GroupMembershipa` te atomarno provoditi pravilo da `DeliveryMode.Group` ima aktivno članstvo
+- ~~Group faza mora zaključati vremensku valjanost i kardinalnost `GroupMembershipa` te atomarno provoditi pravilo da `DeliveryMode.Group` ima aktivno članstvo.~~ **RIJEŠENO 2026-08-25:** vremenski interval, najviše jedno aktivno članstvo, same-Teacher composite FK i transakcijski Student/Group rowversion contract zaključani su u `GROUP_FOUNDATION.md` i ADR-0012.
 - fotografija učenika ostaje blokirana općom file-storage politikom i ne sprema se kao URL/path pretpostavka u Student foundationu
+
+## Odgođene Group odluke
+
+- prije Group edit API/UI-ja odlučiti ponašanje promjene Group Programa kada postoje aktivni članovi: atomarna promjena Student Programa, završetak članstava ili odbijanje promjene
+- minimalni broj učenika, draft lifecycle i pravo brisanje grupe nisu definirani; foundation koristi samo pozitivan maksimalni capacity i arhiviranje
 
 ## Pravilo
 

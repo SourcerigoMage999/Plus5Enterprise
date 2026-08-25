@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Plus5.Domain.Groups;
 using Plus5.Domain.Identity;
 using Plus5.Domain.Students;
 using Plus5.Domain.Teaching;
@@ -28,6 +29,10 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
     public DbSet<Student> Students => Set<Student>();
 
     public DbSet<Guardian> Guardians => Set<Guardian>();
+
+    public DbSet<Group> Groups => Set<Group>();
+
+    public DbSet<GroupMembership> GroupMemberships => Set<GroupMembership>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

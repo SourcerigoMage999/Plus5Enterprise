@@ -95,8 +95,17 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-25:** zaključani su `STUDENT_FOUNDATION.md` i ADR-0011. Dodani su Student, DeliveryMode, StudentStatus i Student-owned Guardian modeli, restriktivni Teacher/SchoolGrade/Program/Student FK-ovi, composite same-Teacher Program zaštita, četiri Student CHECK constrainta i filtered unique primarni Guardian indeks. Migracija `AddStudentProfileFoundation` prolazi clean i upgrade putanju na SQL Serveru, očuvava postojeći Program i odbija cross-owner, incomplete organization, invalid status, active archive i duplicate-primary zapise. Release build, 99 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime prolaze.
 
-## 2.3 Group foundation — TODO
-Podaci i pravila potrebni za 2.7, 2.8 i 2.9.
+## 2.3 Group foundation — DONE
+
+**Cilj:** zaključati najmanji siguran Group i GroupMembership temelj potreban za buduće ekrane 2.7, 2.8 i 2.9 bez rasporeda, termina ili feature API/UI sloja.
+
+**Scope:** Teacher-owned Group s obaveznim same-Teacher Programom i SchoolGradeom, statusima Active/OnHold/Inactive, pozitivnim kapacitetom, arhiviranjem, optimistic concurrency zaštitom te vremenskim članstvom koje dopušta najviše jednu aktivnu grupu po Studentu.
+
+**Out of scope:** Group CRUD/API/UI, raspored, lokacija, trajanje i Session, materijali, ciljevi, bilješke, progress/readiness/Knowledge Model, minimalan broj članova, fizičko brisanje i promjena Programa grupe s aktivnim članovima.
+
+**Acceptance:** ownership i cross-Teacher zaštita postoje u bazi; status/capacity/archive/membership invariante imaju domain ili DB zaštitu; upgrade, clean i idempotent migration prolaze; concurrent capacity contract je eksplicitan; nema preuranjenih Session ili knowledge polja; contract, ADR i odgođene odluke su dokumentirani.
+
+**Dovršeno 2026-08-25:** zaključani su `GROUP_FOUNDATION.md` i ADR-0012. Dodani su Group, GroupStatus i vremenski GroupMembership modeli, restriktivni composite ownership FK-ovi, filtered unique one-active-group indeks, status/capacity/archive/interval CHECK constrainti i `rowversion` za transakcijsku zaštitu kapaciteta. Student dobiva eksplicitne domain prijelaze za ulazak u grupni Program i izlazak u individualni način uz očuvanje Programa. Migracija `AddGroupFoundation` prolazi clean i upgrade putanju na SQL Serveru, očuvava postojeće Studente te odbija cross-owner, drugo aktivno članstvo, nevaljan kapacitet/status/archive/interval i duplicate-name zapise. Release build, 107 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime prolaze.
 
 ## 2.4 Schedule/session foundation — TODO
 Model konkretnog termina, statusa termina, individualnog/grupnog konteksta i veze s redovitim rasporedom grupe.
