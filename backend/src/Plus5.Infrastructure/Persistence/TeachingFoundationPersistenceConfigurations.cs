@@ -22,6 +22,12 @@ internal sealed class ProgramConfiguration : IEntityTypeConfiguration<Program>
             .WithMany()
             .HasForeignKey(program => program.TeacherAccountId)
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasAlternateKey(program => new
+        {
+            program.TeacherAccountId,
+            program.Id,
+        })
+            .HasName("AK_Programs_Teacher_Id");
         builder.HasIndex(program => new { program.TeacherAccountId, program.NormalizedName })
             .IsUnique()
             .HasDatabaseName("UX_Programs_Teacher_NormalizedName");

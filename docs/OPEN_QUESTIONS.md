@@ -33,6 +33,13 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 ## Operativne odluke prije produkcijskog releasea
 
 - odabrati produkcijski SMTP provider, verificiranu sender domenu/adresu, SPF/DKIM/DMARC postavke i secret provisioning; Phase 1.6 zadržava provider-neutralni TLS SMTP adapter i lokalni capture contract
+- zaključati Student/Guardian retention, pravni zahtjev za erasure te anonimizaciju povezanih povijesnih zapisa prije production delete funkcije
+
+## Odgođene Student odluke
+
+- odobriti kontrolirani Gender katalog ili potvrditi trajni free-text contract prije nego se taj podatak koristi za filtere, izvještaje ili automatizaciju
+- Group faza mora zaključati vremensku valjanost i kardinalnost `GroupMembershipa` te atomarno provoditi pravilo da `DeliveryMode.Group` ima aktivno članstvo
+- fotografija učenika ostaje blokirana općom file-storage politikom i ne sprema se kao URL/path pretpostavka u Student foundationu
 
 ## Pravilo
 

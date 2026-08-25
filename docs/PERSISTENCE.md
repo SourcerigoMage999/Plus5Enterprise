@@ -97,3 +97,12 @@ Phase 2.1 dodaje četiri odvojena 3NF korijena:
 - `Curricula` — globalni code/name/version korijen s jedinstvenom code/version kombinacijom
 
 Program nema SchoolGrade, ProficiencyLevel ni Curriculum FK. Nema Student/Group/Material veza, CurriculumOutcome hijerarhije, seed podataka ni feature API-ja. Detaljni contract je u `CORE_TEACHING_FOUNDATION.md`.
+
+## Phase 2.2 Student profile schema
+
+Phase 2.2 dodaje dva 3NF modela bez feature endpointa:
+
+- `Students` — Teacher-owned profil osobe bez accounta, s obaveznim SchoolGradeom, opcionalnim paired Program/DeliveryMode podacima, tri operativna statusa i arhivskim UTC vremenom
+- `Guardians` — opcionalni Student-owned kontakti bez accounta, uz filtered unique zaštitu najviše jednog primarnog kontakta po Studentu
+
+Svi FK-ovi su restriktivni. Composite Student/Program FK uključuje `TeacherAccountId` i zato na razini baze odbija povezivanje Studenta s Programom drugog Teachera. Nema Group/GroupMembership, fotografije, messaginga, bilješki, knowledge/readiness polja, seeda ni backfilla. Detaljni contract je u `STUDENT_FOUNDATION.md`.

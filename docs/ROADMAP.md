@@ -83,8 +83,17 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-25:** zaključan je `CORE_TEACHING_FOUNDATION.md` i ADR-0010. Dodani su odvojeni `Program`, `SchoolGrade`, `ProficiencyLevel` i `Curriculum` domain/persistence modeli bez seed pretpostavki ili preuranjenih veza. Migracija `AddCoreTeachingFoundation` na stvarnom SQL Serveru stvara četiri tablice, restriktivni Teacher ownership FK, četiri natural-key unique indeksa i dva sort-order CHECK constrainta. Release build, 92 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime prolaze.
 
-## 2.2 Student aggregate / profile foundation — TODO
-Podaci potrebni za 2.1, 2.2, 2.3 i 2.6 bez readiness logike.
+## 2.2 Student aggregate / profile foundation — DONE
+
+**Cilj:** zaključati najmanji siguran Student/Guardian profil koji koriste ekrani 2.1, 2.2, 2.3 i 2.6 bez uvođenja feature API-ja ili knowledge/readiness podataka.
+
+**Scope:** Teacher-owned Student bez accounta, obavezni SchoolGrade, opcionalni same-Teacher Program + eksplicitni DeliveryMode, statusi Active/OnHold/Inactive, osnovni opcionalni kontakt/profile podaci, Student-owned Guardian kontakti, arhiviranje, 3NF persistence i migracija.
+
+**Out of scope:** Student CRUD/API/UI, Group/GroupMembership, fotografije/file storage, bilješke, communication, privacy toggles, ProficiencyLevel procjene/ciljevi, Knowledge Model, mastery/readiness/progress/evidence i production legal-erasure workflow.
+
+**Acceptance:** Teacher/object ownership i cross-Teacher Program zaštita postoje u bazi; status/organization/archive/primary-Guardian invariante imaju DB constraint; clean, upgrade i idempotent migration prolaze; nema Student/Guardian accounta, seeda ni readiness polja; contract, ADR i odgođene odluke su dokumentirani.
+
+**Dovršeno 2026-08-25:** zaključani su `STUDENT_FOUNDATION.md` i ADR-0011. Dodani su Student, DeliveryMode, StudentStatus i Student-owned Guardian modeli, restriktivni Teacher/SchoolGrade/Program/Student FK-ovi, composite same-Teacher Program zaštita, četiri Student CHECK constrainta i filtered unique primarni Guardian indeks. Migracija `AddStudentProfileFoundation` prolazi clean i upgrade putanju na SQL Serveru, očuvava postojeći Program i odbija cross-owner, incomplete organization, invalid status, active archive i duplicate-primary zapise. Release build, 99 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime prolaze.
 
 ## 2.3 Group foundation — TODO
 Podaci i pravila potrebni za 2.7, 2.8 i 2.9.

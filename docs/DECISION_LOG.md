@@ -108,3 +108,12 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Razlozi:** model čuva zaključane glossary razlike, sprječava cross-Teacher IDOR granicu, ostaje u 3NF i ne zaključava nedokumentirane Student/Group/Material kardinalnosti ni hrvatski/CEFR katalog prije odobrenja sadržaja.
 - **Posljedice:** buduće veze moraju referencirati zasebne entitete i poštovati Teacher ownership. Program lifecycle/management, reference-data provisioning i curriculum hijerarhija ostaju svojim dokumentacijskim/ROADMAP gateovima.
 - **Alternative:** globalni shared Program, jedno polje `GradeLevel`, grade/level/curriculum stupci na Programu, hardkodirani enum/seed katalozi i preuranjeni CurriculumOutcome model nisu prihvaćeni.
+
+### ADR-0011 — Teacher-owned Student profil, child Guardian kontakti i arhiviranje
+- **Datum:** 2026-08-25
+- **Status:** Accepted
+- **Kontekst:** Ekrani 2.1, 2.2, 2.3 i 2.6 trebaju zajednički Student zapis, ali Group, communication, file storage i Knowledge Model još nisu u scopeu. Source zahtijeva obavezni razred, opcionalnu organizaciju nastave, tri statusa, više Guardian kontakata i sigurno ponašanje umjesto neposrednog fizičkog brisanja.
+- **Odluka:** `Student` je Teacher-owned aggregate root bez accounta, s obaveznim `SchoolGrade`, opcionalnim paired `Program` + `DeliveryMode`, statusom `Active`/`OnHold`/`Inactive` i arhivskim UTC vremenom. Program veza koristi composite same-Teacher FK. `Guardian` je Student-owned child kontakt; Student ima nula ili više kontakata i najviše jednog primarnog. Product delete je arhiviranje, a fizičko brisanje/erasure nije uvedeno. Group-mode write ostaje zatvoren do atomarne `GroupMembership` invarijante u Phase 2.3.
+- **Razlozi:** model čuva glossary razlike, minimizira PII, sprječava IDOR/cross-owner vezu na razini baze, ostaje u 3NF i ne izmišlja buduće account, group, messaging, knowledge ili file-storage contracte.
+- **Posljedice:** budući Student API mora koristiti session Teacher ownership i ne smije prihvaćati client ownership autoritet. Uobičajeni list queryji isključuju arhivirane retke. Phase 2.3 mora atomarno jamčiti da `DeliveryMode.Group` ima valjano aktivno članstvo, a production delete zahtijeva retention/legal-erasure odluku.
+- **Alternative:** Student kao `UserAccount`, hard delete iz feature flowa, Guardian account, globalno dijeljeni Guardian bez dokumentiranog identity mergea, implicitni DeliveryMode iz Group FK-a, ručno upisani progress/readiness i preuranjeni Group/Knowledge modeli nisu prihvaćeni.

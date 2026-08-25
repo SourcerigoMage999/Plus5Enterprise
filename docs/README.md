@@ -19,6 +19,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `SECURITY_ENGINEERING_STANDARD.md`
    - `AUTHENTICATION_REQUIREMENTS.md` + `AUTHENTICATION_ARCHITECTURE.md` za Phase 1.6 i svaki kasniji auth/authorization zahvat
    - `CORE_TEACHING_FOUNDATION.md` nakon Phase 2.1 za Program, SchoolGrade, ProficiencyLevel i Curriculum granice
+   - `STUDENT_FOUNDATION.md` nakon Phase 2.2 za Student, Guardian, status, organizaciju i arhiviranje
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`
