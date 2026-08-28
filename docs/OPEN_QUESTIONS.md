@@ -8,7 +8,7 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 2. ~~Koji je detaljni authentication model, vrste korisnika i permissions model?~~ **RIJEŠENO 2026-08-24:** samo Teacher ima account u Phase 1.6; javna Teacher registracija s potvrdom e-maila; Student/Guardian bez accounta u ovoj fazi; nema Administrator rolea; revocable secure cookie auth i deny-by-default ownership authorization. Vidi `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md` i ADR-0009.
 3. `4.1 Biblioteka materijala.docx` je 0 B. Potrebno je obnoviti/ponovno spremiti opis 4.1.
 4. Koji je točan algoritam readiness procjene iz Evidence Eventa (weighting, decay, broj dokaza, confidence, thresholds)?
-5. Kako se modeliraju redoviti termini grupe naspram konkretnih instanci termina i promjena serije?
+5. ~~Kako se modeliraju redoviti termini grupe naspram konkretnih instanci termina i promjena serije?~~ **RIJEŠENO 2026-08-28:** versioned weekly `RecurringSessionSeries`, materialized `Session`, one-occurrence exception i successor-series contract zaključani su u `SCHEDULING_FOUNDATION.md` i ADR-0013.
 6. Koja je politika pohrane datoteka/materijala, maksimalne veličine i podržani formati?
 7. Koja je granica AI funkcionalnosti u prezentacijama/lesson builderu i mora li učitelj potvrditi svaki AI prijedlog prije objave/korištenja?
 
@@ -45,6 +45,12 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 
 - prije Group edit API/UI-ja odlučiti ponašanje promjene Group Programa kada postoje aktivni članovi: atomarna promjena Student Programa, završetak članstava ili odbijanje promjene
 - minimalni broj učenika, draft lifecycle i pravo brisanje grupe nisu definirani; foundation koristi samo pozitivan maksimalni capacity i arhiviranje
+
+## Odgođene Schedule odluke
+
+- odabrati bounded recurrence preview/materialization horizon i replenishment cadence prije Phase 4 application implementacije
+- definirati smije li Teacher svjesno overrideati conflict upozorenje i pod kojim audit pravilima
+- arbitrary recurrence/overnight, shared room permissions, reminders i notification delivery ostaju zasebni gateovi
 
 ## Pravilo
 

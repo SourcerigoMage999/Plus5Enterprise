@@ -19,6 +19,7 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - odvojeni Teacher Program, SchoolGrade, ProficiencyLevel i verzionirani Curriculum domain/persistence temelj
 - Teacher-owned Student profil, opcionalni Guardian kontakti, same-owner Program veza i sigurno arhiviranje
 - Teacher-owned Group, vremenska povijest članstva, one-active-group zaštita i concurrency-safe kapacitet
+- konkretni Session, verzionirane tjedne recurrence serije, Teacher-owned lokacije i eksplicitne series exceptions
 
 Feature API endpointi i ekrani iz Phase 3+ još nisu implementirani.
 

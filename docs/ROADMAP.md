@@ -107,10 +107,17 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-25:** zaključani su `GROUP_FOUNDATION.md` i ADR-0012. Dodani su Group, GroupStatus i vremenski GroupMembership modeli, restriktivni composite ownership FK-ovi, filtered unique one-active-group indeks, status/capacity/archive/interval CHECK constrainti i `rowversion` za transakcijsku zaštitu kapaciteta. Student dobiva eksplicitne domain prijelaze za ulazak u grupni Program i izlazak u individualni način uz očuvanje Programa. Migracija `AddGroupFoundation` prolazi clean i upgrade putanju na SQL Serveru, očuvava postojeće Studente te odbija cross-owner, drugo aktivno članstvo, nevaljan kapacitet/status/archive/interval i duplicate-name zapise. Release build, 107 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime prolaze.
 
-## 2.4 Schedule/session foundation — TODO
-Model konkretnog termina, statusa termina, individualnog/grupnog konteksta i veze s redovitim rasporedom grupe.
+## 2.4 Schedule/session foundation — DONE
 
-**Gate:** pravila ponavljajućih termina i promjene serije moraju se formalizirati iz 3.3/3.4 specifikacije prije DB locka.
+**Cilj:** zaključati najmanji siguran model konkretnog termina i verzioniranog tjednog rasporeda potreban za buduće ekrane 3.1–3.4, bez feature API/UI sloja ili lesson-delivery evidencije.
+
+**Scope:** Teacher-owned Location, konkretni UTC Session s individualnim ili grupnim kontekstom, eksplicitni statusi, tjedna RecurringSessionSeries za redoviti Group raspored i individualnu recurrence, occurrence identity, “samo ovaj termin” iznimka, “svi budući” versioning, optimistic concurrency i conflict transaction contract.
+
+**Out of scope:** Schedule CRUD/API/UI, arbitrary RRULE, overnight, generation horizon/background replenishment, conflict override, shared-room permissions, reminders/notifications, attendance, stvarni held-lesson zapis, plan sata, materijali, domaća zadaća i Knowledge Model.
+
+**Acceptance:** recurrence i series-change pravila iz 3.3/3.4 su formalizirana; ownership/context/time/status invariante imaju domain ili DB zaštitu; clean, upgrade i idempotent migration prolaze na SQL Serveru; “samo ovaj” i “svi budući” contracti su testirani; nema preuranjenog API/UI ili delivery scopea.
+
+**Dovršeno 2026-08-28:** zaključani su `SCHEDULING_FOUNDATION.md` i ADR-0013. Dodani su Location, RecurringSessionSeries i Session modeli, restriktivni same-Teacher composite FK-ovi, CHECK constrainti, Teacher-first kalendarski indeksi, unique occurrence zaštita i `rowversion`. Upgrade 6→7 i clean SQL Server migracije prolaze uz očuvan sentinel i 0 seed redaka; devet negativnih constraint scenarija je odbijeno, a rowversion promjena potvrđena. Release build, 118 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF model/idempotent SQL te čisti non-root Docker runtime i health provjere prolaze.
 
 ---
 

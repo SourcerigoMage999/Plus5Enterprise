@@ -126,3 +126,12 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Razlozi:** model čuva Program–DeliveryMode–Group razliku, povijest bez hard deletea, tenant sigurnost na DB razini i normalizirani canonical member count bez stored countera ili triggera. Rowversion odgovara stvarnom konkurentnom capacity write use caseu.
 - **Posljedice:** feature write ne smije postojati bez transakcije, active-count provjere i concurrency conflict mappinga. Student može imati više povijesnih, ali samo jedno aktivno članstvo. Raspored i location nisu Group stupci. Promjena Group Programa s aktivnim članovima ostaje zaseban product gate.
 - **Alternative:** GroupId izravno na Studentu bez povijesti, više aktivnih grupa po Studentu, cascade/hard delete, stored active-member counter, DB trigger, implicitni DeliveryMode, Group-owned kopije Student podataka i preuranjeni schedule model nisu prihvaćeni.
+
+### ADR-0013 — Versioned weekly series, materialized Session instances i explicit exceptions
+- **Datum:** 2026-08-28
+- **Status:** Accepted
+- **Kontekst:** Group i Schedule specifikacije zahtijevaju jedan source of truth za redoviti raspored, konkretne kalendarske termine, jednokratne iznimke i promjenu buduće serije. Potrebni su DST-safe UTC termini, očuvana povijest i zaštita od overlap/duplicate raceova.
+- **Odluka:** `RecurringSessionSeries` je verzionirana tjedna definicija. Group-kind serija predstavlja canonical `RegularGroupSchedule`; individualna recurrence koristi isti mehanizam. Konkretni `Session` retci se materijaliziraju s jedinstvenim series/occurrence ključem. Jedna iznimka mijenja samo Session; future change supersedea staru i stvara nasljednu seriju. Intervalni konflikti provjeravaju se u Serializable transakciji, dok rowversion štiti update i unique indeks generiranje.
+- **Razlozi:** model nema dvije kopije grupnog rasporeda, čuva povijest i auditabilnu lineage, omogućuje calendar query bez računanja beskonačne recurrence te ispravno razdvaja lokalno recurrence pravilo od UTC instanci.
+- **Posljedice:** feature use case mora imati bounded generation horizon, DST validation, context/ownership provjeru, atomic future-series zamjenu i kontrolirani concurrency/conflict rezultat. Migracija ne generira business podatke.
+- **Alternative:** RRULE string/JSON kao core model, mutiranje stare serije, samo virtualni termini, beskonačna pre-generacija, brisanje otkazanih termina, lokalni datetime bez timezonea i client-side conflict autoritet nisu prihvaćeni.

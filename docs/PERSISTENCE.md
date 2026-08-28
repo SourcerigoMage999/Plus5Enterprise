@@ -115,3 +115,13 @@ Phase 2.3 dodaje dva normalizirana modela bez feature endpointa:
 - `GroupMemberships` — vremenski zapis članstva Studenta u grupi s početkom i opcionalnim završetkom
 
 Composite FK-ovi s mirrored `TeacherAccountId` fizički odbijaju cross-Teacher Program, Group i Student veze. Filtered unique indeks nad aktivnim članstvom dopušta najviše jednu grupu po Studentu, a CHECK constrainti štite kapacitet, statuse, arhiviranje i valjan vremenski interval. Brojanje članova naspram kapaciteta ostaje transakcijska poslovna invarijanta: budući use case mora zaključati/izmijeniti `Group` u istoj transakciji kako bi `rowversion` detektirao konkurentne upise. Nema rasporeda, termina, lokacije, materijala, ciljeva, bilješki, seeda ni backfilla. Detaljni contract je u `GROUP_FOUNDATION.md`.
+
+## Phase 2.4 Schedule/session schema
+
+Phase 2.4 dodaje tri Teacher-owned modela bez feature endpointa:
+
+- `Locations` — ponovno upotrebljiva lokacija s jedinstvenim normaliziranim nazivom unutar Teacher scopea i arhiviranjem koje čuva povijesne veze
+- `RecurringSessionSeries` — verzionirano tjedno pravilo za redoviti Group raspored ili individualnu Student recurrence, s lokalnim wall-clock vremenom, vremenskom zonom i vezom na prethodnu seriju
+- `Sessions` — konkretan UTC termin s točno jednim Group/Student kontekstom, eksplicitnim statusom, opcionalnim series occurrence identitetom i oznakom iznimke
+
+Composite FK-ovi fizički odbijaju Group, Student, Location ili Series drugog Teachera. CHECK constrainti štite context XOR, enum vrijednosti, vremenske intervale, cancellation audit, upareni series occurrence i zabranu istodobne fizičke/online lokacije. `rowversion` štiti izmjene Sessiona i Seriesa, a filtered unique `(RecurringSessionSeriesId, SeriesOccurrenceDate)` indeks čini materijalizaciju idempotentnom. Teacher-first indeksi podržavaju kalendar i buduće serializable overlap provjere. Migracija nema seed, backfill ni automatsko generiranje Session redaka. Detaljni contract je u `SCHEDULING_FOUNDATION.md`.
