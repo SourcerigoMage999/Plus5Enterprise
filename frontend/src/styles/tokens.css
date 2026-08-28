@@ -1,23 +1,23 @@
 :root {
   --color-brand-50: #f1f5f9;
-  --color-brand-700: #263a59;
-  --color-brand-800: #1b2c48;
-  --color-brand-900: #111f35;
+  --color-brand-700: #064b96;
+  --color-brand-800: #063c78;
+  --color-brand-900: #003773;
   --color-accent-100: #fff8d8;
   --color-accent-200: #ffec9b;
   --color-accent-300: #ffdf5d;
-  --color-accent-400: #f6cb45;
-  --color-accent-500: #e9b91f;
+  --color-accent-400: #ffc51b;
+  --color-accent-500: #f5b900;
   --color-success-600: #23845b;
-  --color-surface-canvas: #f3f5f2;
+  --color-surface-canvas: #ffffff;
   --color-surface-raised: #ffffff;
-  --color-text-primary: #142036;
-  --color-text-secondary: #5a6575;
+  --color-text-primary: #062355;
+  --color-text-secondary: #53647e;
   --color-text-inverse: #ffffff;
   --color-text-inverse-muted: #c3cbd6;
   --color-text-on-brand: #ffffff;
   --color-text-on-accent: #17243a;
-  --color-border-subtle: #dfe4e8;
+  --color-border-subtle: #dce4ee;
   --color-border-accent: #edd36d;
   --color-focus-ring: #a66b00;
 
@@ -58,6 +58,6 @@
   --duration-fast: 160ms;
   --easing-standard: cubic-bezier(0.2, 0, 0, 1);
 
-  --shell-sidebar-width: 17rem;
+  --shell-sidebar-width: 12.75rem;
   --shell-header-height: 5rem;
 }

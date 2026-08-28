@@ -20,8 +20,9 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - Teacher-owned Student profil, opcionalni Guardian kontakti, same-owner Program veza i sigurno arhiviranje
 - Teacher-owned Group, vremenska povijest članstva, one-active-group zaštita i concurrency-safe kapacitet
 - konkretni Session, verzionirane tjedne recurrence serije, Teacher-owned lokacije i eksplicitne series exceptions
+- autorizirani, pretraživi i filtrirani popis vlastitih učenika s pregledom statusa i programa
 
-Feature API endpointi i ekrani iz Phase 3+ još nisu implementirani.
+Student create, dossier, edit i Group feature ekrani iz ostatka Phase 3 još nisu implementirani.
 
 ## Preduvjeti
 
@@ -105,6 +106,8 @@ Frontend shell, route registry, design tokeni i accessibility foundation nalaze 
 Teacher account, cookie/session, CSRF i recovery contract nalazi se u [`docs/AUTHENTICATION_REQUIREMENTS.md`](docs/AUTHENTICATION_REQUIREMENTS.md) i [`docs/AUTHENTICATION_ARCHITECTURE.md`](docs/AUTHENTICATION_ARCHITECTURE.md).
 
 Program/grade/level/curriculum granice nalaze se u [`docs/CORE_TEACHING_FOUNDATION.md`](docs/CORE_TEACHING_FOUNDATION.md), Student/Guardian/status/archive contract u [`docs/STUDENT_FOUNDATION.md`](docs/STUDENT_FOUNDATION.md), a Group i membership contract u [`docs/GROUP_FOUNDATION.md`](docs/GROUP_FOUNDATION.md).
+
+Student list API/UI contract, filteri i neutralni progress boundary nalaze se u [`docs/STUDENT_LIST.md`](docs/STUDENT_LIST.md).
 
 ## Struktura
 

@@ -14,10 +14,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Plus5.Api.Conventions;
 using Plus5.Api.Identity;
+using Plus5.Api.Students;
 using Plus5.Application.Identity;
+using Plus5.Application.Students;
 using Plus5.Domain.Identity;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Persistence;
+using Plus5.Infrastructure.Students;
 
 namespace Plus5.Api.Tests.Identity;
 
@@ -33,12 +36,14 @@ public sealed class AuthenticationApiTests
         using var client = app.GetTestClient();
 
         using var anonymous = await client.GetAsync("/api/v1/auth/session", CancellationToken.None);
+        using var anonymousStudents = await client.GetAsync("/api/v1/students", CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
             CancellationToken.None);
 
         Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousStudents.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -63,6 +68,8 @@ public sealed class AuthenticationApiTests
         var authCookie = ReadCookie(login, "plus5-auth");
         csrf = await GetCsrfAsync(client, authCookie);
         using var session = await GetWithCookiesAsync(client, "/api/v1/auth/session", authCookie, csrf.Cookie);
+        using var students = await GetWithCookiesAsync(client, "/api/v1/students?pageSize=100", authCookie, csrf.Cookie);
+        using var invalidStudents = await GetWithCookiesAsync(client, "/api/v1/students?pageSize=101", authCookie, csrf.Cookie);
         using var logout = await PostAsync(client, "/api/v1/auth/logout", new { }, csrf, authCookie);
         using var revoked = await GetWithCookiesAsync(client, "/api/v1/auth/session", authCookie, csrf.Cookie);
 
@@ -71,6 +78,10 @@ public sealed class AuthenticationApiTests
         Assert.Contains("httponly", authCookieHeader, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("samesite=strict", authCookieHeader, StringComparison.OrdinalIgnoreCase);
         Assert.Equal(HttpStatusCode.OK, session.StatusCode);
+        Assert.True(
+            students.StatusCode == HttpStatusCode.OK,
+            await students.Content.ReadAsStringAsync(CancellationToken.None));
+        Assert.Equal(HttpStatusCode.BadRequest, invalidStudents.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, revoked.StatusCode);
     }
@@ -150,6 +161,7 @@ public sealed class AuthenticationApiTests
             options.UseInMemoryDatabase(databaseName));
         builder.Services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         builder.Services.AddScoped<ITeacherAuthenticationService, TeacherAuthenticationService>();
+        builder.Services.AddScoped<IStudentListQuery, EfStudentListQuery>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -162,6 +174,7 @@ public sealed class AuthenticationApiTests
         app.UseAuthorization();
         app.UseAntiforgery();
         app.MapTeacherAuthentication();
+        app.MapStudentList();
         await app.StartAsync(CancellationToken.None);
         return app;
     }

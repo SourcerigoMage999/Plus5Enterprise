@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using Plus5.Application.Identity;
+using Plus5.Application.Students;
 using Plus5.Domain.Identity;
 using Plus5.Infrastructure.Identity;
+using Plus5.Infrastructure.Students;
 
 namespace Plus5.Infrastructure.Persistence;
 
@@ -85,6 +87,7 @@ public static class PersistenceServiceCollectionExtensions
 
         services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         services.AddScoped<ITeacherAuthenticationService, TeacherAuthenticationService>();
+        services.AddScoped<IStudentListQuery, EfStudentListQuery>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);
 

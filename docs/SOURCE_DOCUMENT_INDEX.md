@@ -34,4 +34,4 @@
 
 ## Vizuali
 
-PNG mockupovi ostaju u izvornom ZIP-u i trebaju se koristiti za layout/visual acceptance zajedno s tekstualnom specifikacijom.
+Paket `Za programera - novo.zip` potvrđeno sadrži 78 PNG mockupova. Ostaju u izvornom ZIP-u i trebaju se koristiti kao canonical layout/visual acceptance izvor zajedno s tekstualnom specifikacijom. Za svaki business UI ekran prije zaključavanja faze obavezni su usporedba s pripadajućim PNG-om, desktop dokaz, responsive pregled i dokumentirana odstupanja.

@@ -5,6 +5,7 @@ using Plus5.Api.Conventions;
 using Plus5.Api.Configuration;
 using Plus5.Api.Observability;
 using Plus5.Api.Identity;
+using Plus5.Api.Students;
 using Plus5.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 }).AllowAnonymous();
 
 app.MapTeacherAuthentication();
+app.MapStudentList();
 
 app.Run();
 

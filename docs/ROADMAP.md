@@ -123,7 +123,11 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 # PHASE 3 — Teacher UI: Students & Groups
 
-## 3.1 Screen 2.1 Student list — TODO
+## 3.1 Screen 2.1 Student list — DONE
+
+**Dovršeno 2026-08-28:** implementirani su Teacher-authorized `GET /api/v1/students` i `/overview`, owner-scoped pretraga, filteri i bounded pagination, tablični/kartični responsive ekran, URL stanje, loading/empty/error/retry stanja te pregled statusa i programa. Zadnji sat koristi samo postojeći `Held` Session; napredak ostaje neutralno “Nije dostupno” do Knowledge/Evidence faze. Create/dossier/edit akcije su eksplicitno onemogućene do svojih podfaza. Release build, 116 API/domain/persistence i 4 architecture testa, 16 frontend testova, format/lint/typecheck/build, stvarna SQL Server translacija, Docker health i non-root runtime prolaze.
+
+**Visual gate 2026-08-29:** PASS. Stvarni ekran uspoređen je s canonical PNG-om iz izvornog paketa `Za programera - novo.zip`. Desktop 1536×1024 i mobilna prilagodba 390×844 vizualno su pregledani; dokazi i namjerna odstupanja dokumentirani su u `docs/visual-acceptance/README.md`.
 ## 3.2 Screen 2.3 Create student — TODO
 ## 3.3 Screen 2.2 Student digital dossier (administrative/core view) — TODO
 ## 3.4 Screen 2.6 Edit student — TODO
