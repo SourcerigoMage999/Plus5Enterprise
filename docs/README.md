@@ -47,4 +47,6 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
 
 ## Status izvora
 
-Detaljna dokumentacija trenutno postoji za Radni stol, Učenike, Raspored te dio Materijala. Mapa ekrana definira i kasnije module, ali njihov detaljni business/UX opis još nije potpun. Zbog toga kasnije faze imaju dokumentacijske gateove prije implementacije.
+Teacher source je 2026-09-01 proširen s 54 nova `source_specs` dokumenta. Detaljni screen/lifecycle snapshotovi sada postoje za Materijale 4.1 i 4.4–4.5, Lesson Builder, PLUS 5 Ploču, Povijest sati, Domaće zadaće, Poruke, Izvještaje, Financije, Postavke, Centar obavijesti i Profil/account.
+
+`source_specs/MASTER_SITEMAP_TEACHER.md` daje cross-module pregled, a `source_specs/DOCUMENTATION_BACKLOG.md` navodi domenske contracte i završne audite koji još nisu zaključani. Detaljni screen source ne uklanja ROADMAP gateove za Knowledge/Evidence, storage, permissions, metrics/privacy/export, finance, notifications ili MVP rez.

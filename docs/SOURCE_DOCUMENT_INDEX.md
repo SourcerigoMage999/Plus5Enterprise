@@ -27,10 +27,29 @@
 - `4.3._Izrada_prezentacije.md` ← `Za programera - novo/4.0 Materijali/4.3 Novi materijali/Prezentacija/4.3. Izrada prezentacije.docx`
 - `Popis_svih_ekrana_koje_vidi_uU010ditelj.md` ← `Za programera - novo/Popis svih ekrana koje vidi u#U010ditelj.docx`
 
-## Poznati problem
+## Povijesni problem — riješen 2026-09-01
 
-- `4.1 Biblioteka materijala.docx` nije pretvoren jer je u dostavljenom ZIP-u veličine 0 B.
+- Raniji `4.1 Biblioteka materijala.docx` bio je 0 B. Novi teacher source sada daje detaljan behavior/data opis kroz `source_specs/4.1_Biblioteka_materijala.md`; stari blocker više nije aktivan.
 - Word privremena datoteka `~$1 Biblioteka materijala.docx` ignorirana je.
+
+## Teacher source refresh — 2026-09-01
+
+Paket `docs(20260901-104358).zip` dodao je 54 nova Markdown snapshot dokumenta u `source_specs/`, uključujući:
+
+- 4.1 i 4.4–4.5 Materijale
+- 5.1–5.6 Lesson Builder
+- 6.1–6.5 PLUS 5 Ploču / Lesson Session runtime
+- 7.1–7.2 Povijest sati
+- 8.1–8.3 Domaće zadaće
+- 9.1–9.2 Poruke
+- 10.1–10.9 Izvještaje
+- 11.1–11.3 Financije
+- 12.1–12.7 Postavke
+- 13.1 Centar obavijesti
+- 14.1–14.3 Profil/account
+- `MASTER_SITEMAP_TEACHER.md` i `DOCUMENTATION_BACKLOG.md`
+
+Raniji source snapshotovi ostaju važeći gdje nisu u kontradikciji s novijim sourceom. Zaključani tehnički standardi, ADR-ovi, implementacijski statusi i phase summaryji nisu zamijenjeni sadržajem novog paketa.
 
 ## Vizuali
 

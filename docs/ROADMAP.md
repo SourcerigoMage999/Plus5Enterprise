@@ -177,11 +177,16 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 ## 6.1 Material domain model & storage strategy — TODO
 ## 6.2 Material metadata ↔ curriculum/knowledge mapping — TODO
-## 6.3 Screen 4.1 Material library — BLOCKED
-**Razlog:** DOCX izvor je prazan (0 B). PNG postoji, ali bez detaljnog business opisa ne zaključavati ponašanje filtera, akcija i permissionsa.
-
+## 6.3 Screen 4.1 Material library — TODO
 ## 6.4 Screen 4.2 Material detail — TODO
 ## 6.5 Evidence-capable task metadata within material — TODO
+## 6.6 Screen 4.4 Import own material — TODO
+## 6.7 Screen 4.5 Edit material and version history — TODO
+## 6.8 Material sharing, visibility and permissions contract — BLOCKED
+
+**Source status:** detaljni source sada postoji za 4.1 i 4.4–4.5. Stari 0 B blocker za 4.1 više nije aktivan.
+
+**Gate:** prije implementacije zaključati storage adapter, dopuštene formate i veličine, upload validation/scanning, ownership/sharing permissions, `MaterialVersion`/`TaskVersion` povijesnu konzistentnost te AI analysis confirmation/privacy boundary. AI metadata ostaje prijedlog dok ga Teacher ne potvrdi.
 
 ---
 
@@ -209,65 +214,111 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 ---
 
-# PHASE 9 — Lesson Builder — DOCUMENTATION GATE
+# PHASE 9 — Lesson Builder
 
-## 9.0 Detailed specification 5.1–5.7 — BLOCKED
-Tek nakon odobrene detaljne specifikacije:
-- 9.1 Goal selection
-- 9.2 Suggested lesson structure
-- 9.3 Lesson plan editor
-- 9.4 Activity/Knowledge Block selection
-- 9.5 Activity detail/edit
-- 9.6 Materials attachment
-- 9.7 Confirmed lesson
+## 9.0 Detailed specification 5.1–5.6 — DOCUMENTED
+Source: `source_specs/5.0_Priprema_sata_Lesson_Builder.md` i 5.1–5.6 screen specovi.
 
----
+## 9.1 Goal selection — TODO
+## 9.2 Suggested lesson structure and balance check — TODO
+## 9.3 Lesson Plan editor and material-version attachment — TODO
+## 9.4 Activity / Knowledge Block selection — TODO
+## 9.5 Lesson Activity detail/edit — TODO
+## 9.6 Confirmed Lesson Plan / ready state — TODO
 
-# PHASE 10 — PLUS 5 Board / Live Lesson — DOCUMENTATION GATE
-
-## 10.0 Detailed specification 6.1–6.5 — BLOCKED
-Nakon toga: teacher board, activity delivery, student work review, live summary, lesson completion and evidence emission.
+**Gate:** prije implementacije zaključati formalne `LessonPlan`, `ActivityTemplate` i `LessonActivity` contracte te dependencyje na Knowledge/Material modele. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
 
 ---
 
-# PHASE 11 — Session History — DOCUMENTATION GATE
+# PHASE 10 — PLUS 5 Board / Live Lesson
 
-## 11.0 Detailed specification 7.1–7.2 — BLOCKED
+## 10.0 Detailed specification 6.1–6.5 — DOCUMENTED
+Source: `source_specs/6.0_PLUS5_Ploca.md` i 6.1–6.5 runtime specovi.
 
----
+## 10.1 Teacher board and Lesson Session lifecycle — TODO
+## 10.2 Universal activity runtime and Attempt capture — TODO
+## 10.3 Live student diagnostic — TODO
+## 10.4 Live lesson summary and plan-vs-executed view — TODO
+## 10.5 Lesson closure, Evidence finalization and follow-up — TODO
 
-# PHASE 12 — Homework — DOCUMENTATION GATE
-
-## 12.0 Detailed specification 8.1–8.3 — BLOCKED
-Posebno zaključati kako homework rezultat emitira Evidence Event i kako se evidentira pomoć učeniku.
-
----
-
-# PHASE 13 — Messaging — DOCUMENTATION GATE
-
-## 13.0 Detailed specification 9.1–9.2 — BLOCKED
-Zaključati korisnike razgovora, permissions, unread/read state, attachments, retention i notifications.
+**Gate:** formalizirati `LessonSession` persistence, runtime recovery/autosave, `TaskVersion`/`MaterialVersion` references, teacher-assessed Evidence i invalidation/audit pravila. `Completion`, `Accuracy` i `Mastery` ostaju odvojeni koncepti; `Attempt` nije automatski Evidence.
 
 ---
 
-# PHASE 14 — Reports — DOCUMENTATION GATE
+# PHASE 11 — Session History
 
-## 14.0 Detailed specification 10.1–10.9 — BLOCKED
-Zaključati izvore podataka, metrike, privatnost i PDF/export contract.
+## 11.0 Detailed specification 7.1–7.2 — DOCUMENTED
+## 11.1 Completed Lesson Session history list — TODO
+## 11.2 Completed lesson historical detail — TODO
 
----
-
-# PHASE 15 — Finance — DOCUMENTATION GATE
-
-## 15.0 Detailed specification 11.1–11.3 — BLOCKED
-Zaključati je li modul samo evidencija ili uključuje račune/naplatu/porezne podatke.
+**Gate:** povijesni read model mora čuvati stvarno korištene Task/Material verzije, planirano naspram izvedenog, void/invalidation audit i isti Session context prema dossieru, homeworku, reportsima i financijama.
 
 ---
 
-# PHASE 16 — Settings, Notifications & Profile — DOCUMENTATION GATE
+# PHASE 12 — Homework
 
-## 16.0 Detailed specification 12.x–14.x — BLOCKED
-Uključuje postavke, notification center, profile menu i preostale auth ekrane.
+## 12.0 Detailed specification 8.1–8.3 — DOCUMENTED
+## 12.1 Homework overview and operational queues — TODO
+## 12.2 Create/duplicate Homework Assignment — TODO
+## 12.3 Homework detail, Submission review and lifecycle — TODO
+
+**Gate:** formalizirati `HomeworkAssignment`/`HomeworkSubmission`, participant access, Task versioning, reminder confirmation i Evidence emission/assistance pravila. Closing ili cancelling ne briše povijesne Submissione, Attemptse ili Evidence.
+
+---
+
+# PHASE 13 — Messaging
+
+## 13.0 Detailed specification 9.1–9.2 — DOCUMENTED
+## 13.1 Inbox, sent, archived and draft conversations — TODO
+## 13.2 Conversation detail, composer, attachments and Context Links — TODO
+
+**Gate:** zaključati participants/permissions, private replies na broadcast, attachments, retention, delivery, read state i abuse/privacy contract. AI smije predložiti draft, ali ne smije automatski poslati poruku.
+
+---
+
+# PHASE 14 — Reports
+
+## 14.0 Detailed specification 10.1–10.9 — DOCUMENTED
+## 14.1 Reports overview and Student/Group selection — TODO
+## 14.2 Student report overview with Period Context — TODO
+## 14.3 Knowledge analysis — TODO
+## 14.4 Activity timeline analysis — TODO
+## 14.5 Task, Attempt and result analysis — TODO
+## 14.6 Completed-session analysis — TODO
+## 14.7 Engagement and behavior analysis — TODO
+## 14.8 Parent-report draft, section selection and export preview — TODO
+## 14.9 Parent-report review, immutable Report Snapshot and messaging handoff — TODO
+
+**Gate:** zaključati izvore podataka, metric definitions, confidence/insufficient-data behavior, privacy, export/PDF i immutable `ReportSnapshot` contract. Knowledge, Engagement i Assessment Readiness ne smiju se svesti na jednu metriku.
+
+---
+
+# PHASE 15 — Finance
+
+## 15.0 Detailed specification 11.1–11.3 — DOCUMENTED
+## 15.1 Finance overview, trends and opportunity suggestions — TODO
+## 15.2 Completed sessions, financial entries and payment status — TODO
+## 15.3 Financial detail, adjustment, void and audit trail — TODO
+
+**Gate:** formalno zaključati internal-ledger naspram invoice/payment/tax/fiscalization scopea, valutu i money precision, group per-Student payment semantics te permissions/audit. Održani sat može stvoriti stavku, ali se financijska povijest ne briše tiho; poslovne prijedloge potvrđuje Teacher.
+
+---
+
+# PHASE 16 — Settings, Notifications & Profile
+
+## 16.0 Detailed specification 12.x–14.x — DOCUMENTED
+## 16.1 General / Teacher settings — TODO
+## 16.2 Teaching and Group preferences — TODO
+## 16.3 Assessment, attendance and homework rules — TODO
+## 16.4 Pricing and business rules — TODO
+## 16.5 Notification preferences and channel policy — TODO
+## 16.6 Privacy, security and data controls — TODO
+## 16.7 Settings single-source-of-truth audit and MVP boundary — BLOCKED
+## 16.8 Notification center and event/read-resolved model — TODO
+## 16.9 User menu and Teacher profile — TODO
+## 16.10 Account/security UI — TODO
+
+**Gate:** završiti audit postavki 12.1–12.7 tako da svaka odluka ima jedan source of truth; zaključati notification event/delivery/retention contract. `Message` nije `Notification`, a read notification ne rješava povezani poslovni događaj. Auth funkcije ostaju podređene zaključanim Phase 1.6 contractima; budući MFA/2FA ili novi account tipovi zahtijevaju zasebnu odluku.
 
 ---
 

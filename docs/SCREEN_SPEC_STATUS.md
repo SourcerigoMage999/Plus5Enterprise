@@ -8,20 +8,21 @@ Ovaj dokument je gate protiv AI-haluciniranja nedokumentiranih funkcionalnosti.
 | Učenici | 2.1–2.9 | detaljni DOCX + vizuali | može u implementaciju nakon domain/data foundationa |
 | Knowledge / readiness | 2.4–2.5 | detaljan funkcionalni opis + posebna logika | zahtijeva prethodno zaključan Knowledge/Evidence model |
 | Raspored | 3.1–3.4 | detaljni DOCX + vizuali | može nakon Student/Group foundationa |
-| Materijali | 4.1 | PNG postoji; DOCX je 0 B | **BLOCKED za punu implementaciju dok se opis ne obnovi** |
+| Materijali | 4.1 | novi detaljni source + postojeći PNG | stari 0 B blocker riješen; može nakon Material storage/permissions foundationa |
 | Materijali | 4.2 | detaljan opis | može nakon Material + Knowledge metadata modela |
 | Materijali | 4.3 Prezentacija | detaljan opis | može nakon Material foundationa; editor treba zaseban tehnički dizajn |
-| Materijali | 4.4–4.5 | samo mapa ekrana | dokumentacijski gate prije implementacije |
-| Priprema sata | 5.1–5.7 | mapa ekrana | dokumentacijski gate prije implementacije |
-| PLUS 5 Ploča | 6.1–6.5 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Sati/Povijest | 7.1–7.2 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Domaće zadaće | 8.1–8.3 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Poruke | 9.1–9.2 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Izvještaji | 10.1–10.9 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Financije | 11.1–11.3 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Postavke | 12.1–12.6 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Obavijesti | 13.1 | mapa ekrana | dokumentacijski gate prije implementacije |
-| Profil/Auth | 14.1–14.3 | mapa ekrana | auth requirements moraju biti posebno definirani prije implementacije |
+| Materijali | 4.4–4.5 | detaljni import/edit/versioning source specovi | nakon Material storage, versioning, permissions i AI-confirmation contracta |
+| Priprema sata | 5.1–5.6 | detaljni Lesson Builder source specovi | screen-flow gate riješen; zahtijeva Lesson Plan/Activity i Knowledge/Material contracte |
+| PLUS 5 Ploča | 6.1–6.5 | detaljni runtime/lifecycle source specovi | screen-flow gate riješen; zahtijeva Lesson Session/Evidence architecture |
+| Sati/Povijest | 7.1–7.2 | detaljni source specovi | može nakon Lesson Session persistencea i povijesnog version contracta |
+| Domaće zadaće | 8.1–8.3 | detaljni source specovi | zahtijeva Homework/Evidence contract i participant access pravila |
+| Poruke | 9.1–9.2 | detaljni source specovi | zahtijeva participant/permission/retention/delivery contract |
+| Izvještaji | 10.1–10.9 | detaljni source specovi | zahtijeva metric definitions/privacy/export/Report Snapshot contract |
+| Financije | 11.1–11.3 | detaljni source behavior | zahtijeva formalni finance/tax/invoice/fiscalization boundary |
+| Postavke | 12.1–12.7 | detaljne mape posljedica | audit single-source-of-truth i MVP rez ostaju obavezni |
+| Obavijesti | 13.1 | detaljni event/read-resolved model | zahtijeva notification delivery/retention contract |
+| Profil/Auth | 14.1–14.3 | screen source + zaključani auth contract | Phase 1.6 auth contract ima prednost |
+| Master sitemap/audit | cross-module | početni master sitemap izveden | završni functional audit i MVP rez nisu zaključani |
 
 ## Pravilo statusa
 

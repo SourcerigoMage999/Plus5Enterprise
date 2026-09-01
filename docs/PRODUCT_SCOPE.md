@@ -61,15 +61,27 @@ Detaljni business contract je u `AUTHENTICATION_REQUIREMENTS.md`.
 
 Specifikacije za 2.4, 2.5 i 4.2 jasno upućuju da procjena znanja ne smije biti nasumična niti ručno upisan postotak. Rezultati aktivnosti trebaju biti povezani s kurikulumom i komponentama znanja, a procjena mora nastajati iz prikupljenih dokaza. Pomoć učeniku i vrsta dokaza također utječu na interpretaciju rezultata.
 
-## Granica trenutačne dokumentacije
+## Granica trenutačne dokumentacije — osvježeno 2026-09-01
 
 Detaljno su opisani:
 
 - 1.1 Radni stol učitelja
 - 2.1–2.9 Učenici / Grupe
 - 3.1–3.4 Raspored
+- logika 2.4 procjene spremnosti i 2.5 detalja znanja
+- 4.1 Biblioteka materijala
 - 4.2 Pregled materijala
 - 4.3 Novi materijal — izrada prezentacije
-- logika 2.4 procjene spremnosti i 2.5 detalja znanja
+- 4.4–4.5 Uvoz i uređivanje materijala
+- 5.1–5.6 Priprema sata / Lesson Builder
+- 6.1–6.5 PLUS 5 Ploča / Live Lesson
+- 7.1–7.2 Povijest sati
+- 8.1–8.3 Domaće zadaće
+- 9.1–9.2 Poruke
+- 10.1–10.9 Izvještaji
+- 11.1–11.3 Financije
+- 12.1–12.7 Postavke
+- 13.1 Centar obavijesti
+- 14.1–14.3 Profil/account
 
-Za 4.1 postoji PNG, ali dostavljeni DOCX je prazan. Za brojne ekrane 4.4–14.x postoji mapa/navigacijski opis, ali ne i potpuna detaljna specifikacija.
+Detaljni screen/lifecycle source ne zaključava automatski domenski, permission, storage, metric, finance ili delivery contract. Ti gateovi ostaju u `ROADMAP.md`, `OPEN_QUESTIONS.md` i `source_specs/DOCUMENTATION_BACKLOG.md`.
