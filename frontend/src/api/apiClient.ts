@@ -16,6 +16,10 @@ interface ProblemResponse {
   readonly code?: string
 }
 
+interface CsrfResponse {
+  readonly token: string
+}
+
 export const apiEvents = {
   unauthorized: 'plus5:auth-required',
   forbidden: 'plus5:access-denied',
@@ -50,6 +54,26 @@ export async function getJson<T>(
   signal?: AbortSignal,
 ): Promise<T> {
   const response = await apiRequest(path, { signal })
+  return (await response.json()) as T
+}
+
+export async function postJson<T>(
+  path: string,
+  body: object,
+  notify = true,
+): Promise<T> {
+  const csrfResponse = await apiRequest('/auth/csrf', {}, { notify })
+  const csrf = (await csrfResponse.json()) as CsrfResponse
+  const response = await apiRequest(path, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': csrf.token,
+    },
+    body: JSON.stringify(body),
+  }, { notify })
+
+  if (response.status === 204) return undefined as T
   return (await response.json()) as T
 }
 
@@ -91,6 +115,19 @@ function friendlyMessage(code?: string): string {
       return 'Previše pokušaja. Pričekajte prije ponovnog pokušaja.'
     case 'invalid_csrf_token':
       return 'Sigurnosna potvrda zahtjeva je istekla. Osvježite stranicu.'
+    case 'group_capacity_reached':
+      return 'Odabrana grupa je popunjena. Odaberite drugu grupu.'
+    case 'group_unavailable':
+    case 'group_not_found':
+      return 'Odabrana grupa više nije dostupna.'
+    case 'program_not_found':
+      return 'Odabrani program više nije dostupan.'
+    case 'school_grade_not_found':
+      return 'Odabrani razred više nije dostupan.'
+    case 'group_program_mismatch':
+      return 'Odabrana grupa ne pripada odabranom programu.'
+    case 'concurrency_conflict':
+      return 'Podaci grupe su se promijenili. Provjerite odabir i pokušajte ponovno.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

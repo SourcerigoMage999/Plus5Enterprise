@@ -1,4 +1,6 @@
-# Phase 3.1 visual acceptance
+# Visual acceptance
+
+## Phase 3.1 — Student list
 
 ## Source
 
@@ -30,3 +32,29 @@ PNG je mjerodavan vizualni izvor; tekstualni Phase 3.1 contract ostaje mjerodava
 - Create, dossier, communication i edit kontrole vizualno su prisutne, ali onemogućene do svojih faza.
 - Export i Groups summary nisu dio zaključanog Phase 3.1 contracta pa nisu simulirani klijentski izvedenim podacima.
 - API zadržava default `pageSize=25`; broj vidljivih redaka ovisi o stvarnim podacima, a ne o broju redaka u mockupu.
+
+## Phase 3.2 — Create student
+
+### Source
+
+Canonical `Za programera - novo/2.0 Učenici/2.3. Novi učenik/2.3 Novi učenik.png` uspoređen je s renderiranim ekranom. PNG vodi izgled, a `STUDENT_CREATE.md` i izvorni tekst vode ponašanje i sigurnost.
+
+### Dokazi
+
+- `PHASE_3.2_STUDENT_CREATE_DESKTOP_1536.png` — desktop 1536×1024
+- `PHASE_3.2_STUDENT_CREATE_MOBILE_390.png` — mobilna prilagodba 390×844
+
+### Rezultat
+
+- PASS — PLUS 5 shell, žuti aktivni Učenici element, breadcrumb, naslov i globalni profil/notification prostor
+- PASS — centralna sekcionirana forma, dvije desne kartice, status hijerarhija i footer akcije
+- PASS — proportions, spacing, typography, colors, borders, radii, shadows i control sizes
+- PASS — desktop 1536×1024 bez preklapanja
+- PASS — mobilni stacking i sticky akcije bez horizontalnog overflowa
+
+### Namjerna odstupanja
+
+- Program nema obaveznu zvjezdicu jer tekstualni source izričito ispravlja PNG i dopušta Student bez Programa.
+- Guardian ime i prezime odvojena su radi zaključanog domenskog modela i pouzdane validacije.
+- Fotografija nije uvedena bez odobrenog storage/avatar contracta; shell koristi postojeće inicijale.
+- Nakon spremanja prikazuje se minimalna success boundary ruta; stvarni digitalni dosje pripada Phase 3.3.

@@ -18,6 +18,7 @@ using Plus5.Api.Students;
 using Plus5.Application.Identity;
 using Plus5.Application.Students;
 using Plus5.Domain.Identity;
+using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Persistence;
 using Plus5.Infrastructure.Students;
@@ -66,10 +67,38 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.NoContent, login.StatusCode);
 
         var authCookie = ReadCookie(login, "plus5-auth");
+        var grade = new SchoolGrade(Guid.NewGuid(), "7R", "Sedmi razred", 7);
+        await using (var scope = app.Services.CreateAsyncScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<Plus5DbContext>();
+            dbContext.SchoolGrades.Add(grade);
+            await dbContext.SaveChangesAsync();
+        }
         csrf = await GetCsrfAsync(client, authCookie);
         using var session = await GetWithCookiesAsync(client, "/api/v1/auth/session", authCookie, csrf.Cookie);
         using var students = await GetWithCookiesAsync(client, "/api/v1/students?pageSize=100", authCookie, csrf.Cookie);
         using var invalidStudents = await GetWithCookiesAsync(client, "/api/v1/students?pageSize=101", authCookie, csrf.Cookie);
+        using var createOptions = await GetWithCookiesAsync(
+            client, "/api/v1/students/create-options", authCookie, csrf.Cookie);
+        using var createWithoutCsrf = await client.SendAsync(new HttpRequestMessage(
+            HttpMethod.Post, "/api/v1/students")
+        {
+            Content = JsonContent.Create(new
+            {
+                firstName = "Ana",
+                lastName = "Anić",
+                schoolGradeId = grade.Id,
+                status = "active",
+            }),
+            Headers = { { "Cookie", authCookie } },
+        });
+        using var createStudent = await PostAsync(client, "/api/v1/students", new
+        {
+            firstName = "Ana",
+            lastName = "Anić",
+            schoolGradeId = grade.Id,
+            status = "active",
+        }, csrf, authCookie);
         using var logout = await PostAsync(client, "/api/v1/auth/logout", new { }, csrf, authCookie);
         using var revoked = await GetWithCookiesAsync(client, "/api/v1/auth/session", authCookie, csrf.Cookie);
 
@@ -82,6 +111,9 @@ public sealed class AuthenticationApiTests
             students.StatusCode == HttpStatusCode.OK,
             await students.Content.ReadAsStringAsync(CancellationToken.None));
         Assert.Equal(HttpStatusCode.BadRequest, invalidStudents.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, createOptions.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, revoked.StatusCode);
     }
@@ -162,6 +194,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         builder.Services.AddScoped<ITeacherAuthenticationService, TeacherAuthenticationService>();
         builder.Services.AddScoped<IStudentListQuery, EfStudentListQuery>();
+        builder.Services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -175,6 +208,7 @@ public sealed class AuthenticationApiTests
         app.UseAntiforgery();
         app.MapTeacherAuthentication();
         app.MapStudentList();
+        app.MapStudentCreation();
         await app.StartAsync(CancellationToken.None);
         return app;
     }

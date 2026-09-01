@@ -6,6 +6,7 @@ import { AccountSecurityPage } from '../auth/AccountSecurityPage.tsx'
 import { AuthBoundaryNavigation, ProtectedRoute } from '../auth/AuthContext.tsx'
 import { AccessDeniedPage, ForgotPasswordPage, LoginPage, RegisterPage, ResetPasswordPage, SessionExpiredPage, VerifyEmailPage } from '../auth/AuthPages.tsx'
 import { StudentListPage } from '../students/StudentListPage.tsx'
+import { StudentCreatePage, StudentCreatedBoundaryPage } from '../students/StudentCreatePage.tsx'
 
 const dashboard = navigationItems[0]
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students')
@@ -25,6 +26,8 @@ export function AppRoutes() {
         <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
           <Route index element={<FoundationPage title={dashboard.label} />} />
           <Route path="students" element={<StudentListPage />} />
+          <Route path="students/new" element={<StudentCreatePage />} />
+          <Route path="students/:studentId" element={<StudentCreatedBoundaryPage />} />
           {moduleItems.map((item) => (
             <Route
               key={item.id}

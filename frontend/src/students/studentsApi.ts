@@ -1,4 +1,4 @@
-import { getJson } from '../api/apiClient.ts'
+import { getJson, postJson } from '../api/apiClient.ts'
 
 export type StudentDeliveryMode = 'individual' | 'group'
 export type StudentStatus = 'active' | 'on_hold' | 'inactive'
@@ -80,4 +80,48 @@ export function getStudents(filters: StudentListFilters, signal?: AbortSignal) {
 
 export function getStudentOverview(signal?: AbortSignal) {
   return getJson<StudentListOverview>('/students/overview', signal)
+}
+
+export interface StudentCreateOptions {
+  readonly schoolGrades: readonly StudentFilterOption[]
+  readonly programs: readonly StudentFilterOption[]
+  readonly groups: readonly StudentGroupCreateOption[]
+}
+
+export interface StudentGroupCreateOption {
+  readonly id: string
+  readonly name: string
+  readonly programId: string
+  readonly activeMemberCount: number
+  readonly capacity: number
+}
+
+export interface StudentCreateInput {
+  readonly firstName: string
+  readonly lastName: string
+  readonly schoolGradeId: string
+  readonly schoolName: string | null
+  readonly dateOfBirth: string | null
+  readonly gender: string | null
+  readonly email: string | null
+  readonly phone: string | null
+  readonly programId: string | null
+  readonly deliveryMode: StudentDeliveryMode | null
+  readonly groupId: string | null
+  readonly status: StudentStatus
+  readonly guardian: {
+    readonly firstName: string
+    readonly lastName: string
+    readonly email: string | null
+    readonly phone: string | null
+  } | null
+}
+
+export function getStudentCreateOptions(programId?: string, signal?: AbortSignal) {
+  const query = programId ? `?programId=${encodeURIComponent(programId)}` : ''
+  return getJson<StudentCreateOptions>(`/students/create-options${query}`, signal)
+}
+
+export function createStudent(input: StudentCreateInput) {
+  return postJson<{ readonly id: string }>('/students', input)
 }

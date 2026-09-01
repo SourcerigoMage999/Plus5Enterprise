@@ -20,5 +20,8 @@ export const navigationItems = [
 
 export function findNavigationItem(pathname: string): NavigationItem | undefined {
   const normalizedPath = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname
-  return navigationItems.find((item) => item.path === normalizedPath)
+  return navigationItems.find((item) =>
+    item.path === normalizedPath
+      || (item.path !== '/' && normalizedPath.startsWith(`${item.path}/`)),
+  )
 }

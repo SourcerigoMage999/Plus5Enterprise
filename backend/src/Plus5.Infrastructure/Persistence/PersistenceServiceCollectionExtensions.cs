@@ -88,6 +88,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         services.AddScoped<ITeacherAuthenticationService, TeacherAuthenticationService>();
         services.AddScoped<IStudentListQuery, EfStudentListQuery>();
+        services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);
 

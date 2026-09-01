@@ -1,4 +1,4 @@
-import { ApiError, apiEvents, apiRequest } from '../api/apiClient.ts'
+import { ApiError, apiEvents, apiRequest, postJson } from '../api/apiClient.ts'
 
 export { ApiError }
 
@@ -6,10 +6,6 @@ export interface AuthSession {
   readonly email: string
   readonly accountType: 'Teacher'
   readonly expiresAtUtc: string
-}
-
-interface CsrfResponse {
-  readonly token: string
 }
 
 export const authEvents = apiEvents
@@ -61,15 +57,5 @@ export function logout() {
 }
 
 async function post(path: string, body: object, notify = true): Promise<void> {
-  const csrfResponse = await apiRequest('/auth/csrf', {}, { notify })
-  const csrf = (await csrfResponse.json()) as CsrfResponse
-
-  await apiRequest(`/auth${path}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': csrf.token,
-    },
-    body: JSON.stringify(body),
-  }, { notify })
+  await postJson<void>(`/auth${path}`, body, notify)
 }

@@ -128,7 +128,9 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 **Dovršeno 2026-08-28:** implementirani su Teacher-authorized `GET /api/v1/students` i `/overview`, owner-scoped pretraga, filteri i bounded pagination, tablični/kartični responsive ekran, URL stanje, loading/empty/error/retry stanja te pregled statusa i programa. Zadnji sat koristi samo postojeći `Held` Session; napredak ostaje neutralno “Nije dostupno” do Knowledge/Evidence faze. Create/dossier/edit akcije su eksplicitno onemogućene do svojih podfaza. Release build, 116 API/domain/persistence i 4 architecture testa, 16 frontend testova, format/lint/typecheck/build, stvarna SQL Server translacija, Docker health i non-root runtime prolaze.
 
 **Visual gate 2026-08-29:** PASS. Stvarni ekran uspoređen je s canonical PNG-om iz izvornog paketa `Za programera - novo.zip`. Desktop 1536×1024 i mobilna prilagodba 390×844 vizualno su pregledani; dokazi i namjerna odstupanja dokumentirani su u `docs/visual-acceptance/README.md`.
-## 3.2 Screen 2.3 Create student — TODO
+## 3.2 Screen 2.3 Create student — DONE
+
+**Dovršeno 2026-09-01:** implementirani su Teacher-authorized i CSRF-zaštićeni create endpoint, owner-scoped referentne opcije, opcionalni Guardian i Program te atomska GroupMembership dodjela s capacity/concurrency zaštitom. `/students/new` slijedi canonical PNG, ima validaciju, loading/error/configuration-empty stanja, live sažetak i responsive prikaz. Uspješan save vodi na iskrenu Phase 3.3 dossier boundary rutu. Release build, 120 backend testa, 19 frontend testova, lint/typecheck/build te desktop i mobilni visual acceptance prolaze.
 ## 3.3 Screen 2.2 Student digital dossier (administrative/core view) — TODO
 ## 3.4 Screen 2.6 Edit student — TODO
 ## 3.5 Screen 2.7 Groups — TODO

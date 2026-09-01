@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { ApiError } from '../api/apiClient.ts'
 import {
   getStudentOverview,
@@ -107,10 +107,9 @@ export function StudentListPage() {
           <p>Pregledajte i upravljajte svojim učenicima.</p>
         </div>
         <div className="student-list-add-boundary">
-          <button className="student-primary-action" type="button" disabled>
+          <Link className="student-primary-action" to="/students/new">
             <span aria-hidden="true">+</span> Dodaj učenika
-          </button>
-          <small>Dodavanje dolazi u sljedećoj podfazi.</small>
+          </Link>
         </div>
       </header>
 
