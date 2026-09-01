@@ -131,7 +131,9 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 ## 3.2 Screen 2.3 Create student — DONE
 
 **Dovršeno 2026-09-01:** implementirani su Teacher-authorized i CSRF-zaštićeni create endpoint, owner-scoped referentne opcije, opcionalni Guardian i Program te atomska GroupMembership dodjela s capacity/concurrency zaštitom. `/students/new` slijedi canonical PNG, ima validaciju, loading/error/configuration-empty stanja, live sažetak i responsive prikaz. Uspješan save vodi na iskrenu Phase 3.3 dossier boundary rutu. Release build, 120 backend testa, 19 frontend testova, lint/typecheck/build te desktop i mobilni visual acceptance prolaze.
-## 3.3 Screen 2.2 Student digital dossier (administrative/core view) — TODO
+## 3.3 Screen 2.2 Student digital dossier (administrative/core view) — DONE
+
+**Dovršeno 2026-09-01; SQL runtime gate 2026-09-02:** implementiran je Teacher-authorized `GET /api/v1/students/{id}` s privacy-preserving `404`, owner-scoped profilom, primarnim Guardianom, aktivnom GroupMembership te stvarnim sljedećim `Scheduled` i zadnjim `Held` Sessionom. Popis i create flow vode na responsive canonical dosje. Knowledge/Evidence, readiness, materijali, aktivnosti, komunikacija i bilješke ostaju eksplicitna neutralna stanja bez lažnih podataka. Release build, 122 backend testa, 21 frontend test, lint/typecheck/build, desktop 1536×1024 i mobilni 390×844 visual acceptance te potpuni Docker Compose/SQL Server 2025 runtime gate prolaze.
 ## 3.4 Screen 2.6 Edit student — TODO
 ## 3.5 Screen 2.7 Groups — TODO
 ## 3.6 Screen 2.8 Create group — TODO

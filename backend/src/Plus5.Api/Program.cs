@@ -61,6 +61,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 app.MapTeacherAuthentication();
 app.MapStudentList();
 app.MapStudentCreation();
+app.MapStudentDossier();
 
 app.Run();
 

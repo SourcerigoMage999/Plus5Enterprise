@@ -38,6 +38,7 @@ public sealed class AuthenticationApiTests
 
         using var anonymous = await client.GetAsync("/api/v1/auth/session", CancellationToken.None);
         using var anonymousStudents = await client.GetAsync("/api/v1/students", CancellationToken.None);
+        using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
@@ -45,6 +46,7 @@ public sealed class AuthenticationApiTests
 
         Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousStudents.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -99,6 +101,12 @@ public sealed class AuthenticationApiTests
             schoolGradeId = grade.Id,
             status = "active",
         }, csrf, authCookie);
+        var createdStudent = await createStudent.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        using var dossier = await GetWithCookiesAsync(
+            client,
+            $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}",
+            authCookie,
+            csrf.Cookie);
         using var logout = await PostAsync(client, "/api/v1/auth/logout", new { }, csrf, authCookie);
         using var revoked = await GetWithCookiesAsync(client, "/api/v1/auth/session", authCookie, csrf.Cookie);
 
@@ -114,6 +122,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.OK, createOptions.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, revoked.StatusCode);
     }
@@ -195,6 +204,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<ITeacherAuthenticationService, TeacherAuthenticationService>();
         builder.Services.AddScoped<IStudentListQuery, EfStudentListQuery>();
         builder.Services.AddScoped<IStudentCreationService, EfStudentCreationService>();
+        builder.Services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -209,6 +219,7 @@ public sealed class AuthenticationApiTests
         app.MapTeacherAuthentication();
         app.MapStudentList();
         app.MapStudentCreation();
+        app.MapStudentDossier();
         await app.StartAsync(CancellationToken.None);
         return app;
     }

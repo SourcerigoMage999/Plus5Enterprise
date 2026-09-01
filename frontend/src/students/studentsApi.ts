@@ -125,3 +125,45 @@ export function getStudentCreateOptions(programId?: string, signal?: AbortSignal
 export function createStudent(input: StudentCreateInput) {
   return postJson<{ readonly id: string }>('/students', input)
 }
+
+export interface StudentDossierGuardian {
+  readonly firstName: string
+  readonly lastName: string
+  readonly email: string | null
+  readonly phone: string | null
+  readonly relationship: string | null
+}
+
+export interface StudentDossierSession {
+  readonly id: string
+  readonly title: string | null
+  readonly startsAtUtc: string
+  readonly endsAtUtc: string
+  readonly timeZoneId: string
+  readonly deliveryMode: StudentDeliveryMode
+  readonly group: StudentReference | null
+}
+
+export interface StudentDossier {
+  readonly id: string
+  readonly firstName: string
+  readonly lastName: string
+  readonly nickname: string | null
+  readonly dateOfBirth: string | null
+  readonly gender: string | null
+  readonly email: string | null
+  readonly phone: string | null
+  readonly schoolName: string | null
+  readonly schoolGrade: StudentReference
+  readonly program: StudentReference | null
+  readonly deliveryMode: StudentDeliveryMode | null
+  readonly group: StudentReference | null
+  readonly status: StudentStatus
+  readonly primaryGuardian: StudentDossierGuardian | null
+  readonly nextSession: StudentDossierSession | null
+  readonly lastHeldSession: StudentDossierSession | null
+}
+
+export function getStudentDossier(studentId: string, signal?: AbortSignal) {
+  return getJson<StudentDossier>(`/students/${encodeURIComponent(studentId)}`, signal)
+}

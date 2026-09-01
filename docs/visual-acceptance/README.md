@@ -58,3 +58,30 @@ Canonical `Za programera - novo/2.0 Učenici/2.3. Novi učenik/2.3 Novi učenik.
 - Guardian ime i prezime odvojena su radi zaključanog domenskog modela i pouzdane validacije.
 - Fotografija nije uvedena bez odobrenog storage/avatar contracta; shell koristi postojeće inicijale.
 - Nakon spremanja prikazuje se minimalna success boundary ruta; stvarni digitalni dosje pripada Phase 3.3.
+
+## Phase 3.3 — Student digital dossier
+
+### Source
+
+Canonical `Za programera - novo/2.0 Učenici/2.2 Digitalni dosje učenika/2.2 Digitalni dosje učenika.png` uspoređen je sa stvarnim administrativnim dosjeom. PNG vodi izgled, a `STUDENT_DOSSIER.md` i fazne granice vode ponašanje i podatke.
+
+### Dokazi
+
+- `PHASE_3.3_STUDENT_DOSSIER_DESKTOP_1536.png` — desktop 1536×1024
+- `PHASE_3.3_STUDENT_DOSSIER_MOBILE_390.png` — mobilna prilagodba 390×844
+
+### Rezultat
+
+- PASS — PLUS 5 shell, žuti aktivni Učenici element, breadcrumb, identitet/status i globalni profil/notification prostor
+- PASS — profil, readiness, plan rada, napredak, materijali, zadnji sat, aktivnosti, komunikacija i bilješke slijede canonical hijerarhiju
+- PASS — proportions, spacing, typography, colors, borders, radii, shadows i control sizes
+- PASS — desktop prikaz bez horizontalnog overflowa (`1536` viewport, `1521` document width)
+- PASS — mobilni stacking bez horizontalnog overflowa (`390` viewport, `375` document width)
+
+### Namjerna odstupanja
+
+- Inicijali zamjenjuju fotografiju jer storage/avatar contract nije zaključan.
+- Readiness, Knowledge/Evidence napredak, materijali, aktivnosti i bilješke koriste neutralna stanja; canonical demo postotci i sadržaj nisu stvarni podaci.
+- Kartica komunikacije prikazuje samo stvarno spremljenog primarnog Guardiana; povijest poruka pripada Phase 9.
+- Sljedeći i zadnji sat koriste postojeće Session podatke, bez preuranjenog lesson-plan ili activity modela.
+- Poruka roditelju, zakazivanje i uređivanje ostaju vidljive, ali onemogućene do pripadajućih faza.

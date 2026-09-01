@@ -227,7 +227,7 @@ export function StudentListPage() {
               title={hasFilters ? 'Nema učenika za odabrane filtre' : 'Još nema učenika'}
               message={hasFilters
                 ? 'Promijenite ili očistite filtre kako biste proširili rezultate.'
-                : 'Učenici će se prikazati ovdje nakon što ih dodate u sljedećoj podfazi.'}
+                : 'Dodajte prvog učenika kako biste otvorili njegov digitalni dosje.'}
             />
           )}
           {!loading && !error && students && students.items.length > 0 && (
@@ -269,7 +269,7 @@ export function StudentListPage() {
       </div>
       <p className="student-guidance">
         <span aria-hidden="true">ⓘ</span>
-        Detaljni dosje i uređivanje podataka bit će dostupni u sljedećim fazama.
+        Otvorite dosje za administrativni pregled učenika. Pedagoški napredak i komunikacija dolaze u kasnijim fazama.
       </p>
     </section>
   )
@@ -303,7 +303,7 @@ function StudentTable({ students }: { readonly students: readonly StudentListIte
               <td><StudentStatusBadge status={student.status} /></td>
               <td>{formatLastSession(student.lastSessionAtUtc)}</td>
               <td><NeutralProgress /></td>
-              <td><StudentActions /></td>
+              <td><StudentActions studentId={student.id} /></td>
             </tr>
           ))}
         </tbody>
@@ -329,17 +329,17 @@ function StudentCards({ students }: { readonly students: readonly StudentListIte
             <StudentCardDetail label="Zadnji sat" value={formatLastSession(student.lastSessionAtUtc)} />
             <StudentCardDetail label="Napredak" value="Nije dostupno" />
           </dl>
-          <button className="student-card__action" disabled type="button">Otvori dosje — dolazi u Phase 3.3</button>
+          <Link className="student-card__action" to={`/students/${student.id}`}>Otvori dosje</Link>
         </article>
       ))}
     </div>
   )
 }
 
-function StudentActions() {
+function StudentActions({ studentId }: { readonly studentId: string }) {
   return (
     <span className="student-actions" aria-label="Akcije učenika">
-      <button disabled type="button" title="Dosje dolazi u Phase 3.3" aria-label="Otvori dosje">◉</button>
+      <Link to={`/students/${studentId}`} title="Otvori dosje" aria-label="Otvori dosje">◉</Link>
       <button disabled type="button" title="Komunikacija dolazi u kasnijoj fazi" aria-label="Komunikacija">▢</button>
       <button disabled type="button" title="Uređivanje dolazi u Phase 3.4" aria-label="Više akcija">⋮</button>
     </span>
@@ -358,13 +358,13 @@ function NeutralProgress() {
 function StudentIdentity({ student }: { readonly student: StudentListItem }) {
   const initials = `${student.firstName[0] ?? ''}${student.lastName[0] ?? ''}`.toLocaleUpperCase('hr')
   return (
-    <span className="student-identity">
+    <Link className="student-identity" to={`/students/${student.id}`}>
       <span className="student-avatar" aria-hidden="true">{initials}</span>
       <span>
         <strong>{student.firstName} {student.lastName}</strong>
         {student.nickname && <small>“{student.nickname}”</small>}
       </span>
-    </span>
+    </Link>
   )
 }
 

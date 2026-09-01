@@ -40,10 +40,5 @@
 .student-create-summary-row strong { font-size: .82rem; overflow-wrap: anywhere; }
 .student-create-summary-row .is-accent { width: fit-content; padding: .2rem .55rem; border-radius: 2rem; color: #19764e; background: #e4f6ed; }
 .student-create-aside-note { margin: 0; padding: .2rem .45rem; color: #8190a1; font-size: .72rem; line-height: 1.5; }
-.student-created-boundary { display: grid; min-height: 65vh; place-items: center; align-content: center; gap: .65rem; padding: 2rem; text-align: center; }
-.student-created-boundary > span { display: grid; width: 4rem; height: 4rem; place-items: center; border-radius: 50%; color: #fff; background: #24a36a; font-size: 2rem; }
-.student-created-boundary h1, .student-created-boundary p { margin: 0; }
-.student-created-boundary small { color: #718096; }
-.student-created-boundary a { margin-top: .6rem; color: #075f9f; font-weight: 700; }
 @media (max-width: 1050px) { .student-create-layout { grid-template-columns: 1fr; } .student-create-aside { position: static; grid-template-columns: repeat(2, 1fr); } .student-create-aside-note { grid-column: 1 / -1; } }
 @media (max-width: 700px) { .student-create-page { padding: 1.25rem 1rem 3rem; } .student-create-grid--two, .student-status-options, .student-create-aside { grid-template-columns: 1fr; } .student-create-section { padding: 1.2rem 1rem; } .student-create-actions { position: sticky; bottom: 0; padding: .85rem 1rem; background: #fff; box-shadow: 0 -6px 15px rgb(25 52 80 / 8%); } .student-create-cancel, .student-create-save { flex: 1; } }

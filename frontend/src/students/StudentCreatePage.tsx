@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ApiError } from '../api/apiClient.ts'
 import {
   createStudent,
@@ -212,19 +212,6 @@ export function StudentCreatePage() {
           <p className="student-create-aside-note">Obavezna su samo polja označena zvjezdicom. Program možete dodijeliti i kasnije.</p>
         </aside>
       </form>
-    </section>
-  )
-}
-
-export function StudentCreatedBoundaryPage() {
-  const { studentId } = useParams()
-  return (
-    <section className="student-created-boundary">
-      <span aria-hidden="true">✓</span>
-      <h1>Učenik je uspješno spremljen</h1>
-      <p>Dosje učenika bit će dostupan u sljedećoj podfazi.</p>
-      <small>Identifikator: {studentId}</small>
-      <Link to="/students">Povratak na popis učenika</Link>
     </section>
   )
 }

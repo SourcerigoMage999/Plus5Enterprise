@@ -47,7 +47,7 @@ Teacher ID nije dio requesta. Program i Group upiti su owner-scoped, a tuđi ID 
 
 ## Poznata fazna granica
 
-`/students/{id}` zasad prikazuje samo potvrdu spremanja. Administrativni digitalni dosje i njegov read API implementiraju se u Phase 3.3.
+Granica je razriješena u Phase 3.3: `/students/{id}` sada prikazuje stvarni administrativni dosje preko owner-scoped read API-ja.
 
 ## Sljedeća faza
 

@@ -29,7 +29,7 @@ Izvršni contract za Phase 3.2 i ekran 2.3 “Novi učenik”. Nadopunjuje `STUD
 
 - `/students/new` otvara formu iz dominantne akcije na popisu učenika.
 - Cancel se vraća na `/students`; uspješan save ide na `/students/{id}`.
-- Dok Phase 3.3 dossier nije implementiran, detaljna ruta prikazuje samo iskrenu success boundary poruku bez izmišljenih dossier podataka.
+- Uspješan save vodi na stvarni administrativni dosje implementiran u Phase 3.3.
 - Ako nema SchoolGrade opcija, submit je onemogućen uz operativnu poruku o nedostajućem katalogu.
 - Program omogućuje DeliveryMode; Group kontrola postoji samo za group delivery. Desne kartice daju live sažetak.
 

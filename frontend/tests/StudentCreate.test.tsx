@@ -32,12 +32,19 @@ function renderCreate() {
 }
 
 describe('student creation', () => {
-  it('creates a student without requiring a program and opens the phase boundary', async () => {
+  it('creates a student without requiring a program and opens its dossier', async () => {
     vi.mocked(fetch)
       .mockResolvedValueOnce(json(session))
       .mockResolvedValueOnce(json(options))
       .mockResolvedValueOnce(json({ token: 'csrf-token' }))
       .mockResolvedValueOnce(json({ id: 'student-1' }, 201))
+      .mockResolvedValueOnce(json({
+        id: 'student-1', firstName: 'Ana', lastName: 'Anić', nickname: null,
+        dateOfBirth: null, schoolName: null, gender: null, email: null, phone: null,
+        status: 'active', schoolGrade: options.schoolGrades[0], program: null,
+        deliveryMode: null, group: null, primaryGuardian: null,
+        nextSession: null, lastHeldSession: null,
+      }))
 
     renderCreate()
 
@@ -47,7 +54,7 @@ describe('student creation', () => {
     fireEvent.change(screen.getByLabelText('Razred *'), { target: { value: 'grade-1' } })
     fireEvent.click(screen.getByRole('button', { name: 'Spremi učenika' }))
 
-    expect(await screen.findByRole('heading', { name: 'Učenik je uspješno spremljen' }))
+    expect(await screen.findByRole('heading', { name: 'Ana Anić' }))
       .toBeInTheDocument()
     const createCall = vi.mocked(fetch).mock.calls.find(([input]) =>
       String(input).endsWith('/students') && (input as string) !== '/students')
