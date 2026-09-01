@@ -85,3 +85,31 @@ Canonical `Za programera - novo/2.0 Učenici/2.2 Digitalni dosje učenika/2.2 Di
 - Kartica komunikacije prikazuje samo stvarno spremljenog primarnog Guardiana; povijest poruka pripada Phase 9.
 - Sljedeći i zadnji sat koriste postojeće Session podatke, bez preuranjenog lesson-plan ili activity modela.
 - Poruka roditelju, zakazivanje i uređivanje ostaju vidljive, ali onemogućene do pripadajućih faza.
+
+## Phase 3.4 — Edit student
+
+### Source
+
+Canonical `Za programera - novo/2.0 Učenici/2.6 Uredi učenika/2.6 Uredi učenika.png` uspoređen je sa stvarnim owner-scoped edit ekranom. PNG vodi raspored, proporcije i hijerarhiju; `STUDENT_EDIT.md` i tekstualni source imaju prednost za sigurnost, arhiviranje i fazni scope.
+
+### Dokazi
+
+- `phase-3.4-student-edit-desktop-1536x1024.png` — desktop viewport 1536×1024
+- `phase-3.4-student-edit-mobile-390x844.png` — mobilna prilagodba 390×844
+
+### Rezultat
+
+- PASS — PLUS 5 shell, žuti aktivni Učenici element, breadcrumb, `2.6 Uredi učenika`, podnaslov i globalni profil/notification prostor
+- PASS — tri primarne kartice za osnovne podatke, program/grupu i kontakte te tri donje canonical zone
+- PASS — header save/cancel/archive akcije i puna footer napomena
+- PASS — spacing, typography, colors, borders, radii, shadows, control sizes i proportions izvedeni su iz canonical PNG-a
+- PASS — desktop bez horizontalnog overflowa (`1536` viewport, `1521` document width)
+- PASS — mobilni stacking bez horizontalnog overflowa (`390` viewport, `375` document width)
+
+### Namjerna odstupanja
+
+- `Arhiviraj učenika` zamjenjuje canonical fizičko brisanje jer zaključani retention/audit contract zabranjuje hard delete.
+- DeliveryMode je zaseban izbor od Programa i Grupe prema tekstualnom sourceu i domenskom modelu.
+- Fotografija/upload nisu prikazani bez zaključanog storage/avatar contracta.
+- Knowledge/progress, nastavničke bilješke i privacy/analytics toggles neutralne su buduće zone; ne spremaju lažne podatke niti inertne postavke.
+- Guardian kontakti su uređivi unosi umjesto read-only kartica; uklanjanje kontakta ostaje izvan faze dok retention i communication reference nisu zaključane.

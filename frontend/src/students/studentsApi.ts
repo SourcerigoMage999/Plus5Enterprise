@@ -1,4 +1,4 @@
-import { getJson, postJson } from '../api/apiClient.ts'
+import { getJson, postJson, putJson } from '../api/apiClient.ts'
 
 export type StudentDeliveryMode = 'individual' | 'group'
 export type StudentStatus = 'active' | 'on_hold' | 'inactive'
@@ -166,4 +166,48 @@ export interface StudentDossier {
 
 export function getStudentDossier(studentId: string, signal?: AbortSignal) {
   return getJson<StudentDossier>(`/students/${encodeURIComponent(studentId)}`, signal)
+}
+
+export interface StudentEditGuardian {
+  readonly id: string | null
+  readonly firstName: string
+  readonly lastName: string
+  readonly relationship: string | null
+  readonly email: string | null
+  readonly phone: string | null
+  readonly isPrimary: boolean
+}
+
+export interface StudentEditModel {
+  readonly id: string
+  readonly firstName: string
+  readonly lastName: string
+  readonly nickname: string | null
+  readonly dateOfBirth: string | null
+  readonly schoolName: string | null
+  readonly gender: string | null
+  readonly email: string | null
+  readonly phone: string | null
+  readonly schoolGradeId: string
+  readonly programId: string | null
+  readonly deliveryMode: StudentDeliveryMode | null
+  readonly groupId: string | null
+  readonly status: StudentStatus
+  readonly updatedAtUtc: string
+  readonly rowVersion: string
+  readonly guardians: readonly StudentEditGuardian[]
+}
+
+export type StudentEditInput = Omit<StudentEditModel, 'id' | 'updatedAtUtc'>
+
+export function getStudentEdit(studentId: string, signal?: AbortSignal) {
+  return getJson<StudentEditModel>(`/students/${encodeURIComponent(studentId)}/edit`, signal)
+}
+
+export function updateStudent(studentId: string, input: StudentEditInput) {
+  return putJson<{ readonly rowVersion: string }>(`/students/${encodeURIComponent(studentId)}`, input)
+}
+
+export function archiveStudent(studentId: string, rowVersion: string) {
+  return postJson<void>(`/students/${encodeURIComponent(studentId)}/archive`, { rowVersion })
 }

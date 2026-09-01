@@ -39,6 +39,7 @@ public sealed class AuthenticationApiTests
         using var anonymous = await client.GetAsync("/api/v1/auth/session", CancellationToken.None);
         using var anonymousStudents = await client.GetAsync("/api/v1/students", CancellationToken.None);
         using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
+        using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
@@ -47,6 +48,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousStudents.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -107,6 +109,21 @@ public sealed class AuthenticationApiTests
             $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}",
             authCookie,
             csrf.Cookie);
+        using var edit = await GetWithCookiesAsync(
+            client,
+            $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}/edit",
+            authCookie,
+            csrf.Cookie);
+        var editModel = await edit.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        using var update = await PutAsync(client, $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}", new
+        {
+            rowVersion = editModel.GetProperty("rowVersion").GetString(),
+            firstName = "Anamarija",
+            lastName = "Anić",
+            schoolGradeId = grade.Id,
+            status = "active",
+            guardians = Array.Empty<object>(),
+        }, csrf, authCookie);
         using var logout = await PostAsync(client, "/api/v1/auth/logout", new { }, csrf, authCookie);
         using var revoked = await GetWithCookiesAsync(client, "/api/v1/auth/session", authCookie, csrf.Cookie);
 
@@ -123,6 +140,8 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
         Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, edit.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, update.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, revoked.StatusCode);
     }
@@ -205,6 +224,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IStudentListQuery, EfStudentListQuery>();
         builder.Services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         builder.Services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
+        builder.Services.AddScoped<IStudentEditingService, EfStudentEditingService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -220,6 +240,7 @@ public sealed class AuthenticationApiTests
         app.MapStudentList();
         app.MapStudentCreation();
         app.MapStudentDossier();
+        app.MapStudentEditing();
         await app.StartAsync(CancellationToken.None);
         return app;
     }
@@ -259,6 +280,19 @@ public sealed class AuthenticationApiTests
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, path);
         AddCookies(request, cookies);
+        return await client.SendAsync(request, CancellationToken.None);
+    }
+
+    private static async Task<HttpResponseMessage> PutAsync(
+        HttpClient client,
+        string path,
+        object body,
+        CsrfState csrf,
+        params string[] cookies)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Put, path) { Content = JsonContent.Create(body) };
+        request.Headers.Add(IdentityServiceExtensions.CsrfHeaderName, csrf.Token);
+        AddCookies(request, [csrf.Cookie, .. cookies]);
         return await client.SendAsync(request, CancellationToken.None);
     }
 

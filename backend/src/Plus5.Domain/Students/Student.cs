@@ -90,6 +90,43 @@ public sealed class Student
 
     public DateTimeOffset? ArchivedAtUtc { get; private set; }
 
+    public byte[] RowVersion { get; private set; } = [];
+
+    public void UpdateAdministrativeDetails(
+        Guid schoolGradeId,
+        string firstName,
+        string lastName,
+        StudentStatus status,
+        DateTimeOffset updatedAtUtc,
+        Guid? programId = null,
+        DeliveryMode? deliveryMode = null,
+        string? nickname = null,
+        DateOnly? dateOfBirth = null,
+        string? schoolName = null,
+        string? gender = null,
+        string? email = null,
+        string? phone = null)
+    {
+        EnsureIdentifier(schoolGradeId, nameof(schoolGradeId));
+        EnsureDefinedStatus(status);
+        EnsureOrganizationIsComplete(programId, deliveryMode);
+        EnsureCanUpdate(updatedAtUtc);
+
+        SchoolGradeId = schoolGradeId;
+        FirstName = NormalizeRequiredText(firstName, FirstNameMaxLength, nameof(firstName));
+        LastName = NormalizeRequiredText(lastName, LastNameMaxLength, nameof(lastName));
+        Status = status;
+        ProgramId = programId;
+        DeliveryMode = deliveryMode;
+        Nickname = NormalizeOptionalText(nickname, NicknameMaxLength, nameof(nickname));
+        DateOfBirth = dateOfBirth;
+        SchoolName = NormalizeOptionalText(schoolName, SchoolNameMaxLength, nameof(schoolName));
+        Gender = NormalizeOptionalText(gender, GenderMaxLength, nameof(gender));
+        Email = NormalizeOptionalText(email, EmailMaxLength, nameof(email));
+        Phone = NormalizeOptionalText(phone, PhoneMaxLength, nameof(phone));
+        UpdatedAtUtc = updatedAtUtc;
+    }
+
     public void Archive(DateTimeOffset archivedAtUtc)
     {
         EnsureUtc(archivedAtUtc, nameof(archivedAtUtc));

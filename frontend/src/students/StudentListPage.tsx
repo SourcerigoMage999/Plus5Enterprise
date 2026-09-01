@@ -341,7 +341,7 @@ function StudentActions({ studentId }: { readonly studentId: string }) {
     <span className="student-actions" aria-label="Akcije učenika">
       <Link to={`/students/${studentId}`} title="Otvori dosje" aria-label="Otvori dosje">◉</Link>
       <button disabled type="button" title="Komunikacija dolazi u kasnijoj fazi" aria-label="Komunikacija">▢</button>
-      <button disabled type="button" title="Uređivanje dolazi u Phase 3.4" aria-label="Više akcija">⋮</button>
+      <Link to={`/students/${studentId}/edit`} title="Uredi učenika" aria-label="Uredi učenika">✎</Link>
     </span>
   )
 }

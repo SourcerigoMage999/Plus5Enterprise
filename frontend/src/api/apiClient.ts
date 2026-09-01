@@ -77,6 +77,17 @@ export async function postJson<T>(
   return (await response.json()) as T
 }
 
+export async function putJson<T>(path: string, body: object): Promise<T> {
+  const csrfResponse = await apiRequest('/auth/csrf')
+  const csrf = (await csrfResponse.json()) as CsrfResponse
+  const response = await apiRequest(path, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf.token },
+    body: JSON.stringify(body),
+  })
+  return (await response.json()) as T
+}
+
 export async function ensureSuccess(response: Response, notify = true): Promise<void> {
   if (response.ok) return
 
@@ -127,7 +138,12 @@ function friendlyMessage(code?: string): string {
     case 'group_program_mismatch':
       return 'Odabrana grupa ne pripada odabranom programu.'
     case 'concurrency_conflict':
-      return 'Podaci grupe su se promijenili. Provjerite odabir i pokušajte ponovno.'
+      return 'Podaci su se u međuvremenu promijenili. Osvježite stranicu i pokušajte ponovno.'
+    case 'guardian_not_found':
+    case 'guardian_set_mismatch':
+      return 'Kontakti skrbnika promijenjeni su u međuvremenu. Osvježite stranicu.'
+    case 'multiple_primary_guardians':
+      return 'Samo jedan roditelj ili skrbnik može biti primarni kontakt.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

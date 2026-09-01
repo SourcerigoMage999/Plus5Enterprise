@@ -54,6 +54,7 @@ internal sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
         builder.Property(student => student.CreatedAtUtc).HasPrecision(7).IsRequired();
         builder.Property(student => student.UpdatedAtUtc).HasPrecision(7).IsRequired();
         builder.Property(student => student.ArchivedAtUtc).HasPrecision(7);
+        builder.Property(student => student.RowVersion).IsRowVersion();
 
         builder.HasOne<UserAccount>()
             .WithMany()

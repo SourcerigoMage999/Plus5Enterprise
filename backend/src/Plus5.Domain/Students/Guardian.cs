@@ -59,6 +59,24 @@ public sealed class Guardian
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
+    public void Update(
+        string firstName,
+        string lastName,
+        bool isPrimary,
+        string? relationship = null,
+        string? email = null,
+        string? phone = null)
+    {
+        FirstName = NormalizeRequiredText(firstName, FirstNameMaxLength, nameof(firstName));
+        LastName = NormalizeRequiredText(lastName, LastNameMaxLength, nameof(lastName));
+        Relationship = NormalizeOptionalText(relationship, RelationshipMaxLength, nameof(relationship));
+        Email = NormalizeOptionalText(email, EmailMaxLength, nameof(email));
+        Phone = NormalizeOptionalText(phone, PhoneMaxLength, nameof(phone));
+        IsPrimary = isPrimary;
+    }
+
+    public void ClearPrimary() => IsPrimary = false;
+
     private static void EnsureIdentifier(Guid value, string parameterName)
     {
         if (value == Guid.Empty)

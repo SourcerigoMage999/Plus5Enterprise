@@ -62,6 +62,7 @@ app.MapTeacherAuthentication();
 app.MapStudentList();
 app.MapStudentCreation();
 app.MapStudentDossier();
+app.MapStudentEditing();
 
 app.Run();
 

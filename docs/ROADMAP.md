@@ -134,7 +134,9 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 ## 3.3 Screen 2.2 Student digital dossier (administrative/core view) — DONE
 
 **Dovršeno 2026-09-01; SQL runtime gate 2026-09-02:** implementiran je Teacher-authorized `GET /api/v1/students/{id}` s privacy-preserving `404`, owner-scoped profilom, primarnim Guardianom, aktivnom GroupMembership te stvarnim sljedećim `Scheduled` i zadnjim `Held` Sessionom. Popis i create flow vode na responsive canonical dosje. Knowledge/Evidence, readiness, materijali, aktivnosti, komunikacija i bilješke ostaju eksplicitna neutralna stanja bez lažnih podataka. Release build, 122 backend testa, 21 frontend test, lint/typecheck/build, desktop 1536×1024 i mobilni 390×844 visual acceptance te potpuni Docker Compose/SQL Server 2025 runtime gate prolaze.
-## 3.4 Screen 2.6 Edit student — TODO
+## 3.4 Screen 2.6 Edit student — DONE
+
+**Dovršeno 2026-09-02:** implementirani su owner-scoped edit read model, CSRF-zaštićeni update/archive endpointi, SQL `rowversion` optimistic concurrency, atomske promjene GroupMembershipa s capacity zaštitom te uređivanje i dodavanje Guardian kontakata. `/students/{id}/edit` slijedi canonical trostupčani `2.6` layout, ima eksplicitnu archive potvrdu, responsive prikaz i neutralne granice za Knowledge, bilješke, privacy i storage. Release build, 126 backend i 4 architecture testa, 23 frontend testa, stvarni SQL Server save, Docker health/non-root runtime te desktop 1536×1024 i mobilni 390×844 visual acceptance prolaze.
 ## 3.5 Screen 2.7 Groups — TODO
 ## 3.6 Screen 2.8 Create group — TODO
 ## 3.7 Screen 2.9 Edit group — TODO

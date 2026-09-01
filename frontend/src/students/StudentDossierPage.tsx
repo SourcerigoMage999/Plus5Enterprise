@@ -52,7 +52,7 @@ export function StudentDossierPage() {
         <div className="dossier-actions" aria-label="Akcije dosjea">
           <button disabled title="Komunikacija s roditeljima dolazi u kasnijoj fazi" type="button">✉ Poruka roditelju</button>
           <button disabled title="Zakazivanje termina dolazi u Phase 5" type="button">▣ Zakaži termin</button>
-          <button disabled title="Uređivanje učenika dolazi u Phase 3.4" type="button">✎ Uredi učenika</button>
+          <Link to={`/students/${studentId}/edit`}>✎ Uredi učenika</Link>
         </div>
       </header>
 
@@ -94,7 +94,7 @@ export function StudentDossierPage() {
       <div className="dossier-bottom-grid">
         <Card title="Nedavne aktivnosti"><BoundaryEmpty icon="↗" title="Aktivnosti još nisu dostupne">Povijest aktivnosti zahtijeva zaključan model evidencije i audit događaja.</BoundaryEmpty></Card>
         <Card title="Komunikacija s roditeljem">
-          {guardian ? <div className="dossier-guardian"><span aria-hidden="true">{guardian.firstName[0]}{guardian.lastName[0]}</span><div><strong>{guardian.firstName} {guardian.lastName}</strong><small>Primarni kontakt{guardian.relationship ? ` · ${guardian.relationship}` : ''}</small><p>{guardian.email ?? 'E-pošta nije navedena'}<br />{guardian.phone ?? 'Telefon nije naveden'}</p></div></div> : <BoundaryEmpty icon="♙" title="Primarni kontakt nije dodan">Kontakt se može dodati kroz uređivanje učenika u Phase 3.4.</BoundaryEmpty>}
+          {guardian ? <div className="dossier-guardian"><span aria-hidden="true">{guardian.firstName[0]}{guardian.lastName[0]}</span><div><strong>{guardian.firstName} {guardian.lastName}</strong><small>Primarni kontakt{guardian.relationship ? ` · ${guardian.relationship}` : ''}</small><p>{guardian.email ?? 'E-pošta nije navedena'}<br />{guardian.phone ?? 'Telefon nije naveden'}</p></div></div> : <BoundaryEmpty icon="♙" title="Primarni kontakt nije dodan">Kontakt možete dodati kroz akciju Uredi učenika.</BoundaryEmpty>}
           <p className="dossier-boundary-note">Povijest poruka dolazi u fazi komunikacije.</p>
         </Card>
         <Card title="Bilješke nastavnika"><BoundaryEmpty icon="✎" title="Bilješke još nisu dostupne">Bilješke se neće spremati dok model privatnosti i ovlasti ne bude zaključan.</BoundaryEmpty></Card>

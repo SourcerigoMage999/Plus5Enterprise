@@ -69,6 +69,7 @@ describe('student list', () => {
     expect(within(table).getByText('Ana Anić')).toBeInTheDocument()
     expect(within(table).getByText('Grupa Orion')).toBeInTheDocument()
     expect(within(table).getByText('Nije dostupno')).toBeInTheDocument()
+    expect(within(table).getByRole('link', { name: 'Uredi učenika' })).toHaveAttribute('href', '/students/student-1/edit')
     expect(screen.getByRole('heading', { name: '1 ukupno učenika' })).toBeInTheDocument()
     expect(screen.queryByText(/\d+\s*%/)).not.toBeInTheDocument()
   })

@@ -34,6 +34,7 @@ describe('student dossier', () => {
     const actions = screen.getByRole('button', { name: /Poruka roditelju/ }).parentElement
     expect(actions).not.toBeNull()
     expect(within(actions!).getAllByRole('button').every((button) => button.hasAttribute('disabled'))).toBe(true)
+    expect(within(actions!).getByRole('link', { name: /Uredi učenika/ })).toHaveAttribute('href', '/students/student-1/edit')
   })
 
   it('does not reveal whether a missing student belongs to another account', async () => {

@@ -90,6 +90,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IStudentListQuery, EfStudentListQuery>();
         services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
+        services.AddScoped<IStudentEditingService, EfStudentEditingService>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);
 
