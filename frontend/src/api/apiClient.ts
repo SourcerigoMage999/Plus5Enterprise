@@ -138,6 +138,7 @@ function friendlyMessage(code?: string): string {
     case 'group_program_mismatch':
       return 'Odabrana grupa ne pripada odabranom programu.'
     case 'concurrency_conflict':
+    case 'membership_changed':
       return 'Podaci su se u međuvremenu promijenili. Osvježite stranicu i pokušajte ponovno.'
     case 'guardian_not_found':
     case 'guardian_set_mismatch':

@@ -49,6 +49,7 @@ describe('student creation', () => {
     renderCreate()
 
     await screen.findByRole('heading', { level: 1, name: 'Novi učenik' })
+    await screen.findByRole('option', { name: /Sedmi razred/ })
     fireEvent.change(screen.getByLabelText('Ime *'), { target: { value: 'Ana' } })
     fireEvent.change(screen.getByLabelText('Prezime *'), { target: { value: 'Anić' } })
     fireEvent.change(screen.getByLabelText('Razred *'), { target: { value: 'grade-1' } })
@@ -85,6 +86,7 @@ describe('student creation', () => {
 
     renderCreate()
     await screen.findByRole('heading', { level: 1, name: 'Novi učenik' })
+    await screen.findByRole('option', { name: 'Matematika 7' })
     fireEvent.change(screen.getByLabelText('Program'), { target: { value: 'program-1' } })
 
     await waitFor(() => expect(vi.mocked(fetch).mock.calls.some(([input]) =>

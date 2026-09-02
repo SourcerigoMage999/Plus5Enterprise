@@ -137,7 +137,9 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 ## 3.4 Screen 2.6 Edit student — DONE
 
 **Dovršeno 2026-09-02:** implementirani su owner-scoped edit read model, CSRF-zaštićeni update/archive endpointi, SQL `rowversion` optimistic concurrency, atomske promjene GroupMembershipa s capacity zaštitom te uređivanje i dodavanje Guardian kontakata. `/students/{id}/edit` slijedi canonical trostupčani `2.6` layout, ima eksplicitnu archive potvrdu, responsive prikaz i neutralne granice za Knowledge, bilješke, privacy i storage. Release build, 126 backend i 4 architecture testa, 23 frontend testa, stvarni SQL Server save, Docker health/non-root runtime te desktop 1536×1024 i mobilni 390×844 visual acceptance prolaze.
-## 3.5 Screen 2.7 Groups — TODO
+## 3.5 Screen 2.7 Groups — DONE
+
+**Dovršeno 2026-09-02:** owner-scoped query/API, pretraga/filteri/pagination, pregled grupa i rasporeda, kandidatni učenici te CSRF/rowversion-zaštićeno dodavanje/uklanjanje članstva. Transfer ponovno koristi Phase 3.4. Build, 132 API/domain/persistence + 4 architecture testa, 28 frontend testova i izolirani SQL test zadnjeg mjesta prolaze. Docker engine i health provjere rade. **Visual acceptance PASS:** stvarni desktop 1536×1024 i mobilni 390×844 prikaz uspoređeni su s canonical PNG-om; ispravljeni su razmak profila/akcija, gustoća redaka, vizualna hijerarhija i mobilna čitljivost tablice. Dokazi i namjerna odstupanja: `visual-acceptance/README.md`; contract: `GROUP_LIST.md`. Commit/push čekaju zasebno odobrenje; 3.6 nije započeta.
 ## 3.6 Screen 2.8 Create group — TODO
 ## 3.7 Screen 2.9 Edit group — TODO
 

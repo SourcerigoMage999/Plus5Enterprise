@@ -9,6 +9,7 @@ import { StudentListPage } from '../students/StudentListPage.tsx'
 import { StudentCreatePage } from '../students/StudentCreatePage.tsx'
 import { StudentDossierPage } from '../students/StudentDossierPage.tsx'
 import { StudentEditPage } from '../students/StudentEditPage.tsx'
+import { GroupListPage } from '../groups/GroupListPage.tsx'
 
 const dashboard = navigationItems[0]
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students')
@@ -29,6 +30,7 @@ export function AppRoutes() {
           <Route index element={<FoundationPage title={dashboard.label} />} />
           <Route path="students" element={<StudentListPage />} />
           <Route path="students/new" element={<StudentCreatePage />} />
+          <Route path="students/groups" element={<GroupListPage />} />
           <Route path="students/:studentId" element={<StudentDossierPage />} />
           <Route path="students/:studentId/edit" element={<StudentEditPage />} />
           {moduleItems.map((item) => (

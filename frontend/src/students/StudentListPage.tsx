@@ -107,6 +107,7 @@ export function StudentListPage() {
           <p>Pregledajte i upravljajte svojim učenicima.</p>
         </div>
         <div className="student-list-add-boundary">
+          <Link className="student-primary-action" to="/students/groups">Grupe</Link>
           <Link className="student-primary-action" to="/students/new">
             <span aria-hidden="true">+</span> Dodaj učenika
           </Link>

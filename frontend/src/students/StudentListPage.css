@@ -38,8 +38,16 @@
 
 .student-list-add-boundary {
   display: grid;
+  width: max-content;
+  max-width: 100%;
   justify-items: end;
   gap: var(--space-2);
+}
+
+.student-list-add-boundary > .student-primary-action {
+  justify-self: stretch;
+  text-align: center;
+  text-decoration: none;
 }
 
 .student-list-add-boundary small {
@@ -656,7 +664,7 @@
   .student-list-eyebrow { color: var(--color-brand-900); font-size: 0.78rem; font-weight: 500; letter-spacing: 0; text-transform: none; }
   .student-list-hero h1 { margin-top: 0.35rem; font-size: 1.85rem; letter-spacing: -0.025em; }
   .student-list-hero p:not(.student-list-eyebrow) { margin-top: 0.45rem; color: var(--color-brand-900); font-size: 0.86rem; }
-  .student-list-add-boundary { gap: 0; padding-top: 4.45rem; }
+  .student-list-add-boundary { gap: var(--space-2); padding-top: 4.45rem; }
   .student-list-add-boundary small { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
   .student-primary-action { min-height: 2.65rem; padding: 0.55rem 1.35rem; border-radius: 0.5rem; }
   .student-primary-action:disabled { filter: none; opacity: 1; }

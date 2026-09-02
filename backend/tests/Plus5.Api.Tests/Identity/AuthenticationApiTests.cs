@@ -15,6 +15,9 @@ using Microsoft.Extensions.Logging;
 using Plus5.Api.Conventions;
 using Plus5.Api.Identity;
 using Plus5.Api.Students;
+using Plus5.Api.Groups;
+using Plus5.Application.Groups;
+using Plus5.Infrastructure.Groups;
 using Plus5.Application.Identity;
 using Plus5.Application.Students;
 using Plus5.Domain.Identity;
@@ -40,6 +43,7 @@ public sealed class AuthenticationApiTests
         using var anonymousStudents = await client.GetAsync("/api/v1/students", CancellationToken.None);
         using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
+        using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
@@ -49,6 +53,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousStudents.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -165,6 +170,40 @@ public sealed class AuthenticationApiTests
     }
 
     [Fact]
+    public async Task GroupsRequireValidatedPagingOwnershipAndCsrf()
+    {
+        await using var app = await StartApplicationAsync();
+        using var client = app.GetTestClient();
+        var sender = app.Services.GetRequiredService<CapturingEmailSender>();
+        var csrf = await GetCsrfAsync(client);
+        using var register = await PostAsync(client, "/api/v1/auth/register", new { email = Email, password = Password }, csrf);
+        using var verify = await PostAsync(client, "/api/v1/auth/verify-email", new { email = Email, token = sender.VerificationToken }, csrf);
+        using var login = await PostAsync(client, "/api/v1/auth/login", new { email = Email, password = Password }, csrf);
+        var cookie = ReadCookie(login, "plus5-auth");
+        csrf = await GetCsrfAsync(client, cookie);
+        foreach (var query in new[] { "page=0", "pageSize=101", "status=4", "programId=00000000-0000-0000-0000-000000000000", "search=" + new string('x', 101) })
+        {
+            using var invalid = await GetWithCookiesAsync(client, "/api/v1/groups?" + query, cookie, csrf.Cookie);
+            Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode);
+        }
+        using var groups = await GetWithCookiesAsync(client, "/api/v1/groups", cookie, csrf.Cookie);
+        Assert.Equal(HttpStatusCode.OK, groups.StatusCode);
+        using var missing = await GetWithCookiesAsync(client, $"/api/v1/groups/{Guid.NewGuid()}", cookie, csrf.Cookie);
+        Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
+        var path = $"/api/v1/groups/{Guid.NewGuid()}/members/{Guid.NewGuid()}";
+        using var missingCsrf = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, path)
+        {
+            Content = JsonContent.Create(new { join = true, groupRowVersion = "AQ==", studentRowVersion = "Ag==" }),
+            Headers = { { "Cookie", cookie } },
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
+        using var invalidVersion = await PostAsync(client, path, new { join = true, groupRowVersion = "invalid", studentRowVersion = "" }, csrf, cookie);
+        Assert.Equal(HttpStatusCode.BadRequest, invalidVersion.StatusCode);
+        using var foreignWrite = await PostAsync(client, path, new { join = true, groupRowVersion = "AQ==", studentRowVersion = "Ag==" }, csrf, cookie);
+        Assert.Equal(HttpStatusCode.NotFound, foreignWrite.StatusCode);
+    }
+
+    [Fact]
     public async Task PublicAuthSurfaceIsRateLimited()
     {
         await using var app = await StartApplicationAsync();
@@ -225,6 +264,8 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         builder.Services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         builder.Services.AddScoped<IStudentEditingService, EfStudentEditingService>();
+        builder.Services.AddScoped<IGroupQuery, EfGroupQuery>();
+        builder.Services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -241,6 +282,7 @@ public sealed class AuthenticationApiTests
         app.MapStudentCreation();
         app.MapStudentDossier();
         app.MapStudentEditing();
+        app.MapGroups();
         await app.StartAsync(CancellationToken.None);
         return app;
     }

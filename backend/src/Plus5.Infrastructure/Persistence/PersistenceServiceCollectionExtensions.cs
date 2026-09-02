@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using Plus5.Application.Identity;
 using Plus5.Application.Students;
+using Plus5.Application.Groups;
+using Plus5.Infrastructure.Groups;
 using Plus5.Domain.Identity;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Students;
@@ -88,6 +90,8 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         services.AddScoped<ITeacherAuthenticationService, TeacherAuthenticationService>();
         services.AddScoped<IStudentListQuery, EfStudentListQuery>();
+        services.AddScoped<IGroupQuery, EfGroupQuery>();
+        services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
         services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         services.AddScoped<IStudentEditingService, EfStudentEditingService>();

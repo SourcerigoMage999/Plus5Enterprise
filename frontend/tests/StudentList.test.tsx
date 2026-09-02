@@ -72,6 +72,13 @@ describe('student list', () => {
     expect(within(table).getByRole('link', { name: 'Uredi učenika' })).toHaveAttribute('href', '/students/student-1/edit')
     expect(screen.getByRole('heading', { name: '1 ukupno učenika' })).toBeInTheDocument()
     expect(screen.queryByText(/\d+\s*%/)).not.toBeInTheDocument()
+    const groupsAction = screen.getByRole('link', { name: 'Grupe' })
+    const addAction = screen.getByRole('link', { name: 'Dodaj učenika' })
+    expect(groupsAction).toHaveAttribute('href', '/students/groups')
+    expect(addAction).toHaveAttribute('href', '/students/new')
+    expect(groupsAction).toHaveClass('student-primary-action')
+    expect(addAction).toHaveClass('student-primary-action')
+    expect(groupsAction.nextElementSibling).toBe(addAction)
   })
 
   it('keeps filters in route state and requests the selected status', async () => {
