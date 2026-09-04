@@ -88,6 +88,14 @@ Početni vizualni jezik slijedi source-spec signal: tamna stabilna navigacija, �
 
 Feature faze moraju zadržati ove landmarke i dodati specifično loading/empty/error ponašanje tek kada stvarno uvedu podatke.
 
+## DS 001 source refresh
+
+Novi `source_specs/DESIGN_SYSTEM_DS001.md` uvodi odobreni poslovni design source i UI kit,
+ali njegove boje nisu identične postojećim zaključanim tokenima niti svim canonical screen
+PNG-ovima. Phase 1.7 mora prije sljedećeg novog poslovnog UI ekrana odlučiti token mapping
+i napraviti visual regression pregled. Do tada postojeći tokeni ostaju aktivni baseline;
+nema parcijalnog masovnog restylea dovršenih ekrana.
+
 ## Component-test temelj
 
 Frontend testovi koriste Vitest + jsdom + Testing Library/jest-dom. Testovi provjeravaju korisnički vidljivo ponašanje:

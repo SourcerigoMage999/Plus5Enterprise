@@ -18,6 +18,23 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 12. Koji je notification event/delivery/retention contract i koji kanali postoje izvan web centra?
 13. Audit postavki 12.1–12.7: potvrditi da svaka poslovna odluka ima jedan source of truth.
 14. Završni functional audit i MVP rez: označiti featuree kao MVP / nakon MVP-a / kasnije.
+15. **P-01 Student/Guardian i maloljetnici:** tko daje privolu, upravlja računom, vidi
+    napredak, odobrava rezervaciju/otkazivanje i smije kupiti uslugu za maloljetnika?
+16. **BR-ST-01 Student–Teacher odnos:** kako nastaje i prestaje, dopušta li više Teachera,
+    koji se podaci dijele te kako rade referral, block i povlačenje pristupa?
+17. **BR-PAY-01 commercial/payment:** subscription, credits/paketi sati, provizija,
+    payment provider, refund, otkazivanje/no-show, failed payment, obnova, grace period,
+    račun/billing dokument i porezna/fiskalna granica.
+18. **BR-MSG-01 cross-role komunikacija:** tko kome smije pisati, Guardian vidljivost,
+    block/report, moderiranje, kontaktni podaci, privitci i životni vijek razgovora?
+19. **BR-ACC-01 Student account lifecycle:** registracija/verifikacija/recovery,
+    dobna granica, deaktivacija, brisanje, retention, anonimizacija i Guardian control?
+20. **BR-TM-01/02 Teacher marketplace:** postoje li recenzije/reputation te što znači
+    verificirani Teacher, tko verificira i koji dokaz/status lifecycle vrijedi?
+21. Kako DS-001 `#f8b91b` / `#0f4d80`, žuti primary action i narančasti warning mapirati
+    na postojeće tokene i canonical PNG-ove bez regresije dovršenih ekrana?
+22. Koji su privacy, audit i model-improvement contracti za Lesson Builder tvrdnju da AI
+    pamti Teacherove prihvaćene, uređene i odbijene prijedloge?
 
 ## Preostali feature/domain gateovi prije kasnijih modula
 
@@ -49,6 +66,8 @@ Detaljni screen/lifecycle source sada postoji za 4.1, 4.4–4.5, 5.1–5.6, 6.1�
 - odobriti kontrolirani Gender katalog ili potvrditi trajni free-text contract prije nego se taj podatak koristi za filtere, izvještaje ili automatizaciju
 - ~~Group faza mora zaključati vremensku valjanost i kardinalnost `GroupMembershipa` te atomarno provoditi pravilo da `DeliveryMode.Group` ima aktivno članstvo.~~ **RIJEŠENO 2026-08-25:** vremenski interval, najviše jedno aktivno članstvo, same-Teacher composite FK i transakcijski Student/Group rowversion contract zaključani su u `GROUP_FOUNDATION.md` i ADR-0012.
 - fotografija učenika ostaje blokirana općom file-storage politikom i ne sprema se kao URL/path pretpostavka u Student foundationu
+- novi student-facing source ne mijenja Teacher-only Phase 1.6: prije Student logina
+  riješiti pitanja 15–20, prijetnje cross-role IDOR-a, consent i guardian access/revocation
 
 ## Odgođene Group odluke
 

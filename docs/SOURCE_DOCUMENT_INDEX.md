@@ -54,3 +54,22 @@ Raniji source snapshotovi ostaju važeći gdje nisu u kontradikciji s novijim so
 ## Vizuali
 
 Paket `Za programera - novo.zip` potvrđeno sadrži 78 PNG mockupova. Ostaju u izvornom ZIP-u i trebaju se koristiti kao canonical layout/visual acceptance izvor zajedno s tekstualnom specifikacijom. Za svaki business UI ekran prije zaključavanja faze obavezni su usporedba s pripadajućim PNG-om, desktop dokaz, responsive pregled i dokumentirana odstupanja.
+
+## Full platform source refresh 2026-09-04
+
+Pregledana su četiri foldera pod `C:/Users/arodr/Downloads/5/Plus 5 aplikacija/`: novi
+`Za programera - novo`, `Design System`, `Priprema sata` i `Baza Ekrana`. Ukupno sadrže
+178 DOCX-a, 133 PNG-a, jedan XLSX i jedan TXT. Rezultat selektivnog mergea i neispravan
+12.3.1 DOCX dokumentirani su u `SOURCE_PACKAGE_AUDIT_2026_09_04.md`.
+
+Novi source-derived dokumenti:
+
+- `source_specs/STUDENT_APPLICATION_SITEMAP.md`
+- `source_specs/DESIGN_SYSTEM_DS001.md`
+- `source_specs/LESSON_BUILDER_KNOWLEDGE_BLOCK_CATALOG.md`
+- `source_specs/CROSS_ROLE_BASELINE.md`
+
+Postojeća 54 teacher source snapshot dokumenta nisu duplicirana. Novi paketi dodaju
+studentski ekran-flow, 25 detaljnih KB DRAFT specifikacija, DS-001/UI kit, sitemap C
+lifecyclee i bazne FS-001–003 namjere. PNG-ovi ostaju na izvornoj lokaciji kao visual
+acceptance reference; projektni `docs` ne tvrdi da su svi binarni izvori pohranjeni u Git.

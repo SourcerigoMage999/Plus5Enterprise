@@ -37,6 +37,8 @@ describe('application shell', () => {
   it('provides a skip link and a named main navigation landmark', async () => {
     renderRoute('/')
 
+    const brand = await screen.findByRole('link', { name: 'PLUS 5 — Radni stol' })
+    expect(brand.querySelector('img')).toHaveAttribute('alt', 'PLUS 5')
     expect(await screen.findByRole('link', { name: 'Preskoči na glavni sadržaj' })).toHaveAttribute(
       'href',
       '#main-content',

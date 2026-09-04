@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router'
+import plus5Logo from '../assets/plus5-logo.png'
 import {
   ApiError,
   forgotPassword,
@@ -155,7 +156,9 @@ function AuthCard({ title, description, children }: { readonly title: string; re
   return (
     <main className="auth-layout">
       <section className="auth-card">
-        <Link className="auth-brand" to="/" aria-label="PLUS 5">PLUS <span>5</span></Link>
+        <Link className="auth-brand" to="/" aria-label="PLUS 5">
+          <img className="auth-brand-logo" src={plus5Logo} alt="PLUS 5" />
+        </Link>
         <p className="auth-eyebrow">Učiteljska aplikacija</p>
         <h1>{title}</h1>
         <p className="auth-description">{description}</p>

@@ -23,7 +23,14 @@ Ovaj dokument je gate protiv AI-haluciniranja nedokumentiranih funkcionalnosti.
 | Obavijesti | 13.1 | detaljni event/read-resolved model | zahtijeva notification delivery/retention contract |
 | Profil/Auth | 14.1–14.3 | screen source + zaključani auth contract | Phase 1.6 auth contract ima prednost |
 | Master sitemap/audit | cross-module | početni master sitemap izveden | završni functional audit i MVP rez nisu zaključani |
+| DS-001 | cross-platform | odobreni DS-001 source + UI kit | alignment prema postojećim tokenima i PNG-ovima obavezan prije sljedećeg UI featurea |
+| Lesson Builder KB katalog | KB-001–KB-025 | detaljni DRAFT pedagoški opisi | zahtijeva formalni Lesson Plan/Activity/Knowledge/Evidence/AI/privacy contract |
+| Student aplikacija | 1.1, 2.1–10.4 | 44 detaljna screen DOCX/PNG para + 10 master/modulskih site-mapova | blokirano dok se ne zaključe Student/Guardian auth, minor consent, permissions i shared-domain contracti |
+| Cross-role baseline | FS-001–FS-003, sitemap C1–C11 | business intent i lifecycle mape | koristiti kao input; noviji ADR/security/phase contracti imaju prednost kod konflikta |
 
 ## Pravilo statusa
 
 “Mapa ekrana” nije dovoljna za produkcijsku implementaciju featurea koji stvara ili mijenja trajne podatke. Prije takve faze moraju biti definirani barem business rules, permissions, states/transitions, validation, error behavior i acceptance kriteriji.
+
+Oznake `ODOBRENO` ili `DRAFT` unutar vanjskog DOCX-a opisuju status tog izvora. Ne
+preskaču projektni documentation, architecture, security, test i visual acceptance gate.

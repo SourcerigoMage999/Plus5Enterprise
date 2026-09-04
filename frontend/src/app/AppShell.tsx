@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { findNavigationItem, navigationItems } from './navigation.ts'
 import { useAuth } from '../auth/authContextState.ts'
+import plus5Logo from '../assets/plus5-logo.png'
 
 export function AppShell() {
   const location = useLocation()
@@ -26,10 +27,7 @@ export function AppShell() {
       <div className="app-shell">
         <aside className="shell-sidebar">
           <NavLink className="brand-link" end to="/" aria-label="PLUS 5 — Radni stol">
-            <span className="brand-wordmark">Plus</span>
-            <span className="brand-five" aria-hidden="true">
-              5
-            </span>
+            <img className="brand-logo" src={plus5Logo} alt="PLUS 5" />
           </NavLink>
 
           <nav className="primary-navigation" aria-label="Glavna navigacija">

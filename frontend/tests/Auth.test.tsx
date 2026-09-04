@@ -18,6 +18,7 @@ describe('authentication boundary', () => {
     renderAuthRoute('/students')
 
     expect(await screen.findByRole('heading', { name: 'Prijava za učitelje' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'PLUS 5' }).querySelector('img')).toHaveAttribute('alt', 'PLUS 5')
     expect(screen.queryByRole('heading', { name: 'Učenici' })).not.toBeInTheDocument()
   })
 

@@ -51,6 +51,11 @@ Glossary definira pojmove, ali ne zaključava nedokumentirane kardinalnosti, per
 | `LessonPlan` | Priprema sata | Strukturirani plan ciljeva, aktivnosti i materijala za budući ili konkretni termin. Nije sam termin i ne predstavlja dokaz znanja. |
 | `LearningActivity` | Nastavna aktivnost | Organizirana cjelina rada tijekom sata, domaće zadaće, testa ili samostalne vježbe. Može sadržavati nula ili više procjenjivih zadataka. |
 
+`Knowledge Block` iz novog DRAFT Lesson Builder paketa trenutačno je naziv pedagoškog
+predloška/kategorije aktivnosti KB-001–KB-025, a ne sinonim za `KnowledgeComponent`.
+Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prema
+`LearningActivity`, `LessonPlan` i `Material` ostaju otvoreni do ROADMAP 9.1.
+
 ## Curriculum and knowledge model
 
 | Canonical term | Hrvatski/UI naziv | Definicija i granica |

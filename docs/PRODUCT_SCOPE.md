@@ -6,7 +6,8 @@ PLUS 5 je aplikacija za organizaciju i izvođenje instrukcija/nastave, s naglask
 
 ## Glavni korisnički kontekst iz dostavljene dokumentacije
 
-Trenutačno je dokumentiran prvenstveno **Teacher application**. Stalna glavna navigacija uključuje:
+Implementacija je trenutačno **Teacher application**, a source paket od 2026-09-04
+dokumentira i buduću **Student application**. Teacher stalna glavna navigacija uključuje:
 
 - Radni stol
 - Učenici
@@ -21,6 +22,11 @@ Trenutačno je dokumentiran prvenstveno **Teacher application**. Stalna glavna n
 - Postavke
 
 Dodatno postoje Centar obavijesti i korisnički/auth ekrani.
+
+Student source opisuje 44 detaljna ekrana kroz Početnu, self-study, Moje sate, Domaće
+zadaće, pomoć/booking, napredak, Teachere, Poruke, Profil i Postavke. To proširuje budući
+product scope, ali ne aktivni account scope: Student/Guardian login, minor consent,
+permissions, payments i marketplace pravila ostaju blokirana pitanja Phase 17.
 
 ## Authentication scope
 
@@ -61,7 +67,7 @@ Detaljni business contract je u `AUTHENTICATION_REQUIREMENTS.md`.
 
 Specifikacije za 2.4, 2.5 i 4.2 jasno upućuju da procjena znanja ne smije biti nasumična niti ručno upisan postotak. Rezultati aktivnosti trebaju biti povezani s kurikulumom i komponentama znanja, a procjena mora nastajati iz prikupljenih dokaza. Pomoć učeniku i vrsta dokaza također utječu na interpretaciju rezultata.
 
-## Granica trenutačne dokumentacije — osvježeno 2026-09-01
+## Granica trenutačne dokumentacije — osvježeno 2026-09-04
 
 Detaljno su opisani:
 
@@ -85,3 +91,8 @@ Detaljno su opisani:
 - 14.1–14.3 Profil/account
 
 Detaljni screen/lifecycle source ne zaključava automatski domenski, permission, storage, metric, finance ili delivery contract. Ti gateovi ostaju u `ROADMAP.md`, `OPEN_QUESTIONS.md` i `source_specs/DOCUMENTATION_BACKLOG.md`.
+
+Dodatno su source-derived dokumentirani DS-001, 25 DRAFT Lesson Builder Knowledge
+Blockova, master sitemap C/C1–C11, bazni FS-001–FS-003 te cijela studentska sitemap/screen
+struktura. Selektivni merge i izvorne lokacije dokumentirani su u
+`SOURCE_PACKAGE_AUDIT_2026_09_04.md`.

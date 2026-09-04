@@ -68,6 +68,13 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-24:** implementiran je isključivo Teacher account lifecycle: javna registracija, obavezna potvrda e-maila, login/logout, forgot/reset/change password, revocable server-side cookie sesije, CSRF, rate limiting i deny-by-default authorization. Dodani su potpuni auth UI flowovi bez browser token storagea, SQL migracije za identity/session/token podatke i trajni shared Data Protection key ring koji izvan Developmenta zahtijeva zaštitu certifikatom. Release build, 86 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF migration provjere, desktop/mobile browser review te čisti non-root Docker runtime prolaze.
 
+## 1.7 DS-001 token and component alignment audit — TODO
+
+Usporediti `source_specs/DESIGN_SYSTEM_DS001.md`, UI kit, postojeće tokene i dovršene
+canonical PNG acceptance dokaze. Zaključati semantički token mapping, primary/secondary/
+danger pravila, status komponentu i regression postupak. Ne provoditi masovni restyle bez
+desktop/mobile ponovne provjere. Ovaj audit je preduvjet sljedećeg novog business UI ekrana.
+
 ---
 
 # PHASE 2 — Core Teaching Domain
@@ -224,15 +231,18 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 # PHASE 9 — Lesson Builder
 
-## 9.0 Detailed specification 5.1–5.6 — DOCUMENTED
+## 9.0 Detailed specification 5.1–5.6 and KB-001–KB-025 — DOCUMENTED / DRAFT GATES
 Source: `source_specs/5.0_Priprema_sata_Lesson_Builder.md` i 5.1–5.6 screen specovi.
 
-## 9.1 Goal selection — TODO
-## 9.2 Suggested lesson structure and balance check — TODO
-## 9.3 Lesson Plan editor and material-version attachment — TODO
-## 9.4 Activity / Knowledge Block selection — TODO
-## 9.5 Lesson Activity detail/edit — TODO
-## 9.6 Confirmed Lesson Plan / ready state — TODO
+## 9.1 Lesson Plan Activity and Knowledge Block formal domain contract — BLOCKED
+## 9.2 AI input privacy explainability confirmation and audit contract — BLOCKED
+## 9.3 Versioned KB-001–KB-025 catalog and applicability rules — BLOCKED until 9.1–9.2
+## 9.4 Goal selection — TODO after contracts
+## 9.5 Suggested lesson structure timeline and balance check — TODO
+## 9.6 Lesson Plan editor and immutable material-version attachment — TODO
+## 9.7 Activity / Knowledge Block selection — TODO
+## 9.8 Lesson Activity detail/edit and regeneration — TODO
+## 9.9 Confirmed Lesson Plan / ready state — TODO
 
 **Gate:** prije implementacije zaključati formalne `LessonPlan`, `ActivityTemplate` i `LessonActivity` contracte te dependencyje na Knowledge/Material modele. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
 
@@ -330,15 +340,38 @@ Source: `source_specs/6.0_PLUS5_Ploca.md` i 6.1–6.5 runtime specovi.
 
 ---
 
-# PHASE 17 — Hardening & Release
+# PHASE 17 — Student Application and Cross Role Foundation
 
-## 17.1 End-to-end critical journeys — TODO
-## 17.2 Security review — TODO
-## 17.3 Performance review — TODO
-## 17.4 Accessibility review — TODO
-## 17.5 Backup/restore and operational runbook — TODO
-## 17.6 Production deployment validation — TODO
-## 17.7 Release summary / known limitations — TODO
+Novi student-facing source dokumentira 44 detaljna ekrana, ali nije dozvola za implementaciju bez
+novog account/authorization i parental-consent contracta. Teacher i Student koriste iste
+canonical business entitete; ne stvaraju se paralelni modeli po ulozi.
+
+## 17.0 Student screen/source audit and final 1.1 home specification — TODO
+## 17.1 Student/Guardian identity minor consent and permissions architecture — BLOCKED
+## 17.2 Student–Teacher relationship lifecycle and data visibility — BLOCKED
+## 17.3 Student shell profile settings account and notification center — BLOCKED until 17.1
+## 17.4 Student home 1.1 — BLOCKED until 17.0–17.3
+## 17.5 Self study 2.1–2.8 — BLOCKED until Knowledge/Evidence and content contracts
+## 17.6 My lessons 3.1–3.7 and Student live board — BLOCKED until Lesson Session and real-time authorization
+## 17.7 Student homework 4.1–4.6 — BLOCKED until Homework participant contract
+## 17.8 Help booking and Teacher discovery 5.1–5.6 / 7.1–7.4 — BLOCKED
+## 17.9 Student progress 6.1–6.5 — BLOCKED until Knowledge/Evidence definitions
+## 17.10 Student messages 8.1–8.2 — BLOCKED until cross-role messaging/moderation contract
+## 17.11 Guardian/payment/subscription implementation boundary — BLOCKED
+## 17.12 Cross-role end-to-end privacy accessibility and visual acceptance — TODO after implementation
+
+Obavezni otvoreni gateovi: P-01, BR-ST-01, BR-PAY-01, BR-MSG-01, BR-ACC-01 i
+BR-TM-01/02 iz `OPEN_QUESTIONS.md`. P-01 prethodi payments/booking odlukama.
+
+# PHASE 18 — Hardening & Release
+
+## 18.1 End-to-end critical journeys — TODO
+## 18.2 Security review — TODO
+## 18.3 Performance review — TODO
+## 18.4 Accessibility review — TODO
+## 18.5 Backup/restore and operational runbook — TODO
+## 18.6 Production deployment validation — TODO
+## 18.7 Release summary / known limitations — TODO
 
 ---
 

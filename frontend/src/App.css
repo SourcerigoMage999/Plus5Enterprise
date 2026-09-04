@@ -38,11 +38,9 @@
 
 .brand-link {
   display: inline-flex;
-  width: fit-content;
-  align-items: baseline;
-  gap: 0.2rem;
   min-height: 8.1rem;
   width: calc(100% + 1.5rem);
+  align-items: center;
   justify-content: center;
   margin: 0 0 0 -0.75rem;
   padding: 0;
@@ -52,17 +50,12 @@
   text-decoration: none;
 }
 
-.brand-wordmark {
-  font-size: 2rem;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -0.04em;
-}
-
-.brand-five {
-  color: var(--color-accent-400);
-  font-size: 3rem;
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
+.brand-logo {
+  display: block;
+  width: min(11.5rem, 88%);
+  height: 7.8rem;
+  object-fit: cover;
+  object-position: center;
 }
 
 .primary-navigation {
@@ -572,15 +565,19 @@
 }
 
 .auth-brand {
-  color: var(--color-brand-900);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
 }
 
-.auth-brand span {
-  color: var(--color-accent-500);
-  font-size: var(--font-size-3xl);
+.auth-brand-logo {
+  display: block;
+  width: clamp(8rem, 32vw, 10rem);
+  height: clamp(5.6rem, 22.4vw, 7rem);
+  object-fit: cover;
+  object-position: center;
 }
 
 .auth-eyebrow {

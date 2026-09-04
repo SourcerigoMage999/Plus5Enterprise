@@ -50,3 +50,9 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
 Teacher source je 2026-09-01 proširen s 54 nova `source_specs` dokumenta. Detaljni screen/lifecycle snapshotovi sada postoje za Materijale 4.1 i 4.4–4.5, Lesson Builder, PLUS 5 Ploču, Povijest sati, Domaće zadaće, Poruke, Izvještaje, Financije, Postavke, Centar obavijesti i Profil/account.
 
 `source_specs/MASTER_SITEMAP_TEACHER.md` daje cross-module pregled, a `source_specs/DOCUMENTATION_BACKLOG.md` navodi domenske contracte i završne audite koji još nisu zaključani. Detaljni screen source ne uklanja ROADMAP gateove za Knowledge/Evidence, storage, permissions, metrics/privacy/export, finance, notifications ili MVP rez.
+
+Full-platform refresh od 2026-09-04 dodaje studentsku aplikaciju, DS-001/UI kit, detaljni
+DRAFT katalog KB-001–KB-025, teacher master sitemap C i bazne cross-role specifikacije.
+Prije rada s tim scopeom obavezno pročitati `SOURCE_PACKAGE_AUDIT_2026_09_04.md` i četiri
+nova source-derived dokumenta navedena u `DOCUMENTATION_MANIFEST.md`. Novi source ne
+mijenja postojeći Teacher-only auth niti automatski zatvara otvorene domain/security gateove.

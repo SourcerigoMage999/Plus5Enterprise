@@ -2,9 +2,10 @@
 
 ## Status
 
-**MERGED PROJECT MANIFEST — 2026-09-01**
+**MERGED PROJECT MANIFEST — 2026-09-04**
 
-Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnog teacher-source mergea. ZIP snapshot nije samostalna zamjena za projektne dokumente.
+Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnih teacher i
+full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za projektne dokumente.
 
 ## Obavezni projektni source-of-truth
 
@@ -21,6 +22,11 @@ Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnog tea
 - `source_specs/MASTER_SITEMAP_TEACHER.md` daje izvedeni cross-module sitemap.
 - `source_specs/DOCUMENTATION_BACKLOG.md` navodi još nezaključane domenske dokumente, završni functional audit i MVP rez.
 - `SOURCE_DOCUMENT_INDEX.md` bilježi podrijetlo i redoslijed source refresha.
+- `SOURCE_PACKAGE_AUDIT_2026_09_04.md` bilježi selektivni merge studentske aplikacije,
+  DS-001, Lesson Builder/KB kataloga, sitemap C i baznih cross-role dokumenata.
+- Novi source-derived sažeci su `DESIGN_SYSTEM_DS001.md`,
+  `LESSON_BUILDER_KNOWLEDGE_BLOCK_CATALOG.md`, `STUDENT_APPLICATION_SITEMAP.md` i
+  `CROSS_ROLE_BASELINE.md`. Izvorni DRAFT/otvoreni statusi ne pretvaraju se u lock.
 
 ## Phase evidence
 
@@ -30,3 +36,7 @@ Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnog tea
 ## Merge pravilo
 
 Novi source može proširiti budući feature scope i razriješiti dokumentacijski gate, ali ne smije retroaktivno poništiti zaključani tehnički contract, Accepted ADR, dovršeni ROADMAP status ili phase evidence bez eksplicitne odluke vlasnika proizvoda.
+
+DS-001 je obavezan input za budući visual acceptance, ali razlike prema postojećim
+tokenima prvo prolaze Phase 1.7 alignment audit. Student source ne mijenja postojeći
+Teacher-only authentication contract; implementacija je blokirana do cross-role odluka.
