@@ -8,6 +8,10 @@ Ovaj dokument definira najmanji trajni Group i GroupMembership contract potreban
 
 ## Zaključane granice
 
+- Phase 3.6 / ADR-0015: nova grupa smije biti Active s nula učenika i bez rasporeda.
+  Automatska deaktivacija prema broju učenika je rejected behavior; MinimumStudents
+  nije dio create contracta. Početna članstva i opcionalni raspored spremaju se atomski.
+
 - `Group` je Teacher-owned trajna organizacijska jedinica za grupnu nastavu; nije Program ni raspored.
 - Svaka Group pripada točno jednom Programu istog Teachera i jednom `SchoolGrade` zapisu.
 - Group SchoolGrade opisuje ciljanu organizacijsku školsku godinu. Student drugog SchoolGradea može biti ponuđen niže na listi, ali Teacher zadržava konačnu odluku; grade jednakost zato nije DB invarijanta članstva.

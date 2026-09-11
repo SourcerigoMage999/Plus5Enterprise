@@ -1,0 +1,34 @@
+{
+  "screens": [
+    {
+      "name": "create",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "unsaved",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "create",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "name": "unsaved",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    }
+  ],
+  "errors": [],
+  "created": [],
+  "checks": [
+    "desktop: link + Back + Escape retain form",
+    "mobile: link + Back + Escape retain form"
+  ]
+}

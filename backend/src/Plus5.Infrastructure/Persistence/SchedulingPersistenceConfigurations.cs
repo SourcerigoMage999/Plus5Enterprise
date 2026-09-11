@@ -59,7 +59,7 @@ internal sealed class RecurringSessionSeriesConfiguration
         builder.Property(series => series.Kind).HasConversion<int>().IsRequired();
         builder.Property(series => series.DayOfWeek).HasConversion<int>().IsRequired();
         builder.Property(series => series.StartsOn).HasColumnType("date").IsRequired();
-        builder.Property(series => series.EndsOn).HasColumnType("date").IsRequired();
+        builder.Property(series => series.EndsOn).HasColumnType("date");
         builder.Property(series => series.LocalStartTime).HasColumnType("time(0)").IsRequired();
         builder.Property(series => series.LocalEndTime).HasColumnType("time(0)").IsRequired();
         builder.Property(series => series.TimeZoneId)

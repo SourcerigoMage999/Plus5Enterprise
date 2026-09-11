@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { StatusBadge } from '../ui/StatusBadge.tsx'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useLocation, useSearchParams } from 'react-router'
 import { changeMembership, useGroupResource } from './groupsApi.ts'
 import type { Group, GroupSession, GroupStudent, Overview, Page, Slot } from './groupsApi.ts'
 import type { StudentListOverview } from '../students/studentsApi.ts'
@@ -13,6 +13,7 @@ const shortTime = (value: string) => value.slice(0, 5)
 const slotLabel = (slot: Slot) => `${days[slot.dayOfWeek]} ${shortTime(slot.start)}–${shortTime(slot.end)}`
 
 export function GroupListPage() {
+  const location = useLocation()
   const [params, setParams] = useSearchParams()
   const [revision, setRevision] = useState(0)
   const page = pageNumber(params.get('page'))
@@ -42,10 +43,11 @@ export function GroupListPage() {
         <div><h1>2.7 Grupe</h1><p>Pregledaj i upravljaj grupama i učenicima po grupama.</p></div>
         <div className="groups-hero-actions">
           <button disabled title="Izvoz je planiran u fazi izvještaja.">Izvezi izvještaj (PDF)</button>
-          <button className="groups-primary" disabled title="Nova grupa dolazi u Phase 3.6.">+ Nova grupa</button>
-          <small>Nova grupa: sljedeća faza · Izvoz: faza izvještaja</small>
+          <Link className="groups-primary ds-action" to="/students/groups/new">+ Nova grupa</Link>
+          <small>Izvoz: faza izvještaja</small>
         </div>
       </header>
+      {typeof location.state?.createdGroupName === 'string' && <p role="status">Grupa {location.state.createdGroupName} uspješno je kreirana.</p>}
       {overview?.data ? <div className="groups-stats">
         <Stat icon="groups" label="Ukupno grupa" value={overview.data.totalGroups} note={`Aktivnih: ${overview.data.activeGroups}`} />
         <Stat icon="students" label="Ukupno učenika" value={overview.data.students} note={`Prosječno po grupi: ${overview.data.totalGroups ? (overview.data.students / overview.data.totalGroups).toLocaleString('hr-HR', { maximumFractionDigits: 1 }) : '0'}`} />
@@ -69,7 +71,7 @@ export function GroupListPage() {
                 <span className="groups-row-count"><strong>{group.memberCount} učenika</strong><small>{Math.max(0, group.capacity - group.memberCount)} slobodnih</small></span><span aria-hidden="true">›</span>
               </button>
             </li>)}</ul>
-            {groups.data.items.length === 0 && <div className="groups-empty"><h3>Nema grupa za odabrane filtre</h3><p>Promijenite pretragu ili filtre. Kreiranje grupa dolazi u sljedećoj fazi.</p></div>}
+            {groups.data.items.length === 0 && <div className="groups-empty"><h3>Nema grupa za odabrane filtre</h3><p>Promijenite pretragu ili filtre, ili kreirajte novu grupu.</p></div>}
             <Pager page={groups.data} label="grupa" onPage={(value) => update('page', String(value))} />
           </> : <Message error={groups?.error} retry={reload} loading="Učitavanje grupa…" />}
         </section>

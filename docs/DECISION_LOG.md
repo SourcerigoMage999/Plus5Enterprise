@@ -1,5 +1,15 @@
 # DECISION_LOG
 
+### ADR-0015 — Group create, opcionalna otvorena serija i početnih 12 tjedana
+- **Datum:** 2026-09-11
+- **Status:** Accepted — SA odluke za nastavak 3.6.
+- **Odluka:** grupa se sprema kao Active s 0..N učenika i 0..N rasporeda. Broj članova ne mijenja status; automatska deaktivacija je rejected behavior. Nema MinimumStudents.
+- **Raspored:** canonical serija može imati `EndsOn = null`. Početna materializacija obuhvaća 12 tjedana (84 lokalna dana), od kasnijeg od današnjeg datuma u Europe/Zagreb i StartsOn, s exclusive gornjom granicom; raniji uneseni EndsOn uključiv je i skraćuje prozor. Ne generiraju se već započeti termini. Nema business limita trajanja serije.
+- **Integritet:** grupa, početna članstva, serije i početni Sessioni jedna su Serializable transakcija. Ownership, capacity, Student rowversion, aktivno članstvo i vremenski konflikti validiraju se prije commita. Konflikt nema override.
+- **Operativne granice:** početni generator je bounded; Phase 4 replenishment mora ponovno provjeriti konflikte/DST pri svakom širenju prozora. Spremanje nije jamstvo nekonfliktnosti svih budućih beskonačnih pojava. Nema background servisa u 3.6.
+- **Posljedice:** nullable EndsOn migracija bez izmjene postojećih datuma; postojeći read model mora uključiti otvorene serije. Zaštita veličine pojedinačnog create zahtjeva: najviše 100 početnih članova i 14 tjednih slotova; to nije ograničenje Capacity grupe.
+- **Navigacija:** postojeći React Router data-router adapter omogućuje službeni useBlocker za potpuni SPA Back/Forward gate; nema nove biblioteke ili server-state migracije.
+
 Ovdje se zapisuju arhitekturne i trajne implementacijske odluke.
 
 ## Format

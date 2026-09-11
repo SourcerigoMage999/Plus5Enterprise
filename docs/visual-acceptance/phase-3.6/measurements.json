@@ -1,0 +1,22 @@
+{
+  "status": "PARTIAL - preparation only; no save or final visual acceptance",
+  "screens": [
+    {
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "sqlCandidates": 200,
+      "disabledSave": true,
+      "cancelledNavigation": true
+    },
+    {
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "sqlCandidates": 200,
+      "disabledSave": true,
+      "cancelledNavigation": true
+    }
+  ],
+  "errors": []
+}

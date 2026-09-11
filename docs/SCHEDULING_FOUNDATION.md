@@ -19,6 +19,11 @@ Ovaj dokument formalizira recurrence gate iz source specifikacija 3.3/3.4 i defi
 
 ## Vrijeme i DST
 
+- Phase 3.6 / ADR-0015: `EndsOn` je opcionalan; null znači otvorenu seriju, ne magic datum.
+  Početna materializacija je 12 tjedana od max(danas u zoni, StartsOn), exclusive gornja
+  granica; inclusive EndsOn je dodatna granica. Nema generiranja prošlih/započetih termina.
+  Replenishment ostaje Phase 4, uz ponovnu conflict/DST provjeru.
+
 - Session čuva `StartsAtUtc` i `EndsAtUtc` kao apsolutne trenutke te `TimeZoneId` za prikaz izvornog lokalnog konteksta.
 - Series čuva lokalni dan/timeslot, IANA/TimeZoneInfo identifikator i inclusive `StartsOn`/`EndsOn` datume. Ne sprema izvedeno trajanje.
 - Overnight slot nije podržan u foundationu; `LocalEndTime` mora biti nakon `LocalStartTime` istoga dana.

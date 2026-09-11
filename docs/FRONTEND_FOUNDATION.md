@@ -56,7 +56,10 @@ Route registry u `src/app/navigation.ts` jedini je source za glavni navigacijski
 
 ## Routing odluka
 
-React Router koristi declarative mode (`BrowserRouter`, `Routes`, `Route`, `NavLink`, `Outlet`). Foundation trenutačno ne treba data-router loadere, actione, framework mode ni route-level server state.
+Phase 3.6 koristi postojeći React Router kroz `createBrowserRouter`/`RouterProvider`
+zbog podržanog `useBlocker` za Back/Forward i nespremljeni create obrazac. Postojeći
+`Routes`/`Route`/`NavLink`/`Outlet`, URL-ovi i API boundary ostaju. Nisu uvedeni loaderi,
+actioni, framework mode ni nova biblioteka; auth redirecti ne smiju ostati blokirani formom.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

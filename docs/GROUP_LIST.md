@@ -8,6 +8,10 @@ Canonical izvori: `source_specs/2.7_Grupe.md`, izvorni `2.7 Grupe.png`,
 `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md` i projektni engineering standardi.
 Ova faza ne otvara kreiranje/uređivanje grupe iz Phase 3.6/3.7.
 
+**Naknadno — Phase 3.6:** `+ Nova grupa` sada vodi na `/students/groups/new`;
+uspješan create otvara ovaj ekran s novom grupom odabranom i potvrdom. Opis disabled
+akcije u povijesnom Phase 3.5 odjeljku ispod vrijedi za tadašnji rezultat, ne aktualni UI.
+
 ## UI i navigacija
 
 - `/students/groups`, dostupno preko poveznice **Grupe** na popisu učenika.

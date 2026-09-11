@@ -73,12 +73,18 @@ Detaljni screen/lifecycle source sada postoji za 4.1, 4.4–4.5, 5.1–5.6, 6.1�
 
 ## Odgođene Group odluke
 
+- **RIJEŠENO — Phase 3.6, ADR-0015:** prazna Active grupa je legitimna, raspored je
+  opcionalan, završni datum nije obavezan. Početni Session horizont je 12 tjedana;
+  grupa/članstva/raspored spremaju se atomski, konflikt blokira write. Automatska
+  deaktivacija prema broju učenika je rejected behavior, ne odgođeni feature.
 - prije Group edit API/UI-ja odlučiti ponašanje promjene Group Programa kada postoje aktivni članovi: atomarna promjena Student Programa, završetak članstava ili odbijanje promjene
-- minimalni broj učenika, draft lifecycle i pravo brisanje grupe nisu definirani; foundation koristi samo pozitivan maksimalni capacity i arhiviranje
+- minimalni broj učenika nije potreban za 3.6; ne uvodi se MinimumStudents. Draft lifecycle
+  i pravo brisanje ostaju nedefinirani; foundation koristi capacity i arhiviranje.
 
 ## Odgođene Schedule odluke
 
-- odabrati bounded recurrence preview/materialization horizon i replenishment cadence prije Phase 4 application implementacije
+- početni materialization horizon je zaključan na 12 tjedana (ADR-0015); replenishment
+  cadence i održavanje budućeg prozora ostaju Phase 4 operational zadatak
 - definirati smije li Teacher svjesno overrideati conflict upozorenje i pod kojim audit pravilima
 - arbitrary recurrence/overnight, shared room permissions, reminders i notification delivery ostaju zasebni gateovi
 

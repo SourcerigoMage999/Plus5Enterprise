@@ -112,6 +112,10 @@ export async function ensureSuccess(response: Response, notify = true): Promise<
 
 function friendlyMessage(code?: string): string {
   switch (code) {
+    case 'group_name_exists': return 'Grupa s tim nazivom već postoji. Odaberite drugi naziv.'
+    case 'group_create_reference_not_found': return 'Odabrani program, razred, učenik ili lokacija više nisu dostupni. Osvježite podatke.'
+    case 'schedule_conflict': return 'Raspored se preklapa s drugim terminom. Promijenite termine prije spremanja.'
+    case 'invalid_local_time': return 'Termin pada na nepostojeće ili dvosmisleno lokalno vrijeme pri promjeni sata. Odaberite drugo vrijeme.'
     case 'invalid_credentials':
       return 'E-mail adresa ili lozinka nisu ispravni.'
     case 'email_already_registered':

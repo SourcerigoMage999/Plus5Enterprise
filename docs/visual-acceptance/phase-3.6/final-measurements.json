@@ -1,0 +1,69 @@
+{
+  "screens": [
+    {
+      "name": "create",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "unsaved",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "created",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "create",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "name": "unsaved",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "name": "conflict",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "name": "created",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    }
+  ],
+  "errors": [],
+  "created": [
+    {
+      "type": "student",
+      "id": "ddfe639e-5617-41e3-828b-38da0ab1d2cc"
+    },
+    {
+      "type": "scheduled-group",
+      "id": "9ffbcd27-531c-4d68-be58-4203477058e7",
+      "sessionCount": 12
+    },
+    {
+      "type": "empty-group",
+      "id": "0f6f089a-31ed-4abe-8fbc-0f1d6fd1fab4",
+      "sessionCount": 0
+    }
+  ],
+  "checks": [
+    "desktop: link + Back + Escape retain form",
+    "desktop: selected member + open-ended schedule create 201; 12 sessions",
+    "mobile: link + Back + Escape retain form",
+    "mobile: conflict 409, then 0 members + 0 schedule create 201"
+  ]
+}

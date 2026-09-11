@@ -1,16 +1,10 @@
 import './App.css'
-import { BrowserRouter } from 'react-router'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import { AppRoutes } from './app/AppRoutes.tsx'
 import { AuthProvider } from './auth/AuthContext.tsx'
 
-function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
-  )
-}
+const router = createBrowserRouter([{ path: '*', element: <AuthProvider><AppRoutes /></AuthProvider> }])
+
+function App() { return <RouterProvider router={router} /> }
 
 export default App

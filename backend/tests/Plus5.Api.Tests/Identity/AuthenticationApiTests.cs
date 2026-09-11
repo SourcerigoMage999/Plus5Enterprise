@@ -188,6 +188,16 @@ public sealed class AuthenticationApiTests
         }
         using var groups = await GetWithCookiesAsync(client, "/api/v1/groups", cookie, csrf.Cookie);
         Assert.Equal(HttpStatusCode.OK, groups.StatusCode);
+        var candidatePath = $"/api/v1/groups/create-candidates?programId={Guid.NewGuid()}&schoolGradeId={Guid.NewGuid()}";
+        using var anonymousCandidates = await client.GetAsync(candidatePath, CancellationToken.None);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousCandidates.StatusCode);
+        using var missingCandidates = await GetWithCookiesAsync(client, candidatePath, cookie, csrf.Cookie);
+        Assert.Equal(HttpStatusCode.NotFound, missingCandidates.StatusCode);
+        foreach (var invalidQuery in new[] { "page=0", "pageSize=101", "search=" + new string('x', 101) })
+        {
+            using var invalidCandidates = await GetWithCookiesAsync(client, candidatePath + "&" + invalidQuery, cookie, csrf.Cookie);
+            Assert.Equal(HttpStatusCode.BadRequest, invalidCandidates.StatusCode);
+        }
         using var missing = await GetWithCookiesAsync(client, $"/api/v1/groups/{Guid.NewGuid()}", cookie, csrf.Cookie);
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
         var path = $"/api/v1/groups/{Guid.NewGuid()}/members/{Guid.NewGuid()}";
@@ -201,6 +211,31 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.BadRequest, invalidVersion.StatusCode);
         using var foreignWrite = await PostAsync(client, path, new { join = true, groupRowVersion = "AQ==", studentRowVersion = "Ag==" }, csrf, cookie);
         Assert.Equal(HttpStatusCode.NotFound, foreignWrite.StatusCode);
+        using var createWithoutCsrf = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "/api/v1/groups")
+        {
+            Content = JsonContent.Create(new { name = "Test create", programId = Guid.NewGuid(), schoolGradeId = Guid.NewGuid(), capacity = 6 }),
+            Headers = { { "Cookie", cookie } },
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
+        Guid createProgram;
+        Guid createGrade;
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Plus5DbContext>();
+            var owner = await db.UserAccounts.SingleAsync();
+            var grade = new Plus5.Domain.Teaching.SchoolGrade(Guid.NewGuid(), "T7", "Test grade", 7);
+            var program = new Plus5.Domain.Teaching.Program(Guid.NewGuid(), owner.Id, "Test program", DateTimeOffset.UtcNow);
+            db.AddRange(grade, program);
+            await db.SaveChangesAsync();
+            createProgram = program.Id;
+            createGrade = grade.Id;
+        }
+        using var created = await PostAsync(client, "/api/v1/groups", new { name = "Empty active", programId = createProgram, schoolGradeId = createGrade, capacity = 6 }, csrf, cookie);
+        Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        using var duplicate = await PostAsync(client, "/api/v1/groups", new { name = "Empty active", programId = createProgram, schoolGradeId = createGrade, capacity = 6 }, csrf, cookie);
+        Assert.Equal(HttpStatusCode.Conflict, duplicate.StatusCode);
+        using var badMembers = await PostAsync(client, "/api/v1/groups", new { name = "Bad", programId = createProgram, schoolGradeId = createGrade, capacity = 6, members = new[] { new { studentId = Guid.NewGuid(), rowVersion = "not-base64" } } }, csrf, cookie);
+        Assert.Equal(HttpStatusCode.BadRequest, badMembers.StatusCode);
     }
 
     [Fact]
@@ -265,6 +300,8 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         builder.Services.AddScoped<IStudentEditingService, EfStudentEditingService>();
         builder.Services.AddScoped<IGroupQuery, EfGroupQuery>();
+        builder.Services.AddScoped<IGroupCreationQuery, EfGroupCreationQuery>();
+        builder.Services.AddScoped<IGroupCreationService, EfGroupCreationService>();
         builder.Services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>

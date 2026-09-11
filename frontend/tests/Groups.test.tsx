@@ -35,7 +35,7 @@ describe('group screen', () => {
     expect(screen.getByRole('link', { name: 'Ana Anić' }).querySelector('.groups-student-avatar')).toHaveAttribute('aria-hidden', 'true')
     expect(screen.getAllByText('Nije dostupno')).toHaveLength(2)
     expect(screen.queryByText(/\d+\s*%/)).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '+ Nova grupa' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: '+ Nova grupa' })).toHaveAttribute('href', '/students/groups/new')
     fireEvent.click(screen.getByRole('tab', { name: 'Raspored' }))
     expect(await screen.findByText('Nema nadolazećih termina.')).toBeInTheDocument()
     fireEvent.keyDown(screen.getByRole('tab', { name: 'Raspored' }), { key: 'ArrowRight' })

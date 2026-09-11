@@ -44,7 +44,7 @@ public sealed class EfGroupQuery(Plus5DbContext db, TimeProvider clock) : IGroup
                    entry.RowVersion,
                    db.RecurringSessionSeries.AsNoTracking()
                        .Where(series => series.TeacherAccountId == owner && series.GroupId == entry.Id
-                           && series.StartsOn <= today && series.EndsOn >= today)
+                           && series.StartsOn <= today && (series.EndsOn == null || series.EndsOn >= today))
                        .OrderBy(series => series.DayOfWeek).ThenBy(series => series.LocalStartTime).ThenBy(series => series.Id)
                        .Take(14)
                        .Select(series => new GroupSlot((int)series.DayOfWeek, series.LocalStartTime, series.LocalEndTime,

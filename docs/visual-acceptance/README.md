@@ -1,5 +1,11 @@
 # Visual acceptance
 
+## Phase 3.6 — Nova grupa
+
+[Finalni canonical pregled, stvarni create journey i iznimke](phase-3.6/README.md).
+Interni desktop/mobile gate PASS; završni SA review čeka. Pripremni PARTIAL dokazi
+ostaju jasno odvojeni od završnog pregleda.
+
 ## Phase 1.7 — DS-001 alignment — PASS (2026-09-11)
 
 Prihvaćeni ADR-0014 provjeren je u stvarnoj aplikaciji: login, shell i ekrani 3.1–3.5

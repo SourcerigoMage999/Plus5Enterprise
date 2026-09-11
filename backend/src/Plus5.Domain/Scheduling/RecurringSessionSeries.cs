@@ -16,7 +16,7 @@ public sealed class RecurringSessionSeries
         Guid contextId,
         DayOfWeek dayOfWeek,
         DateOnly startsOn,
-        DateOnly endsOn,
+        DateOnly? endsOn,
         TimeOnly localStartTime,
         TimeOnly localEndTime,
         string timeZoneId,
@@ -64,7 +64,7 @@ public sealed class RecurringSessionSeries
     public Guid? StudentId { get; private set; }
     public DayOfWeek DayOfWeek { get; private set; }
     public DateOnly StartsOn { get; private set; }
-    public DateOnly EndsOn { get; private set; }
+    public DateOnly? EndsOn { get; private set; }
     public TimeOnly LocalStartTime { get; private set; }
     public TimeOnly LocalEndTime { get; private set; }
     public string TimeZoneId { get; private set; } = string.Empty;
@@ -84,7 +84,7 @@ public sealed class RecurringSessionSeries
             throw new InvalidOperationException("Series has already been superseded.");
         }
 
-        if (finalEffectiveDate < StartsOn || finalEffectiveDate > EndsOn)
+        if (finalEffectiveDate < StartsOn || (EndsOn.HasValue && finalEffectiveDate > EndsOn.Value))
         {
             throw new ArgumentOutOfRangeException(nameof(finalEffectiveDate));
         }
@@ -111,9 +111,9 @@ public sealed class RecurringSessionSeries
         }
     }
 
-    private static void EnsureDateRange(DateOnly startsOn, DateOnly endsOn)
+    private static void EnsureDateRange(DateOnly startsOn, DateOnly? endsOn)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(endsOn, startsOn);
+        if (endsOn.HasValue) ArgumentOutOfRangeException.ThrowIfLessThan(endsOn.Value, startsOn);
     }
 
     private static void EnsureTimeRange(TimeOnly start, TimeOnly end)
