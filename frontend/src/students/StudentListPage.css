@@ -209,6 +209,8 @@
 }
 
 .student-table-wrap {
+  /* Contain the absolutely positioned accessible column label inside the scroll region. */
+  position: relative;
   overflow-x: auto;
 }
 
@@ -299,18 +301,18 @@
 }
 
 .student-status--active {
-  color: #16613f;
-  background: #e5f6ed;
+  color: var(--ds-status-positive-text);
+  background: var(--ds-status-positive-bg);
 }
 
 .student-status--on_hold {
-  color: #7a5700;
-  background: var(--color-accent-100);
+  color: var(--ds-status-warning-text);
+  background: var(--ds-status-warning-bg);
 }
 
 .student-status--inactive {
-  color: var(--color-text-secondary);
-  background: var(--color-brand-50);
+  color: var(--ds-status-neutral-text);
+  background: var(--ds-status-neutral-bg);
 }
 
 .student-neutral-value {

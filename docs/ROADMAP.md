@@ -68,12 +68,24 @@ ROADMAP je **izvršni redoslijed razvoja**, a ne samo popis featurea. Svaka podf
 
 **Dovršeno 2026-08-24:** implementiran je isključivo Teacher account lifecycle: javna registracija, obavezna potvrda e-maila, login/logout, forgot/reset/change password, revocable server-side cookie sesije, CSRF, rate limiting i deny-by-default authorization. Dodani su potpuni auth UI flowovi bez browser token storagea, SQL migracije za identity/session/token podatke i trajni shared Data Protection key ring koji izvan Developmenta zahtijeva zaštitu certifikatom. Release build, 86 backend i 13 frontend testova, format/lint/typecheck, dependency auditi, EF migration provjere, desktop/mobile browser review te čisti non-root Docker runtime prolaze.
 
-## 1.7 DS-001 token and component alignment audit — TODO
+## 1.7 DS-001 token and component alignment audit — DONE
 
 Usporediti `source_specs/DESIGN_SYSTEM_DS001.md`, UI kit, postojeće tokene i dovršene
 canonical PNG acceptance dokaze. Zaključati semantički token mapping, primary/secondary/
 danger pravila, status komponentu i regression postupak. Ne provoditi masovni restyle bez
 desktop/mobile ponovne provjere. Ovaj audit je preduvjet sljedećeg novog business UI ekrana.
+
+**Audit 2026-09-11:** uspoređeni su UI kit, canonical Grupe PNG, prihvaćene desktop/mobile
+snimke i postojeći CSS. Nalazi, predloženi token mapping, status/action contract i regression
+postupak zapisani su u [DESIGN_SYSTEM_ALIGNMENT.md](DESIGN_SYSTEM_ALIGNMENT.md).
+**Odluka 2026-09-11 — ADR-0014:** vlasnik prihvatio semantičko proširenje uz canonical
+screen iznimke i 204 px shell. Pitanje 21 je riješeno. DS tokeni, opt-in stilovi i zajednička
+status komponenta su implementirani; završni status ovisi o obaveznom regression gateu.
+**Dovršeno 2026-09-11:** DS tokeni i opt-in action/card/status stilovi, zajednički
+StatusBadge i canonical iznimke su implementirani. Ispravljen mobilni overflow popisa
+učenika. 29 frontend testova, lint/typecheck/build, Docker runtime i 25 desktop/mobile
+snimki prolaze. [Visual gate](visual-acceptance/phase-1.7/README.md): canonical comparison,
+desktop comparison i mobile adaptation PASS uz zapisane iznimke. Phase 3.6 nije započeta.
 
 ---
 

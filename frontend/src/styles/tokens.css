@@ -1,4 +1,43 @@
 :root {
+  /* DS-001 defaults. Accepted screen/shell tokens below remain canonical exceptions (ADR-0014). */
+  --ds-color-brand: #0f4d80;
+  --ds-color-yellow: #f8b91b;
+  --ds-color-attention: #e84a1c;
+  --ds-color-success: #22c55e;
+  --ds-text: #2c2c2c;
+  --ds-text-muted: #6b7280;
+  --ds-border: #e5e7eb;
+  --ds-canvas: #f7f8fa;
+  --ds-surface: #ffffff;
+  --ds-action-primary-bg: var(--ds-color-yellow);
+  --ds-action-primary-text: var(--ds-color-brand);
+  --ds-action-secondary-bg: var(--ds-surface);
+  --ds-action-secondary-text: var(--ds-color-brand);
+  --ds-action-secondary-border: var(--ds-color-brand);
+  /* Darker danger text preserves contrast; orange is an attention indicator, not body text. */
+  --ds-action-danger-bg: #fff3f1;
+  --ds-action-danger-text: #8f312a;
+  --ds-action-danger-border: #ad3c34;
+  --ds-status-positive-bg: #e5f6ed;
+  --ds-status-positive-text: #16613f;
+  --ds-status-warning-bg: #fff8d8;
+  --ds-status-warning-text: #7a5700;
+  --ds-status-neutral-bg: #f1f5f9;
+  --ds-status-neutral-text: #53647e;
+  --ds-heading-1-size: 2rem;
+  --ds-heading-2-size: 1.25rem;
+  --ds-heading-3-size: 1rem;
+  --ds-heading-weight: 700;
+  --ds-subheading-weight: 600;
+  --ds-body-size: 0.875rem;
+  --ds-caption-size: 0.75rem;
+  --ds-card-radius: 0.75rem;
+  --ds-card-padding: 1.25rem;
+  --ds-card-shadow: 0 4px 12px rgb(15 77 128 / 8%);
+  --ds-table-header-bg: #f1f5f9;
+  --ds-quick-action-height: 3rem;
+  --ds-icon-stroke-width: 2;
+
   --color-brand-50: #f1f5f9;
   --color-brand-700: #064b96;
   --color-brand-800: #063c78;

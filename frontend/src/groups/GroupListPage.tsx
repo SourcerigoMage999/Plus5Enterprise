@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { StatusBadge } from '../ui/StatusBadge.tsx'
 import { Link, useSearchParams } from 'react-router'
 import { changeMembership, useGroupResource } from './groupsApi.ts'
 import type { Group, GroupSession, GroupStudent, Overview, Page, Slot } from './groupsApi.ts'
@@ -163,7 +164,7 @@ function Schedule({ group, revision }: { group: Group; revision: number }) {
 function Stat({ icon, label, value, note }: { icon: string; label: string; value: number; note: string }) {
   return <article className={`groups-stat groups-stat--${icon}`}><span className="groups-stat-icon"><Icon kind={icon} /></span><div><h2>{label}</h2><strong>{value}</strong><p>{note}</p></div></article>
 }
-function Status({ group }: { group: Group }) { return <span className={`groups-status groups-status--${group.status}`}>{statuses[group.status]}</span> }
+function Status({ group }: { group: Group }) { return <StatusBadge className={`groups-status groups-status--${group.status}`} label={statuses[group.status]} tone={group.status === 'active' ? 'positive' : group.status === 'on_hold' ? 'warning' : 'neutral'} /> }
 function Message({ error, retry, loading }: { error?: string; retry: () => void; loading?: string }) { return <div className="groups-message" role={error ? 'alert' : 'status'}>{error ? <><p>{error}</p><button onClick={retry}>Pokušaj ponovno</button></> : loading}</div> }
 function Pager({ page, label, onPage, disabled = false }: { page: { page: number; pageSize: number; totalCount: number; totalPages: number }; label: string; onPage: (value: number) => void; disabled?: boolean }) {
   return <nav className="groups-pager" aria-label={`Stranice ${label}`}><small>Prikazano {page.totalCount && (page.page - 1) * page.pageSize < page.totalCount ? (page.page - 1) * page.pageSize + 1 : 0}–{Math.min(page.page * page.pageSize, page.totalCount)} od {page.totalCount} {label}</small><div><button aria-label={`Prethodna stranica ${label}`} disabled={disabled || page.page <= 1} onClick={() => onPage(page.page - 1)}>‹</button><span>{page.page}</span><button aria-label={`Sljedeća stranica ${label}`} disabled={disabled || page.page >= page.totalPages} onClick={() => onPage(page.page + 1)}>›</button></div></nav>

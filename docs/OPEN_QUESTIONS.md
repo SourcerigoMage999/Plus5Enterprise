@@ -31,8 +31,10 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
     dobna granica, deaktivacija, brisanje, retention, anonimizacija i Guardian control?
 20. **BR-TM-01/02 Teacher marketplace:** postoje li recenzije/reputation te što znači
     verificirani Teacher, tko verificira i koji dokaz/status lifecycle vrijedi?
-21. Kako DS-001 `#f8b91b` / `#0f4d80`, žuti primary action i narančasti warning mapirati
-    na postojeće tokene i canonical PNG-ove bez regresije dovršenih ekrana?
+21. **RIJEŠENO 2026-09-11 — ADR-0014:** vlasnik prihvatio DS-001 kao osnovu uz
+    canonical screen iznimke i očuvanje 204 px shella. Semantičko proširenje i postupna
+    primjena zamjenjuju globalni restyle. [DESIGN_SYSTEM_ALIGNMENT.md](DESIGN_SYSTEM_ALIGNMENT.md)
+    definira mapping i obavezni regression gate; 1.7 završava tek nakon izvršenih provjera.
 22. Koji su privacy, audit i model-improvement contracti za Lesson Builder tvrdnju da AI
     pamti Teacherove prihvaćene, uređene i odbijene prijedloge?
 

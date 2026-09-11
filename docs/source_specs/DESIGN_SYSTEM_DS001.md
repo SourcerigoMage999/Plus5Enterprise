@@ -59,3 +59,11 @@ canonical screen PNG-ove i postojeće tokene; odlučiti jesu li DS vrijednosti g
 zamjena ili semantičko proširenje. Ne raditi masovni restyle dovršenih ekrana bez novog
 visual regression pregleda. Security, accessibility i destructive-action semantika imaju
 prednost nad čistom bojom gumba.
+
+## Projektna odluka nakon audita — 2026-09-11
+
+ADR-0014 prihvaća DS-001 kao semantičku osnovu uz canonical screen iznimke i postojeći
+204 px shell. Ovo je projektni resolution, ne promjena izvornog DS sadržaja iznad.
+Mapping i pravila: [DESIGN_SYSTEM_ALIGNMENT.md](../DESIGN_SYSTEM_ALIGNMENT.md).
+Obavezni Phase 1.7 [visual regression](../visual-acceptance/phase-1.7/README.md) izvršen je
+na desktopu i mobitelu; odluka ne zahtijeva globalni restyle dovršenih ekrana.

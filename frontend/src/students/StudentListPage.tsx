@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { ApiError } from '../api/apiClient.ts'
+import { StatusBadge } from '../ui/StatusBadge.tsx'
 import {
   getStudentOverview,
   getStudents,
@@ -370,7 +371,7 @@ function StudentIdentity({ student }: { readonly student: StudentListItem }) {
 }
 
 function StudentStatusBadge({ status }: { readonly status: StudentStatus }) {
-  return <span className={`student-status student-status--${status}`}>{statusLabel(status)}</span>
+  return <StatusBadge className={`student-status student-status--${status}`} label={statusLabel(status)} tone={status === 'active' ? 'positive' : status === 'on_hold' ? 'warning' : 'neutral'} />
 }
 
 function StudentOverview({ overview, loading }: {

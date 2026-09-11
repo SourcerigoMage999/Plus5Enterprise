@@ -1,5 +1,12 @@
 # Visual acceptance
 
+## Phase 1.7 — DS-001 alignment — PASS (2026-09-11)
+
+Prihvaćeni ADR-0014 provjeren je u stvarnoj aplikaciji: login, shell i ekrani 3.1–3.5
+na 1536×1024 i 390×844. Novi dokazi uključuju aktualni logo, ispravku mobilnog overflowa,
+potvrde, tabove i prazna stanja. [Rezultati i 25 snimki](phase-1.7/README.md).
+Povijesni zapisi niže ostaju dokazi svojih tadašnjih buildova.
+
 ## Phase 3.1 — Student list
 
 ## Source

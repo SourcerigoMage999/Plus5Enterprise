@@ -90,11 +90,13 @@ Feature faze moraju zadržati ove landmarke i dodati specifično loading/empty/e
 
 ## DS 001 source refresh
 
-Novi `source_specs/DESIGN_SYSTEM_DS001.md` uvodi odobreni poslovni design source i UI kit,
-ali njegove boje nisu identične postojećim zaključanim tokenima niti svim canonical screen
-PNG-ovima. Phase 1.7 mora prije sljedećeg novog poslovnog UI ekrana odlučiti token mapping
-i napraviti visual regression pregled. Do tada postojeći tokeni ostaju aktivni baseline;
-nema parcijalnog masovnog restylea dovršenih ekrana.
+ADR-0014 (2026-09-11, izričito prihvaćeno) uvodi DS-001 semantičke `--ds-*` defaulte
+uz canonical screen iznimke. Postojeći `--color-*` baseline, 204 px shell i mobilna
+navigacija ostaju očuvani. `src/ui/designSystem.css` daje opt-in action/card/status stilove;
+`StatusBadge` prima label i presentation tone bez poslovne logike ili live-region semantike.
+Screen klase eksplicitno čuvaju prihvaćeni izgled. Novi ekran koristi DS default osim
+dokumentirane canonical iznimke; vizualni regression iz [alignment contracta](DESIGN_SYSTEM_ALIGNMENT.md)
+obavezan je prije završetka Phase 1.7 i početka sljedećeg business UI ekrana.
 
 ## Component-test temelj
 

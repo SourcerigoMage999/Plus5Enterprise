@@ -1,0 +1,266 @@
+{
+  "browser": "152.0.4191.66",
+  "screens": [
+    {
+      "name": "login",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "Prijava za učitelje",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "students",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "Popis učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "student-cards",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "Popis učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "dossier",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "Milica Krmpotić",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "edit",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "2.6 Uredi učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "archive-confirmation",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "2.6 Uredi učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "create",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "Novi učenik",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "groups",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "schedule-empty",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "membership-confirmation",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "groups-empty",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "login",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Prijava za učitelje",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "students",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Popis učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "students-actions",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Popis učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "student-cards",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Popis učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "dossier",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Milica Krmpotić",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "dossier-actions",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Milica Krmpotić",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "edit",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.6 Uredi učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "archive-confirmation",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.6 Uredi učenika",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "create",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "Novi učenik",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "groups",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "schedule-empty",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "groups-actions",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "membership-confirmation",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    },
+    {
+      "name": "groups-empty",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "heading": "2.7 Grupe",
+      "css": [
+        "/assets/index-DwqeRQ7w.css"
+      ]
+    }
+  ],
+  "interactions": [
+    "desktop: empty create native validation; no save; archive cancelled",
+    "desktop: group tab keyboard navigation PASS",
+    "desktop: membership confirmation cancelled; no write",
+    "desktop: empty group filter PASS",
+    "mobile: empty create native validation; no save; archive cancelled",
+    "mobile: group tab keyboard navigation PASS",
+    "mobile: membership confirmation cancelled; no write",
+    "mobile: empty group filter PASS"
+  ],
+  "errors": []
+}

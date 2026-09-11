@@ -127,6 +127,14 @@ Tehnološki baseline za Phase 0.3 zaključan je kroz Accepted ADR-0001–ADR-000
 - **Posljedice:** feature write ne smije postojati bez transakcije, active-count provjere i concurrency conflict mappinga. Student može imati više povijesnih, ali samo jedno aktivno članstvo. Raspored i location nisu Group stupci. Promjena Group Programa s aktivnim članovima ostaje zaseban product gate.
 - **Alternative:** GroupId izravno na Studentu bez povijesti, više aktivnih grupa po Studentu, cascade/hard delete, stored active-member counter, DB trigger, implicitni DeliveryMode, Group-owned kopije Student podataka i preuranjeni schedule model nisu prihvaćeni.
 
+### ADR-0014 — DS-001 semantic defaults i canonical screen iznimke
+- **Datum:** 2026-09-11
+- **Status:** Accepted — vlasnik projekta izričito prihvatio pristup i obavezni regression gate faze 1.7.
+- **Odluka:** DS-001 je osnova za semantičke tokene i nove komponente. Canonical screen PNG određuje layout i dopušta eksplicitno dokumentirane iznimke (uključujući plave glavne akcije). Prihvaćeni shell ostaje 204 px s postojećom mobilnom navigacijom. Postojeći ekrani prelaze na zajedničke tokene postupno, uz ponovni visual acceptance.
+- **Posljedice:** postojeći `--color-*` i lokalni screen stilovi čine popis iznimaka u `DESIGN_SYSTEM_ALIGNMENT.md`; novi `--ds-*` defaulti ne prepisuju ih globalno. Shared StatusBadge prima presentation tone i domenski label; administrativni status ne postaje readiness. Danger, upozorenje, disabled stanje i autorizacija ostaju zasebne semantike.
+- **Acceptance:** obavezni frontend test/lint/build, stvarni login i ekrani 3.1–3.5 na desktopu i mobitelu, canonical usporedba, novi dokazi i popis odstupanja. Odluka rješava pitanje 21, ali sama ne označava 1.7 DONE.
+- **Alternativa:** globalni DS restyle svih dovršenih ekrana nije odabran.
+
 ### ADR-0013 — Versioned weekly series, materialized Session instances i explicit exceptions
 - **Datum:** 2026-08-28
 - **Status:** Accepted

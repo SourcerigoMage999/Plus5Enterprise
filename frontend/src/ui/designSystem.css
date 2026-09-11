@@ -1,0 +1,27 @@
+/* Opt-in defaults. Canonical screen classes remain explicit visual exceptions. */
+.ds-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--ds-card-radius);
+  font: inherit;
+  font-weight: var(--ds-subheading-weight);
+  text-decoration: none;
+  cursor: pointer;
+}
+.ds-action--primary { color: var(--ds-action-primary-text); background: var(--ds-action-primary-bg); }
+.ds-action--secondary { color: var(--ds-action-secondary-text); background: var(--ds-action-secondary-bg); border-color: var(--ds-action-secondary-border); }
+.ds-action--danger { color: var(--ds-action-danger-text); background: var(--ds-action-danger-bg); border-color: var(--ds-action-danger-border); }
+.ds-action:hover:not(:disabled) { text-decoration: underline; }
+.ds-action:disabled { cursor: not-allowed; opacity: .55; }
+.ds-action:focus-visible { outline: 3px solid var(--ds-color-brand); outline-offset: 3px; }
+
+.ds-card { background: var(--ds-surface); border: 1px solid var(--ds-border); border-radius: var(--ds-card-radius); padding: var(--ds-card-padding); box-shadow: var(--ds-card-shadow); }
+.ds-status { display: inline-block; padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); font-size: var(--ds-caption-size); line-height: 1.4; white-space: nowrap; }
+.ds-status[data-tone='positive'] { color: var(--ds-status-positive-text); background: var(--ds-status-positive-bg); }
+.ds-status[data-tone='warning'] { color: var(--ds-status-warning-text); background: var(--ds-status-warning-bg); }
+.ds-status[data-tone='neutral'] { color: var(--ds-status-neutral-text); background: var(--ds-status-neutral-bg); }

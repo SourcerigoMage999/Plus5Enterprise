@@ -30,6 +30,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 
 ## Phase evidence
 
+- [DESIGN_SYSTEM_ALIGNMENT.md](DESIGN_SYSTEM_ALIGNMENT.md) sadrži Phase 1.7 audit i
+  prihvaćeni ADR-0014 mapping, canonical iznimke i obavezni regression gate.
+
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.
 
