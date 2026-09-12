@@ -223,6 +223,7 @@
   color: #153a5c;
   font: inherit;
   text-align: left;
+  text-decoration: none;
 }
 
 .schedule-event strong,
@@ -412,7 +413,8 @@
 .schedule-reminders ul { display: grid; gap: 0.45rem; margin: 0.6rem 0 0.35rem; padding: 0; list-style: none; }
 .schedule-reminders li { display: grid; grid-template-columns: 1.7rem 1fr; align-items: center; gap: 0.4rem; }
 .schedule-reminder-icon { display: grid; width: 1.7rem; height: 1.7rem; place-items: center; border-radius: 0.3rem; font-size: 0.7rem; }
-.schedule-reminders li button { display: grid; min-width: 0; gap: 0.08rem; padding: 0; border: 0; color: #294967; background: transparent; font: inherit; text-align: left; }
+.schedule-reminders li button,
+.schedule-reminders li a { display: grid; min-width: 0; gap: 0.08rem; padding: 0; border: 0; color: #294967; background: transparent; font: inherit; text-align: left; text-decoration: none; }
 .schedule-reminders li small { color: #7a8b9b; font-size: 0.53rem; }
 .schedule-reminders li strong { overflow: hidden; font-size: 0.63rem; text-overflow: ellipsis; white-space: nowrap; }
 .schedule-reminders > p { color: #718397; font-size: 0.62rem; }

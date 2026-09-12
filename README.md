@@ -109,6 +109,10 @@ Program/grade/level/curriculum granice nalaze se u [`docs/CORE_TEACHING_FOUNDATI
 
 Student list API/UI contract, filteri i neutralni progress boundary nalaze se u [`docs/STUDENT_LIST.md`](docs/STUDENT_LIST.md).
 
+Group create/edit i Schedule read contracti nalaze se u [`docs/GROUP_CREATION.md`](docs/GROUP_CREATION.md),
+[`docs/GROUP_EDITING.md`](docs/GROUP_EDITING.md), [`docs/SCHEDULE_CALENDAR.md`](docs/SCHEDULE_CALENDAR.md)
+i [`docs/SESSION_DETAIL.md`](docs/SESSION_DETAIL.md).
+
 ## Struktura
 
 ```text

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { addDays, formatDayHeader, monthGrid, monthLabel, sessionLocal, shiftMonth } from './calendarDate.ts'
 import type { ScheduleCalendar } from './scheduleApi.ts'
 import { scheduleTone } from './scheduleTone.ts'
@@ -52,7 +53,7 @@ export function ScheduleCalendarSidebar({
     <section className="ds-card schedule-reminders"><h2>Podsjetnici</h2>{calendar.reminders.length ? <ul>{calendar.reminders.map(item => {
       const local = sessionLocal(item.startsAtUtc, calendar.timeZoneId)
       const when = local.date === today ? `Danas u ${local.time}` : local.date === addDays(today, 1) ? `Sutra u ${local.time}` : `${formatDayHeader(local.date).date} u ${local.time}`
-      return <li key={item.id}><span className={`schedule-reminder-icon schedule-event--${scheduleTone(item)}`} aria-hidden="true">▣</span><button type="button" disabled title="Detalj termina dolazi u Phase 4.2."><small>{when}</small><strong>{item.contextName}</strong></button></li>
+      return <li key={item.id}><span className={`schedule-reminder-icon schedule-event--${scheduleTone(item)}`} aria-hidden="true">▣</span><Link to={`/schedule/${item.id}`}><small>{when}</small><strong>{item.contextName}</strong></Link></li>
     })}</ul> : <p>Nema nadolazećih termina.</p>}<button type="button" disabled title="Centar podsjetnika ovisi o budućem notification contractu.">Pogledaj sve podsjetnike <span aria-hidden="true">→</span></button></section>
     <p className="schedule-zone">◷ Vrijeme prikaza: {calendar.timeZoneId}</p>
   </aside>

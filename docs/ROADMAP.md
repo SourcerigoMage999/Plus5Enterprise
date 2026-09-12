@@ -187,7 +187,7 @@ Commit `dd5ffb1` pushan je na `main`; nastavak na Phase 4 odobren je 2026-09-12.
 
 # PHASE 4 — Schedule
 
-## 4.1 Screen 3.1 Calendar — DONE — čeka završni SA review
+## 4.1 Screen 3.1 Calendar — DONE
 
 **Dovršeno 2026-09-12:** owner-scoped read-only `GET /api/v1/schedule`, bounded lokalni
 date range u `Europe/Zagreb`, Group/Program/Location filtri, tjedni/dnevni URL flow,
@@ -196,8 +196,23 @@ metrike. Canonical desktop/mobile week/day visual gate prolazi sa stvarnim Sessi
 document overflowa. Release build, 141 backend/SQL, 4 architecture i 46 frontend testova,
 format/lint/build, auditi i Docker health/non-root runtime prolaze. Contract:
 `SCHEDULE_CALENDAR.md`; završni audit: `summaries/PHASE_4.1_SCHEDULE_CALENDAR_SUMMARY.md`.
-Nema nove migracije/dependencyja ni Session writea; 4.2 nije započeta.
-## 4.2 Screen 3.2 Session detail — TODO
+Nema nove migracije/dependencyja ni Session writea.
+
+**Završni SA review: APPROVED — 2026-09-12.**
+
+## 4.2 Screen 3.2 Session detail — DONE
+
+**Dovršeno 2026-09-12:** Teacher-only `GET /api/v1/schedule/{sessionId}`, privacy-preserving
+404, group/individual context, temporalni roster na početku Sessiona, dossier/group/calendar
+linkovi, canonical status/bilješka/povijest i pošteno zaključane LessonPlan, attendance,
+materials, homework, notification i write zone. Calendar kartice i podsjetnici otvaraju detalj.
+Canonical desktop/mobile gate prolazi sa stvarnim Sessionom, 0 browser grešaka i bez document
+overflowa. Contract: `SESSION_DETAIL.md`; završni audit:
+`summaries/PHASE_4.2_SESSION_DETAIL_SUMMARY.md`. Nema migracije, dependencyja ni writea; 4.3
+nije započeta.
+
+**Završni SA approval: APPROVED — 2026-09-12.**
+
 ## 4.3 Screen 3.3 Create session — TODO
 ## 4.4 Screen 3.4 Edit session — TODO
 ## 4.5 Recurrence/series consistency tests — TODO

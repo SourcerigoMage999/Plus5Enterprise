@@ -230,3 +230,12 @@ mini-kalendar, filtri, precizne summary metrike, stvarni termini i zaključane b
 Nema browser grešaka ni document overflowa; mobilni tjedni grid pomiče se samo lokalno.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-4.1/README.md).
+
+## Phase 4.2 — Session detail — PASS (2026-09-12)
+
+Canonical Screen 3.2 uspoređen je sa stvarnim owner-scoped Session detaljem na desktopu
+1536×1024 i mobitelu 390×844. Potvrđeni su Calendar → detail flow, temporalni roster,
+Group/Student linkovi, status i neutralne buduće zone. Nema browser grešaka ni document
+overflowa; široki roster pomiče se samo lokalno.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-4.2/README.md).

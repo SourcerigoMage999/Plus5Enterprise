@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`
 
 ## Source snapshotovi
 
@@ -41,6 +41,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_4.1_SCHEDULE_CALENDAR_SUMMARY.md](summaries/PHASE_4.1_SCHEDULE_CALENDAR_SUMMARY.md) i
   [phase-4.1 visual acceptance](visual-acceptance/phase-4.1/README.md) sadrže završni
   owner-scoped calendar, SQL-metrics i canonical week/day desktop/mobile dokaz.
+- [PHASE_4.2_SESSION_DETAIL_SUMMARY.md](summaries/PHASE_4.2_SESSION_DETAIL_SUMMARY.md) i
+  [phase-4.2 visual acceptance](visual-acceptance/phase-4.2/README.md) sadrže owner-scoped
+  Session detail, temporalni roster i canonical desktop/mobile dokaz.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

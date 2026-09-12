@@ -1,0 +1,33 @@
+{
+  "screens": [
+    {
+      "name": "session-detail",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "participantRegionClient": 511,
+      "participantRegionScroll": 511,
+      "participantCount": 1
+    },
+    {
+      "name": "session-detail",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "participantRegionClient": 311,
+      "participantRegionScroll": 496,
+      "participantCount": 1
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "desktop: canonical hierarchy, real session/context/participants, disabled future writes, no document overflow",
+    "mobile: canonical hierarchy, real session/context/participants, disabled future writes, no document overflow"
+  ],
+  "data": {
+    "sessionId": "36547e35-1b3f-4533-b435-a44122453c1c",
+    "contextName": "Grupa 3.6 desktop mtx2v22d",
+    "discoveredItems": 2,
+    "timeZoneId": "Europe/Zagreb"
+  }
+}

@@ -40,6 +40,7 @@ describe('schedule calendar', () => {
     expect(screen.getByRole('button', { name: '+ Novi termin' })).toBeDisabled()
     expect(screen.getByRole('region', { name: /Kalendar termina/ })).toHaveAttribute('tabindex', '0')
     expect(screen.getAllByText('B1 Teens')).not.toHaveLength(0)
+    expect(screen.getByRole('link', { name: /Otvori detalj termina B1 Teens/ })).toHaveAttribute('href', '/schedule/session-1')
     expect(screen.getByText('Ana Anić')).toBeInTheDocument()
     expect(screen.getByText('Jedinstvenih učenika').parentElement).toHaveTextContent('5')
     expect(screen.getByText('Planiranih dolazaka').parentElement).toHaveTextContent('5')

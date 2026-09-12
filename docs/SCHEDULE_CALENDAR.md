@@ -23,9 +23,9 @@ Phase 4.1 je owner-scoped read-only pregled postojećih `Session` zapisa:
   canonical zapisa
 - raspored se ne duplicira u zasebnu calendar tablicu niti se iz URL-a izvodi ownership
 
-`+ Novi termin`, klik na termin, detaljni izvještaj i centar podsjetnika pripadaju kasnijim
-fazama. Kontrole mogu biti vizualno prisutne prema canonical PNG-u, ali moraju biti stvarno
-onemogućene i objasniti granicu; ne smiju biti inertni lažni uspjeh.
+`+ Novi termin`, detaljni izvještaj i centar podsjetnika pripadaju kasnijim fazama. Phase 4.2
+aktivira klik na termin i pojedini podsjetnik kao stvaran link na `/schedule/:sessionId` prema
+`SESSION_DETAIL.md`; ostale kontrole ostaju stvarno onemogućene.
 
 ## API
 
@@ -102,6 +102,6 @@ Prije Phase 4.1 completiona obavezno je dokazati:
 
 ## Izvan Phase 4.1
 
-Session detail, create/edit, “samo ovaj termin” ili buduća serija, recurrence replenishment,
+Session create/edit, “samo ovaj termin” ili buduća serija, recurrence replenishment,
 conflict override, notification delivery, izvještaji, attendance evidence, Knowledge Model i
 nova migracija nisu dio ove faze.

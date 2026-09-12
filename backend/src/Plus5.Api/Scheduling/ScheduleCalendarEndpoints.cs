@@ -12,12 +12,28 @@ public static class ScheduleCalendarEndpoints
     {
         ArgumentNullException.ThrowIfNull(endpoints);
 
-        endpoints.MapVersionOneApi()
+        var group = endpoints.MapVersionOneApi()
             .MapGroup("/schedule")
-            .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy)
-            .MapGet("/", GetAsync);
+            .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
+        group.MapGet("/", GetAsync);
+        group.MapGet("/{sessionId:guid}", DetailAsync);
 
         return endpoints;
+    }
+
+    private static async Task<IResult> DetailAsync(
+        Guid sessionId,
+        HttpContext context,
+        IScheduleSessionDetailQuery query,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var owner, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var item = await query.GetAsync(owner, sessionId, cancellationToken);
+        return item is null ? TypedResults.NotFound() : TypedResults.Ok(item);
     }
 
     private static async Task<IResult> GetAsync(

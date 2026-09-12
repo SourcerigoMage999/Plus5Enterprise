@@ -66,7 +66,9 @@ Phase 3.7 ponovno koristi isti službeni dirty-navigation adapter na
 
 Phase 4.1 zamjenjuje foundation `/schedule` stvarnim Screen 3.1 calendar routeom. Datum,
 week/day i filtri ostaju URL navigation state; responsive tjedni grid ima lokalni scroll i ne
-uvodi globalni calendar store. Detalj i write kontrole ostaju onemogućeni do Phase 4.2–4.4.
+uvodi globalni calendar store. Phase 4.2 dodaje deep-linkable `/schedule/:sessionId` read-only
+detalj s povratkom na datum, Group/Student vezama i lokalno pomičnim rosterom. Write kontrole
+ostaju onemogućene do Phase 4.3–4.4 i kasnijih domain gateova.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { Link } from 'react-router'
 import { formatDayHeader, rangeDays, sessionLocal, type CalendarView } from './calendarDate.ts'
 import type { ScheduleItem } from './scheduleApi.ts'
 import { scheduleTone } from './scheduleTone.ts'
@@ -40,12 +41,12 @@ export function ScheduleCalendarGrid({
             const top = Math.max(0, (item.startMinutes - startHour * 60) / 60 * hourHeight)
             const duration = Math.max(30, item.endMinutes - item.startMinutes)
             const style = { top, height: Math.max(34, duration / 60 * hourHeight - 3) }
-            return <button key={item.id} type="button" className={`schedule-event schedule-event--${scheduleTone(item)}`} style={style} disabled title="Detalj termina dolazi u Phase 4.2.">
+            return <Link key={item.id} className={`schedule-event schedule-event--${scheduleTone(item)}`} style={style} to={`/schedule/${item.id}`} aria-label={`Otvori detalj termina ${item.contextName}, ${item.localStart} do ${item.localEnd}`}>
               <strong>{item.deliveryMode === 2 ? item.contextName : 'Individualno'}</strong>
               <span>{item.localStart} – {item.localEnd}</span>
               <small>{item.deliveryMode === 1 ? item.contextName : item.locationName ?? (item.online ? 'Online' : 'Bez lokacije')}</small>
               {item.deliveryMode === 2 && <small>{item.memberCount}/{item.capacity} učenika</small>}
-            </button>
+            </Link>
           })}
         </div>)}</div>
         {!items.length && <p className="schedule-empty">Nema termina za odabrano razdoblje i filtre.</p>}

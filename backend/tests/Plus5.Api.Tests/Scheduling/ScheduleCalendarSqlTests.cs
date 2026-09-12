@@ -36,6 +36,8 @@ public sealed class ScheduleCalendarSqlTests
             Guid locationId;
             Guid groupSessionId;
             Guid individualSessionId;
+            Guid foreignSessionId;
+            Guid groupStudentId;
 
             await using (var db = new Plus5DbContext(options))
             {
@@ -59,7 +61,7 @@ public sealed class ScheduleCalendarSqlTests
                 var futureMembership = new GroupMembership(Guid.NewGuid(), owner.Id, group.Id, futureStudent.Id, now.AddDays(2));
                 var groupSession = new Session(Guid.NewGuid(), owner.Id, DeliveryMode.Group, group.Id,
                     new(2026, 9, 14, 14, 0, 0, TimeSpan.Zero), new(2026, 9, 14, 15, 0, 0, TimeSpan.Zero),
-                    "Europe/Zagreb", now.AddDays(-1), locationId: location.Id);
+                    "Europe/Zagreb", now.AddDays(-1), title: "Present Perfect", notes: "Ponoviti nepravilne glagole.", locationId: location.Id);
                 var individualSession = new Session(Guid.NewGuid(), owner.Id, DeliveryMode.Individual, individualStudent.Id,
                     new(2026, 9, 15, 9, 0, 0, TimeSpan.Zero), new(2026, 9, 15, 9, 45, 0, TimeSpan.Zero),
                     "Europe/Zagreb", now.AddDays(-1), onlineMeetingUrl: "https://meet.example.test/borna");
@@ -85,6 +87,8 @@ public sealed class ScheduleCalendarSqlTests
                 locationId = location.Id;
                 groupSessionId = groupSession.Id;
                 individualSessionId = individualSession.Id;
+                foreignSessionId = foreignSession.Id;
+                groupStudentId = groupStudent.Id;
             }
 
             await using (var db = new Plus5DbContext(options))
@@ -118,6 +122,30 @@ public sealed class ScheduleCalendarSqlTests
                 Assert.Equal(1, filtered.Summary.UniqueStudents);
                 Assert.Equal(1, filtered.Summary.PlannedAttendances);
                 Assert.Single(filtered.Groups);
+
+                var detailQuery = new EfScheduleSessionDetailQuery(db);
+                var detail = await detailQuery.GetAsync(ownerId, groupSessionId, CancellationToken.None);
+                Assert.NotNull(detail);
+                Assert.Equal("B1 Teens", detail.ContextName);
+                Assert.Equal("Engleski B1", detail.ProgramName);
+                Assert.Equal("Calendar grade", detail.SchoolGrade);
+                Assert.Equal("Present Perfect", detail.Title);
+                Assert.Equal("Ponoviti nepravilne glagole.", detail.Notes);
+                Assert.Equal("Učionica 2", detail.LocationName);
+                Assert.Equal(3, detail.Capacity);
+                var participant = Assert.Single(detail.Participants);
+                Assert.Equal(groupStudentId, participant.Id);
+                Assert.Equal("Ana", participant.FirstName);
+
+                var individual = await detailQuery.GetAsync(ownerId, individualSessionId, CancellationToken.None);
+                Assert.NotNull(individual);
+                Assert.Equal("Borna Solo", individual.ContextName);
+                Assert.True(individual.Online);
+                Assert.Equal(individualSessionId, individual.Id);
+                Assert.Equal(individual.StudentId, Assert.Single(individual.Participants).Id);
+
+                Assert.Null(await detailQuery.GetAsync(ownerId, foreignSessionId, CancellationToken.None));
+                Assert.Null(await detailQuery.GetAsync(ownerId, Guid.NewGuid(), CancellationToken.None));
             }
         }
         finally
