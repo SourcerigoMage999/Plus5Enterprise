@@ -8,7 +8,7 @@ export function AppShell() {
   const currentPage = findNavigationItem(location.pathname)
   const { state, signOut } = useAuth()
   const navigate = useNavigate()
-  const isStudentList = currentPage?.id === 'students'
+  const usesBusinessHeader = currentPage?.id === 'students' || currentPage?.id === 'schedule'
   const teacherLabel = state.status === 'authenticated'
     ? formatTeacherLabel(state.session.email)
     : 'Teacher'
@@ -61,9 +61,9 @@ export function AppShell() {
           </div>
         </aside>
 
-        <div className={`shell-content${isStudentList ? ' shell-content--students' : ''}`}>
+        <div className={`shell-content${usesBusinessHeader ? ' shell-content--students' : ''}`}>
           <header className="shell-header">
-            {isStudentList ? (
+            {usesBusinessHeader ? (
               <div className="shell-global-actions">
                 <button type="button" aria-label="Obavijesti" disabled>
                   <svg aria-hidden="true" viewBox="0 0 24 24">

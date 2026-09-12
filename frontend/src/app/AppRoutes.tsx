@@ -12,9 +12,10 @@ import { StudentEditPage } from '../students/StudentEditPage.tsx'
 import { GroupListPage } from '../groups/GroupListPage.tsx'
 import { GroupCreatePage } from '../groups/GroupCreatePage.tsx'
 import { GroupEditPage } from '../groups/GroupEditPage.tsx'
+import { ScheduleCalendarPage } from '../schedule/ScheduleCalendarPage.tsx'
 
 const dashboard = navigationItems[0]
-const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students')
+const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule')
 
 export function AppRoutes() {
   return (
@@ -37,6 +38,7 @@ export function AppRoutes() {
           <Route path="students/groups/:groupId/edit" element={<GroupEditPage />} />
           <Route path="students/:studentId" element={<StudentDossierPage />} />
           <Route path="students/:studentId/edit" element={<StudentEditPage />} />
+          <Route path="schedule" element={<ScheduleCalendarPage />} />
           {moduleItems.map((item) => (
             <Route
               key={item.id}

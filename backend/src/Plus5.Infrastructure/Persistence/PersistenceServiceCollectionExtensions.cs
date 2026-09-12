@@ -13,6 +13,8 @@ using Plus5.Infrastructure.Groups;
 using Plus5.Domain.Identity;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Students;
+using Plus5.Application.Scheduling;
+using Plus5.Infrastructure.Scheduling;
 
 namespace Plus5.Infrastructure.Persistence;
 
@@ -96,6 +98,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IGroupEditingQuery, EfGroupEditingQuery>();
         services.AddScoped<IGroupEditingService, EfGroupEditingService>();
         services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
+        services.AddScoped<IScheduleCalendarQuery, EfScheduleCalendarQuery>();
         services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         services.AddScoped<IStudentEditingService, EfStudentEditingService>();

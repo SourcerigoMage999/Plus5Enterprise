@@ -27,10 +27,10 @@ describe('application shell', () => {
   })
 
   it('marks the current route and renders its neutral foundation state', async () => {
-    renderRoute('/schedule')
+    renderRoute('/materials')
 
-    expect(await screen.findByRole('link', { name: /Raspored/ })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('heading', { level: 1, name: 'Raspored' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: /Materijali/ })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('heading', { level: 1, name: 'Materijali' })).toBeInTheDocument()
     expect(screen.getByText(/Bez lažnih podataka/)).toBeInTheDocument()
   })
 

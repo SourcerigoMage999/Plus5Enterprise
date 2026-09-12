@@ -221,3 +221,12 @@ horizontalnog overflowa ili browser pageerrora.
 Dokazi, stvarna funkcionalna provjera i namjerna odstupanja za archive, business state,
 native date/time locale i buduće featuree nalaze se u
 [Phase 3.7 zapisu](phase-3.7/README.md).
+
+## Phase 4.1 — Calendar — PASS (2026-09-12)
+
+Canonical Screen 3.1 uspoređen je sa stvarnim owner-scoped Session kalendarom na desktopu
+1536×1024 i mobitelu 390×844. Potvrđeni su PLUS 5 shell i žuti Raspored, week/day flow,
+mini-kalendar, filtri, precizne summary metrike, stvarni termini i zaključane buduće akcije.
+Nema browser grešaka ni document overflowa; mobilni tjedni grid pomiče se samo lokalno.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-4.1/README.md).

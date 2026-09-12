@@ -16,7 +16,9 @@ using Plus5.Api.Conventions;
 using Plus5.Api.Identity;
 using Plus5.Api.Students;
 using Plus5.Api.Groups;
+using Plus5.Api.Scheduling;
 using Plus5.Application.Groups;
+using Plus5.Application.Scheduling;
 using Plus5.Infrastructure.Groups;
 using Plus5.Application.Identity;
 using Plus5.Application.Students;
@@ -24,6 +26,7 @@ using Plus5.Domain.Identity;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Persistence;
+using Plus5.Infrastructure.Scheduling;
 using Plus5.Infrastructure.Students;
 
 namespace Plus5.Api.Tests.Identity;
@@ -45,6 +48,7 @@ public sealed class AuthenticationApiTests
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
+        using var anonymousSchedule = await client.GetAsync("/api/v1/schedule?from=2026-09-14&to=2026-09-21", CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
@@ -56,6 +60,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousSchedule.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -91,6 +96,10 @@ public sealed class AuthenticationApiTests
         using var invalidStudents = await GetWithCookiesAsync(client, "/api/v1/students?pageSize=101", authCookie, csrf.Cookie);
         using var createOptions = await GetWithCookiesAsync(
             client, "/api/v1/students/create-options", authCookie, csrf.Cookie);
+        using var calendar = await GetWithCookiesAsync(
+            client, "/api/v1/schedule?from=2026-09-14&to=2026-09-21", authCookie, csrf.Cookie);
+        using var invalidCalendar = await GetWithCookiesAsync(
+            client, "/api/v1/schedule?from=2026-09-01&to=2026-10-03", authCookie, csrf.Cookie);
         using var createWithoutCsrf = await client.SendAsync(new HttpRequestMessage(
             HttpMethod.Post, "/api/v1/students")
         {
@@ -144,6 +153,8 @@ public sealed class AuthenticationApiTests
             await students.Content.ReadAsStringAsync(CancellationToken.None));
         Assert.Equal(HttpStatusCode.BadRequest, invalidStudents.StatusCode);
         Assert.Equal(HttpStatusCode.OK, createOptions.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, calendar.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, invalidCalendar.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
         Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
@@ -319,6 +330,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IGroupEditingQuery, EfGroupEditingQuery>();
         builder.Services.AddScoped<IGroupEditingService, EfGroupEditingService>();
         builder.Services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
+        builder.Services.AddScoped<IScheduleCalendarQuery, EfScheduleCalendarQuery>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -336,6 +348,7 @@ public sealed class AuthenticationApiTests
         app.MapStudentDossier();
         app.MapStudentEditing();
         app.MapGroups();
+        app.MapScheduleCalendar();
         await app.StartAsync(CancellationToken.None);
         return app;
     }

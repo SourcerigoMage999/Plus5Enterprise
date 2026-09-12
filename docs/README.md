@@ -24,6 +24,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `SCHEDULING_FOUNDATION.md` nakon Phase 2.4 za Session, recurrence, location, conflict i series-change granice
    - `GROUP_CREATION.md` nakon Phase 3.6 za atomski create, početna članstva, opcionalni raspored, conflict i 12-tjedni horizont
    - `GROUP_EDITING.md` nakon Phase 3.7 za edit, Program/member gate, capacity, schedule versioning i dirty-form granice
+   - `SCHEDULE_CALENDAR.md` nakon Phase 4.1 za owner-scoped calendar read model, lokalno vrijeme, filtre i precizne summary metrike
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`

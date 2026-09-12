@@ -168,7 +168,7 @@ frontend testova PASS; build/format/lint/Docker i canonical desktop/mobile revie
 uz evidentirane iznimke. `summaries/PHASE_3.6_CREATE_GROUP_SUMMARY.md` i
 `visual-acceptance/phase-3.6/README.md` sadrže rezultate i granice. Završni review prihvaćen
 je nakon usklađenja vulnerability audit traga; commit `4bae5be` pushan je na `main`.
-## 3.7 Screen 2.9 Edit group — DONE — čeka završni SA review
+## 3.7 Screen 2.9 Edit group — DONE
 
 **SA odluka 2026-09-11 — ADR-0016:** Program grupe može se promijeniti samo bez aktivnih
 članstava. Backend odbija promjenu uz aktivne članove; nema implicitne promjene Student
@@ -179,6 +179,7 @@ provjere, Program/member gate, atomsko versioniranje budućeg rasporeda i postoj
 membership workflow. Canonical desktop/mobile i dirty-navigation visual acceptance prolaze;
 hard delete i archive posljedice za raspored ostaju izvan zaključanog scopea. Nema nove
 migracije ili dependencyja. Točni završni testni rezultati zapisani su u Phase 3.7 summaryju.
+Commit `dd5ffb1` pushan je na `main`; nastavak na Phase 4 odobren je 2026-09-12.
 
 **Out of scope za ovu fazu:** izračun readinessa i detaljni Knowledge Model ako PHASE 5 još nije dovršena; UI mora koristiti neutralne placeholder/hidden states definirane prije implementacije, ne lažne postotke.
 
@@ -186,7 +187,16 @@ migracije ili dependencyja. Točni završni testni rezultati zapisani su u Phase
 
 # PHASE 4 — Schedule
 
-## 4.1 Screen 3.1 Calendar — TODO
+## 4.1 Screen 3.1 Calendar — DONE — čeka završni SA review
+
+**Dovršeno 2026-09-12:** owner-scoped read-only `GET /api/v1/schedule`, bounded lokalni
+date range u `Europe/Zagreb`, Group/Program/Location filtri, tjedni/dnevni URL flow,
+mini-kalendar, sljedeći podsjetnici te eksplicitne unique-student/planned-attendance/seat
+metrike. Canonical desktop/mobile week/day visual gate prolazi sa stvarnim Sessionima i bez
+document overflowa. Release build, 141 backend/SQL, 4 architecture i 46 frontend testova,
+format/lint/build, auditi i Docker health/non-root runtime prolaze. Contract:
+`SCHEDULE_CALENDAR.md`; završni audit: `summaries/PHASE_4.1_SCHEDULE_CALENDAR_SUMMARY.md`.
+Nema nove migracije/dependencyja ni Session writea; 4.2 nije započeta.
 ## 4.2 Screen 3.2 Session detail — TODO
 ## 4.3 Screen 3.3 Create session — TODO
 ## 4.4 Screen 3.4 Edit session — TODO

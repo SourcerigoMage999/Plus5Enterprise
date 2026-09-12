@@ -1,0 +1,46 @@
+{
+  "screens": [
+    {
+      "name": "calendar-week",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "calendarClient": 968,
+      "calendarScroll": 968
+    },
+    {
+      "name": "calendar-day",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "calendarClient": 968,
+      "calendarScroll": 968
+    },
+    {
+      "name": "calendar-week",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "calendarClient": 303,
+      "calendarScroll": 768
+    },
+    {
+      "name": "calendar-day",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "calendarClient": 303,
+      "calendarScroll": 448
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "desktop: canonical calendar, week/day, filters, exact metrics, disabled future actions, no document overflow",
+    "mobile: canonical calendar, week/day, filters, exact metrics, disabled future actions, no document overflow"
+  ],
+  "data": {
+    "anchor": "2026-09-21",
+    "discoveredItems": 2,
+    "timeZoneId": "Europe/Zagreb"
+  }
+}

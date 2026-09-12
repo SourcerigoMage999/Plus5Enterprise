@@ -64,6 +64,10 @@ actioni, framework mode ni nova biblioteka; auth redirecti ne smiju ostati bloki
 Phase 3.7 ponovno koristi isti službeni dirty-navigation adapter na
 `/students/groups/:groupId/edit`; nema drugog routera ni paralelnog globalnog statea.
 
+Phase 4.1 zamjenjuje foundation `/schedule` stvarnim Screen 3.1 calendar routeom. Datum,
+week/day i filtri ostaju URL navigation state; responsive tjedni grid ima lokalni scroll i ne
+uvodi globalni calendar store. Detalj i write kontrole ostaju onemogućeni do Phase 4.2–4.4.
+
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 
 ## Design tokeni

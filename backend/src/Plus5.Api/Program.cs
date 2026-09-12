@@ -7,6 +7,7 @@ using Plus5.Api.Observability;
 using Plus5.Api.Identity;
 using Plus5.Api.Students;
 using Plus5.Api.Groups;
+using Plus5.Api.Scheduling;
 using Plus5.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +66,7 @@ app.MapStudentCreation();
 app.MapStudentDossier();
 app.MapStudentEditing();
 app.MapGroups();
+app.MapScheduleCalendar();
 
 app.Run();
 
