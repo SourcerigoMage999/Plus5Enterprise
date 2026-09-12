@@ -53,7 +53,7 @@
 .groups-pager button { min-height: 2rem; min-width: 2rem; padding: .2rem; }
 .groups-detail-column { min-width: 0; display: grid; gap: 1rem; }
 .groups-panel-heading { padding: 1rem 1.15rem; display: flex; justify-content: space-between; align-items: center; }
-.groups-panel-heading button { min-height: 2rem; font-size: .72rem; }
+.groups-panel-heading button, .groups-panel-heading a { min-height: 2rem; font-size: .72rem; }
 .groups-detail-identity { display: flex; align-items: center; gap: .8rem; padding: .35rem 1.15rem 1.3rem; }
 .groups-avatar--large { width: 3.4rem; height: 3.4rem; font-size: 1rem; }
 .groups-row--selected .groups-avatar, .groups-avatar--large { background: var(--color-brand-700); color: var(--color-text-on-brand); }

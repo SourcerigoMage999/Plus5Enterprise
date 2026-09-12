@@ -23,6 +23,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `GROUP_FOUNDATION.md` nakon Phase 2.3 za Group, capacity, membership, ownership i concurrency granice
    - `SCHEDULING_FOUNDATION.md` nakon Phase 2.4 za Session, recurrence, location, conflict i series-change granice
    - `GROUP_CREATION.md` nakon Phase 3.6 za atomski create, početna članstva, opcionalni raspored, conflict i 12-tjedni horizont
+   - `GROUP_EDITING.md` nakon Phase 3.7 za edit, Program/member gate, capacity, schedule versioning i dirty-form granice
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`

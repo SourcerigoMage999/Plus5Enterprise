@@ -2,7 +2,7 @@
 
 ## Status
 
-**MERGED PROJECT MANIFEST — 2026-09-04**
+**MERGED PROJECT MANIFEST — ažurirano 2026-09-11**
 
 Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnih teacher i
 full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za projektne dokumente.
@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`
 
 ## Source snapshotovi
 
@@ -35,6 +35,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_3.6_CREATE_GROUP_SUMMARY.md](summaries/PHASE_3.6_CREATE_GROUP_SUMMARY.md) i
   [phase-3.6 visual acceptance](visual-acceptance/phase-3.6/README.md) sadrže završni
   implementacijski i canonical desktop/mobile dokaz za kreiranje grupe.
+- [PHASE_3.7_EDIT_GROUP_SUMMARY.md](summaries/PHASE_3.7_EDIT_GROUP_SUMMARY.md) i
+  [phase-3.7 visual acceptance](visual-acceptance/phase-3.7/README.md) sadrže završni
+  implementacijski i canonical desktop/mobile dokaz za uređivanje grupe.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

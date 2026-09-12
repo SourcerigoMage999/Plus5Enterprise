@@ -77,7 +77,9 @@ Detaljni screen/lifecycle source sada postoji za 4.1, 4.4–4.5, 5.1–5.6, 6.1�
   opcionalan, završni datum nije obavezan. Početni Session horizont je 12 tjedana;
   grupa/članstva/raspored spremaju se atomski, konflikt blokira write. Automatska
   deaktivacija prema broju učenika je rejected behavior, ne odgođeni feature.
-- prije Group edit API/UI-ja odlučiti ponašanje promjene Group Programa kada postoje aktivni članovi: atomarna promjena Student Programa, završetak članstava ili odbijanje promjene
+- **RIJEŠENO — Phase 3.7, ADR-0016:** promjena Group Programa dopuštena je samo bez
+  aktivnih članstava. Uz aktivne članove backend odbija promjenu; masovna promjena Student
+  Programa i automatski završetak članstava rejected su ponašanja.
 - minimalni broj učenika nije potreban za 3.6; ne uvodi se MinimumStudents. Draft lifecycle
   i pravo brisanje ostaju nedefinirani; foundation koristi capacity i arhiviranje.
 

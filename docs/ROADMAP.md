@@ -159,16 +159,26 @@ desktop comparison i mobile adaptation PASS uz zapisane iznimke. Phase 3.6 nije 
 ## 3.5 Screen 2.7 Groups — DONE
 
 **Dovršeno 2026-09-02:** owner-scoped query/API, pretraga/filteri/pagination, pregled grupa i rasporeda, kandidatni učenici te CSRF/rowversion-zaštićeno dodavanje/uklanjanje članstva. Transfer ponovno koristi Phase 3.4. Build, 132 API/domain/persistence + 4 architecture testa, 28 frontend testova i izolirani SQL test zadnjeg mjesta prolaze. Docker engine i health provjere rade. **Visual acceptance PASS:** stvarni desktop 1536×1024 i mobilni 390×844 prikaz uspoređeni su s canonical PNG-om; ispravljeni su razmak profila/akcija, gustoća redaka, vizualna hijerarhija i mobilna čitljivost tablice. Dokazi i namjerna odstupanja: `visual-acceptance/README.md`; contract: `GROUP_LIST.md`. Commit/push čekaju zasebno odobrenje; 3.6 nije započeta.
-## 3.6 Screen 2.8 Create group — DONE (čeka završni SA review)
+## 3.6 Screen 2.8 Create group — DONE
 
 **2026-09-11:** ADR-0015, Active grupa s 0 učenika, opcionalni raspored i nullable EndsOn,
 atomski Group/Membership/Series/Session create, početnih 12 tjedana, conflict/DST/ownership/
 rowversion zaštita i puni dirty-navigation gate. 138 backend/SQL + 4 architecture + 37
 frontend testova PASS; build/format/lint/Docker i canonical desktop/mobile review PASS
 uz evidentirane iznimke. `summaries/PHASE_3.6_CREATE_GROUP_SUMMARY.md` i
-`visual-acceptance/phase-3.6/README.md` sadrže rezultate i granice. Nije SA-LOCKED niti
-commitano/pushano bez zasebne upute; 3.7 nije započeta.
-## 3.7 Screen 2.9 Edit group — TODO
+`visual-acceptance/phase-3.6/README.md` sadrže rezultate i granice. Završni review prihvaćen
+je nakon usklađenja vulnerability audit traga; commit `4bae5be` pushan je na `main`.
+## 3.7 Screen 2.9 Edit group — DONE — čeka završni SA review
+
+**SA odluka 2026-09-11 — ADR-0016:** Program grupe može se promijeniti samo bez aktivnih
+članstava. Backend odbija promjenu uz aktivne članove; nema implicitne promjene Student
+Programa ni automatskog završetka članstava.
+
+**Dovršeno 2026-09-11:** owner-scoped GET/PUT edit, CSRF, rowversion, unique/capacity
+provjere, Program/member gate, atomsko versioniranje budućeg rasporeda i postojeći
+membership workflow. Canonical desktop/mobile i dirty-navigation visual acceptance prolaze;
+hard delete i archive posljedice za raspored ostaju izvan zaključanog scopea. Nema nove
+migracije ili dependencyja. Točni završni testni rezultati zapisani su u Phase 3.7 summaryju.
 
 **Out of scope za ovu fazu:** izračun readinessa i detaljni Knowledge Model ako PHASE 5 još nije dovršena; UI mora koristiti neutralne placeholder/hidden states definirane prije implementacije, ne lažne postotke.
 

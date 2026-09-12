@@ -61,6 +61,9 @@ zbog podržanog `useBlocker` za Back/Forward i nespremljeni create obrazac. Post
 `Routes`/`Route`/`NavLink`/`Outlet`, URL-ovi i API boundary ostaju. Nisu uvedeni loaderi,
 actioni, framework mode ni nova biblioteka; auth redirecti ne smiju ostati blokirani formom.
 
+Phase 3.7 ponovno koristi isti službeni dirty-navigation adapter na
+`/students/groups/:groupId/edit`; nema drugog routera ni paralelnog globalnog statea.
+
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 
 ## Design tokeni

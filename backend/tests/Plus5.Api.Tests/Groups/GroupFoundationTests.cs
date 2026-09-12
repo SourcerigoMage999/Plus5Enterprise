@@ -59,6 +59,26 @@ public sealed class GroupFoundationTests
     }
 
     [Fact]
+    public void ProgramCannotChangeWhileGroupHasActiveMemberships()
+    {
+        var group = CreateGroup();
+        var newProgram = Guid.NewGuid();
+
+        Assert.Throws<InvalidOperationException>(() => group.UpdateDetails(newProgram,
+            group.SchoolGradeId, group.Name, group.Description, group.Capacity,
+            group.Status, 1, CreatedAtUtc.AddMinutes(1)));
+
+        group.UpdateDetails(newProgram, group.SchoolGradeId, " Updated group ", " Updated ",
+            7, GroupStatus.OnHold, 0, CreatedAtUtc.AddMinutes(1));
+        Assert.Equal(newProgram, group.ProgramId);
+        Assert.Equal("Updated group", group.Name);
+        Assert.Equal("UPDATED GROUP", group.NormalizedName);
+        Assert.Equal("Updated", group.Description);
+        Assert.Equal(7, group.Capacity);
+        Assert.Equal(GroupStatus.OnHold, group.Status);
+    }
+
+    [Fact]
     public void GroupCannotBeArchivedWithActiveMemberships()
     {
         var group = CreateGroup();

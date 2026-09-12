@@ -48,6 +48,7 @@ export function GroupListPage() {
         </div>
       </header>
       {typeof location.state?.createdGroupName === 'string' && <p role="status">Grupa {location.state.createdGroupName} uspješno je kreirana.</p>}
+      {typeof location.state?.updatedGroupName === 'string' && <p role="status">Promjene grupe {location.state.updatedGroupName} uspješno su spremljene.</p>}
       {overview?.data ? <div className="groups-stats">
         <Stat icon="groups" label="Ukupno grupa" value={overview.data.totalGroups} note={`Aktivnih: ${overview.data.activeGroups}`} />
         <Stat icon="students" label="Ukupno učenika" value={overview.data.students} note={`Prosječno po grupi: ${overview.data.totalGroups ? (overview.data.students / overview.data.totalGroups).toLocaleString('hr-HR', { maximumFractionDigits: 1 }) : '0'}`} />
@@ -88,7 +89,7 @@ function GroupDetail({ id, revision, reload }: { id: string; revision: number; r
   const group = detail?.data
   return <div className="groups-detail-column">
     <section className="groups-panel groups-detail" aria-label="Detalji grupe">
-      <div className="groups-panel-heading"><h2>Detalji grupe</h2><button disabled title="Uređivanje grupe dolazi u Phase 3.7.">Uredi <span aria-hidden="true">↗</span></button></div>
+      <div className="groups-panel-heading"><h2>Detalji grupe</h2><Link to={`/students/groups/${group?.id ?? id}/edit`}>Uredi <span aria-hidden="true">↗</span></Link></div>
       {group ? <>
         <header className="groups-detail-identity"><span className="groups-avatar groups-avatar--large" aria-hidden="true">{initials(group.name)}</span><div><h3>{group.name} <Status group={group} /></h3><p>{group.programName} · {group.schoolGrade}</p></div></header>
         <div className="groups-metadata">

@@ -10,6 +10,12 @@ export interface Group {
 export interface Overview { totalGroups: number; activeGroups: number; students: number; availableSeats: number; sessionsThisWeek: number; weekStartsOn: string }
 export interface GroupStudent { id: string; firstName: string; lastName: string; schoolGrade: string; recommended: boolean; rowVersion: string }
 export interface GroupSession { id: string; startsAtUtc: string; endsAtUtc: string; timeZoneId: string; location: string | null; online: boolean; status: number }
+export interface GroupEditSlot extends Slot { seriesId: string; startsOn: string; endsOn: string | null; locationId: string | null; locationName: string | null }
+export interface GroupEdit {
+  id: string; name: string; description: string | null; programId: string; programName: string
+  schoolGradeId: string; schoolGrade: string; status: 1 | 2 | 3; capacity: number
+  memberCount: number; rowVersion: string; slots: GroupEditSlot[]
+}
 
 export function changeMembership(group: Group, student: GroupStudent, join: boolean) {
   return postJson<void>(`/groups/${group.id}/members/${student.id}`, {

@@ -82,6 +82,38 @@ public sealed class Group
         UpdatedAtUtc = updatedAtUtc;
     }
 
+    public void UpdateDetails(
+        Guid programId,
+        Guid schoolGradeId,
+        string name,
+        string? description,
+        int capacity,
+        GroupStatus status,
+        int activeMemberCount,
+        DateTimeOffset updatedAtUtc)
+    {
+        EnsureCanUpdate(updatedAtUtc);
+        EnsureIdentifier(programId, nameof(programId));
+        EnsureIdentifier(schoolGradeId, nameof(schoolGradeId));
+        EnsureCapacity(capacity, activeMemberCount);
+        EnsureDefinedStatus(status);
+
+        if (ProgramId != programId && activeMemberCount > 0)
+        {
+            throw new InvalidOperationException(
+                "A group program cannot change while the group has active memberships.");
+        }
+
+        ProgramId = programId;
+        SchoolGradeId = schoolGradeId;
+        Name = NormalizeRequiredText(name, NameMaxLength, nameof(name));
+        NormalizedName = Name.ToUpperInvariant();
+        Description = NormalizeOptionalText(description, DescriptionMaxLength, nameof(description));
+        Capacity = capacity;
+        Status = status;
+        UpdatedAtUtc = updatedAtUtc;
+    }
+
     public void RecordMembershipChange(
         int activeMemberCountAfterChange,
         DateTimeOffset updatedAtUtc)

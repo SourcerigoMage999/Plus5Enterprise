@@ -25,6 +25,9 @@ Ovaj dokument definira najmanji trajni Group i GroupMembership contract potreban
 - Pri ulasku u grupu Studentov Program postaje Program grupe, a `DeliveryMode` postaje `Group`, atomarno s novim aktivnim članstvom.
 - Pri izlasku bez neposrednog transfera aktivno članstvo završava, Program ostaje, a `DeliveryMode` postaje `Individual` u istoj transakciji.
 - Transfer završava staro i stvara novo članstvo te ostavlja `DeliveryMode.Group`; oba članstva i Student organizacija spremaju se atomarno.
+- Phase 3.7 / ADR-0016: Program grupe smije se promijeniti samo kada nema aktivnih
+  članstava. Promjena uz aktivne članove odbija se; ne mijenja Student Program i ne
+  završava članstva implicitno.
 
 ## Group
 
@@ -93,7 +96,7 @@ Isti contract vrijedi za smanjenje kapaciteta i arhiviranje. Direktni client cou
 
 ## Dokumentacijski gateovi
 
-- Promjena Programa grupe s aktivnim članovima nije implementirana dok vlasnik proizvoda ne odluči mijenjaju li se svi aktivni Student Programi, prekidaju članstva ili se promjena odbija.
+- Promjena Programa grupe s aktivnim članovima riješena je ADR-0016: promjena se odbija.
 - `RegularGroupSchedule`, termini, trajanje, lokacija i conflict detection pripadaju Phase 2.4 i ne spremaju se u Group foundation.
 - Minimalni broj članova, draft grupe i pravo fizičko brisanje nisu zaključani.
 

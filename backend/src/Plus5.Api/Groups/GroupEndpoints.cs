@@ -14,6 +14,7 @@ public static class GroupEndpoints
         var group = endpoints.MapVersionOneApi().MapGroup("/groups")
             .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
         group.MapGroupCreationReads();
+        group.MapGroupEditing();
         group.MapGet("/", Page);
         group.MapGet("/overview", Overview);
         group.MapGet("/{groupId:guid}", Detail);

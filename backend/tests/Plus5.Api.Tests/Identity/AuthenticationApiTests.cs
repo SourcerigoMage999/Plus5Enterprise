@@ -44,6 +44,7 @@ public sealed class AuthenticationApiTests
         using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
+        using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
@@ -54,6 +55,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -232,6 +234,18 @@ public sealed class AuthenticationApiTests
         }
         using var created = await PostAsync(client, "/api/v1/groups", new { name = "Empty active", programId = createProgram, schoolGradeId = createGrade, capacity = 6 }, csrf, cookie);
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
+        var createdGroup = await created.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        var createdGroupId = createdGroup.GetProperty("id").GetGuid();
+        using var editGroup = await GetWithCookiesAsync(client, $"/api/v1/groups/{createdGroupId}/edit", cookie, csrf.Cookie);
+        Assert.Equal(HttpStatusCode.OK, editGroup.StatusCode);
+        using var editMissingCsrf = await client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"/api/v1/groups/{createdGroupId}")
+        {
+            Content = JsonContent.Create(new { name = "Changed", programId = createProgram, schoolGradeId = createGrade, status = 1, capacity = 6, rowVersion = "AAAAAAAAAAA=", slots = Array.Empty<object>() }),
+            Headers = { { "Cookie", cookie } },
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, editMissingCsrf.StatusCode);
+        using var invalidEditVersion = await PutAsync(client, $"/api/v1/groups/{createdGroupId}", new { name = "Changed", programId = createProgram, schoolGradeId = createGrade, status = 1, capacity = 6, rowVersion = "invalid", slots = Array.Empty<object>() }, csrf, cookie);
+        Assert.Equal(HttpStatusCode.BadRequest, invalidEditVersion.StatusCode);
         using var duplicate = await PostAsync(client, "/api/v1/groups", new { name = "Empty active", programId = createProgram, schoolGradeId = createGrade, capacity = 6 }, csrf, cookie);
         Assert.Equal(HttpStatusCode.Conflict, duplicate.StatusCode);
         using var badMembers = await PostAsync(client, "/api/v1/groups", new { name = "Bad", programId = createProgram, schoolGradeId = createGrade, capacity = 6, members = new[] { new { studentId = Guid.NewGuid(), rowVersion = "not-base64" } } }, csrf, cookie);
@@ -302,6 +316,8 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IGroupQuery, EfGroupQuery>();
         builder.Services.AddScoped<IGroupCreationQuery, EfGroupCreationQuery>();
         builder.Services.AddScoped<IGroupCreationService, EfGroupCreationService>();
+        builder.Services.AddScoped<IGroupEditingQuery, EfGroupEditingQuery>();
+        builder.Services.AddScoped<IGroupEditingService, EfGroupEditingService>();
         builder.Services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>

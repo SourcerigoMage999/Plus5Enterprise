@@ -9,14 +9,17 @@ internal static class GroupScheduleConflictQuery
     // Check canonical rules too: an older open-ended series may not yet have materialized this window.
     // Existing occurrences (including cancelled/rescheduled exceptions) are authoritative over their rule.
     public static async Task<bool> HasUnmaterializedConflictAsync(Plus5DbContext db, Guid owner, Guid? locationId,
-        IReadOnlyList<GroupOccurrence> occurrences, CancellationToken cancellationToken)
+        IReadOnlyList<GroupOccurrence> occurrences, CancellationToken cancellationToken,
+        IReadOnlySet<Guid>? excludedSeriesIds = null)
     {
         if (occurrences.Count == 0) return false;
+        var excluded = excludedSeriesIds?.ToArray() ?? [];
         var first = occurrences.Min(o => o.Date);
         var last = occurrences.Max(o => o.Date);
         var lower = DateOnly.FromDayNumber(Math.Max(0, first.DayNumber - 2));
         var upper = DateOnly.FromDayNumber(Math.Min(DateOnly.MaxValue.DayNumber, last.DayNumber + 2));
-        var query = db.RecurringSessionSeries.AsNoTracking().Where(s => (s.TeacherAccountId == owner
+        var query = db.RecurringSessionSeries.AsNoTracking().Where(s => !excluded.Contains(s.Id) && s.SupersededAtUtc == null
+                && (s.TeacherAccountId == owner
                 || (locationId.HasValue && s.LocationId == locationId)) && s.StartsOn <= upper && (s.EndsOn == null || s.EndsOn >= lower))
             .OrderBy(s => s.Id).Select(s => new { s.Id, s.StartsOn, s.EndsOn, s.DayOfWeek, s.LocalStartTime, s.LocalEndTime, s.TimeZoneId });
         for (var offset = 0; ; offset = checked(offset + 100))

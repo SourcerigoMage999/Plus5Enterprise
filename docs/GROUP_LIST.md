@@ -12,6 +12,10 @@ Ova faza ne otvara kreiranje/uređivanje grupe iz Phase 3.6/3.7.
 uspješan create otvara ovaj ekran s novom grupom odabranom i potvrdom. Opis disabled
 akcije u povijesnom Phase 3.5 odjeljku ispod vrijedi za tadašnji rezultat, ne aktualni UI.
 
+**Naknadno — Phase 3.7:** `Uredi` sada vodi na `/students/groups/{groupId}/edit`;
+uspješan edit vraća na odabranu grupu i prikazuje potvrdu. Program/member i schedule
+versioning contract definirani su u `GROUP_EDITING.md`.
+
 ## UI i navigacija
 
 - `/students/groups`, dostupno preko poveznice **Grupe** na popisu učenika.
@@ -83,8 +87,9 @@ Program filter ponovno koristi postojeći owner-scoped `/students/overview` kata
 
 - `Sati tjedno` zamijenjeno je preciznijim **Termini ovaj tjedan** da se ne izmisli
   trajanje školskog sata ili broj generiranih termina.
-- Nova grupa (3.6), Uredi (3.7), PDF (izvještaji) i otvaranje kalendara/detaila termina
-  ostaju disabled s objašnjenjem. Tab Raspored ipak čita postojeće stvarne podatke.
+- U izvornom Phase 3.5 rezultatu Nova grupa (3.6), Uredi (3.7), PDF (izvještaji) i
+  otvaranje kalendara/detaila termina ostali su disabled s objašnjenjem. Nova grupa i
+  Uredi naknadno su aktivirani svojim fazama; PDF i kalendarski/detail termini nisu.
 - Materijali, bilješke, procjena razine i prisutnost imaju iskrene nedostupne sadržaje;
   nema postotaka, B1 vrijednosti, lažnih bilješki ni Knowledge upisa.
 - Vidljive akcije Ukloni/Premjesti umjesto skrivenog trotočkastog izbornika; sačuvana je zona Akcije.

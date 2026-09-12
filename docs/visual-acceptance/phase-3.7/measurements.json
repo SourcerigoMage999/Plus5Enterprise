@@ -1,0 +1,33 @@
+{
+  "screens": [
+    {
+      "name": "edit",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "unsaved",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536
+    },
+    {
+      "name": "edit",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "name": "unsaved",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "desktop: canonical edit, program lock, dirty-navigation modal, no overflow",
+    "mobile: canonical edit, program lock, dirty-navigation modal, no overflow"
+  ]
+}

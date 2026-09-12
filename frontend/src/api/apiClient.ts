@@ -114,6 +114,9 @@ function friendlyMessage(code?: string): string {
   switch (code) {
     case 'group_name_exists': return 'Grupa s tim nazivom već postoji. Odaberite drugi naziv.'
     case 'group_create_reference_not_found': return 'Odabrani program, razred, učenik ili lokacija više nisu dostupni. Osvježite podatke.'
+    case 'group_edit_reference_not_found': return 'Grupa ili odabrani program, razred ili lokacija više nisu dostupni. Osvježite podatke.'
+    case 'group_program_has_active_members': return 'Program grupe nije moguće promijeniti dok grupa ima aktivne učenike. Najprije premjestite ili uklonite učenike iz grupe.'
+    case 'group_capacity_below_members': return 'Kapacitet grupe ne može biti manji od trenutačnog broja učenika.'
     case 'schedule_conflict': return 'Raspored se preklapa s drugim terminom. Promijenite termine prije spremanja.'
     case 'invalid_local_time': return 'Termin pada na nepostojeće ili dvosmisleno lokalno vrijeme pri promjeni sata. Odaberite drugo vrijeme.'
     case 'invalid_credentials':

@@ -1,5 +1,20 @@
 # DECISION_LOG
 
+### ADR-0016 — Promjena Programa grupe samo bez aktivnih članstava
+- **Datum:** 2026-09-11
+- **Status:** Accepted — SA odluka za Phase 3.7.
+- **Kontekst:** promjena `Group.ProgramId` dok grupa ima aktivne članove mogla bi implicitno
+  promijeniti Student aggregate ili neočekivano završiti povijesna članstva.
+- **Odluka:** `Group.ProgramId` smije se promijeniti samo kada grupa nema aktivnih
+  `GroupMembership` redaka. Pokušaj promjene uz `activeMembershipCount > 0` odbija se
+  kontroliranim business rezultatom. Frontend unaprijed zaključava Program i objašnjava
+  razlog, ali backend uvijek ponovno provjerava pravilo u transakciji.
+- **Posljedice:** nema masovnog ažuriranja Student Programa i nema automatskog završetka
+  članstava. Teacher mora učenike eksplicitno ukloniti ili premjestiti, promijeniti Program
+  prazne grupe te ih po potrebi ponovno dodati postojećim membership workflowom.
+- **Alternative:** implicitna promjena Programa svih učenika i automatsko zatvaranje
+  članstava eksplicitno su odbijeni.
+
 ### ADR-0015 — Group create, opcionalna otvorena serija i početnih 12 tjedana
 - **Datum:** 2026-09-11
 - **Status:** Accepted — SA odluke za nastavak 3.6.

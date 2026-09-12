@@ -195,7 +195,8 @@ spremljeni u dokumentaciju ili screenshotove.
 - Termini ovaj tjedan umjesto Sati tjedno; nema izmišljenih sati, procjena razine, prisutnosti ni bilješki.
 - Vidljive Ukloni/Premjesti akcije i paginacija povećavaju visinu redaka članova u odnosu
   na mockupov trotočkasti izbornik. Informacije o budućim funkcijama dodaju tekstualne napomene.
-- Nova grupa, Uredi i PDF ostaju disabled u skladu s faznim scopeom, zbog čega imaju prigušen izgled.
+- U trenutku Phase 3.5 capturea Nova grupa, Uredi i PDF bili su disabled u skladu s tadašnjim
+  faznim scopeom. Nova grupa i Uredi naknadno su aktivirani u Phase 3.6/3.7; PDF nije.
 - Mobile koristi postojeću horizontalnu navigaciju i stacking, ne novu hamburger implementaciju.
 - Raspored je vizualno provjeren u praznom stanju. Popunjena pravila/Sessioni provjereni su
   zasebnim SQL/query testovima, ne tvrdi se da ih ove demo snimke prikazuju.
@@ -209,3 +210,14 @@ otvoriti Učenici → Grupe. Pregledati viewportove 1536×1024 i 390×844, tabov
 na mobitelu fokusirati/pomaknuti tablicu do Akcija, otvoriti Ukloni i odabrati Odustani.
 Usporediti s canonical PNG-om i navedenim odstupanjima. Ne stvarati dodatne podatke niti
 spremati promjenu članstva samo radi reprodukcije screenshotova.
+
+## Phase 3.7 — Edit group — PASS (2026-09-11)
+
+Canonical Screen 2.9 uspoređen je sa stvarnim owner-scoped edit ekranom na desktopu
+1536×1024 i mobitelu 390×844. Potvrđeni su četverostupčani layout, Program lock s aktivnim
+članom, raspored, sažetak, članovi, neutralne buduće zone i dirty-navigation modal bez
+horizontalnog overflowa ili browser pageerrora.
+
+Dokazi, stvarna funkcionalna provjera i namjerna odstupanja za archive, business state,
+native date/time locale i buduće featuree nalaze se u
+[Phase 3.7 zapisu](phase-3.7/README.md).
