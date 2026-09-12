@@ -50,6 +50,7 @@ public sealed class AuthenticationApiTests
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousSchedule = await client.GetAsync("/api/v1/schedule?from=2026-09-14&to=2026-09-21", CancellationToken.None);
         using var anonymousSessionDetail = await client.GetAsync($"/api/v1/schedule/{Guid.NewGuid()}", CancellationToken.None);
+        using var anonymousSessionCreate = await client.PostAsJsonAsync("/api/v1/schedule", new { }, CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
             new { email = Email, password = Password },
@@ -63,6 +64,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousSchedule.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousSessionDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousSessionCreate.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
 
@@ -104,6 +106,19 @@ public sealed class AuthenticationApiTests
             client, "/api/v1/schedule?from=2026-09-01&to=2026-10-03", authCookie, csrf.Cookie);
         using var missingSessionDetail = await GetWithCookiesAsync(
             client, $"/api/v1/schedule/{Guid.NewGuid()}", authCookie, csrf.Cookie);
+        using var createSessionWithoutCsrf = await client.SendAsync(new HttpRequestMessage(
+            HttpMethod.Post, "/api/v1/schedule")
+        {
+            Content = JsonContent.Create(new
+            {
+                deliveryMode = 1,
+                contextId = Guid.NewGuid(),
+                date = new DateOnly(2026, 9, 14),
+                startsAt = new TimeOnly(16, 0),
+                endsAt = new TimeOnly(17, 0),
+            }),
+            Headers = { { "Cookie", authCookie } },
+        });
         using var createWithoutCsrf = await client.SendAsync(new HttpRequestMessage(
             HttpMethod.Post, "/api/v1/students")
         {
@@ -124,6 +139,31 @@ public sealed class AuthenticationApiTests
             status = "active",
         }, csrf, authCookie);
         var createdStudent = await createStudent.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        using var createSession = await PostAsync(client, "/api/v1/schedule", new
+        {
+            deliveryMode = 1,
+            contextId = createdStudent.GetProperty("id").GetGuid(),
+            title = "API journey",
+            date = new DateOnly(2099, 9, 14),
+            startsAt = new TimeOnly(16, 0),
+            endsAt = new TimeOnly(17, 0),
+            repeatWeekly = false,
+        }, csrf, authCookie);
+        var createdSession = await createSession.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        using var createdSessionDetail = await GetWithCookiesAsync(
+            client,
+            $"/api/v1/schedule/{createdSession.GetProperty("id").GetGuid()}",
+            authCookie,
+            csrf.Cookie);
+        using var invalidGroupRecurrence = await PostAsync(client, "/api/v1/schedule", new
+        {
+            deliveryMode = 2,
+            contextId = Guid.NewGuid(),
+            date = new DateOnly(2099, 9, 14),
+            startsAt = new TimeOnly(16, 0),
+            endsAt = new TimeOnly(17, 0),
+            repeatWeekly = true,
+        }, csrf, authCookie);
         using var dossier = await GetWithCookiesAsync(
             client,
             $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}",
@@ -160,8 +200,12 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.OK, calendar.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, invalidCalendar.StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, missingSessionDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, createSessionWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, createSession.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, createdSessionDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, invalidGroupRecurrence.StatusCode);
         Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
         Assert.Equal(HttpStatusCode.OK, edit.StatusCode);
         Assert.Equal(HttpStatusCode.OK, update.StatusCode);
@@ -337,6 +381,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IGroupMembershipService, EfGroupMembershipService>();
         builder.Services.AddScoped<IScheduleCalendarQuery, EfScheduleCalendarQuery>();
         builder.Services.AddScoped<IScheduleSessionDetailQuery, EfScheduleSessionDetailQuery>();
+        builder.Services.AddScoped<IScheduleCreationService, EfScheduleCreationService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());

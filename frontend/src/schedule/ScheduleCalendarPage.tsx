@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { calendarRange, formatRange, todayInZone, validDateKey, addDays, type CalendarView } from './calendarDate.ts'
 import { ScheduleCalendarGrid } from './ScheduleCalendarGrid.tsx'
 import { ScheduleCalendarSidebar } from './ScheduleCalendarSidebar.tsx'
@@ -53,7 +53,7 @@ export function ScheduleCalendarPage() {
           <button type="button" aria-pressed={view === 'day'} onClick={() => setView('day')}>Dan</button>
         </div>
         <button type="button" className="schedule-today" onClick={() => update({ date: todayInZone(timeZone) })}>Danas</button>
-        <button type="button" className="schedule-new" disabled title="Novi termin dolazi u Phase 4.3.">+ Novi termin</button>
+        <Link className="schedule-new" to={`/schedule/new?date=${anchor}`}>+ Novi termin</Link>
       </div>
     </header>
 

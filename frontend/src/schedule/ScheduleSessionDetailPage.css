@@ -55,7 +55,7 @@
 .session-notes > small { display: block; margin-top: .25rem; color: #7c8c9c; font-size: .54rem; text-align: right; }
 .session-actions { display: grid; gap: .35rem; }
 .session-actions h2 { margin-bottom: .45rem; }
-.session-actions button { padding: .42rem .55rem; border: 1px solid #ccd8e4; border-radius: .28rem; color: #1c4b85; background: #fff; font: inherit; font-size: .62rem; font-weight: 700; text-align: left; }
+.session-actions button, .session-actions a { padding: .42rem .55rem; border: 1px solid #ccd8e4; border-radius: .28rem; color: #1c4b85; background: #fff; font: inherit; font-size: .62rem; font-weight: 700; text-align: left; text-decoration: none; }
 .session-actions button:first-of-type { color: #a2313f; }
 .session-related-history { display: grid; grid-template-columns: .8fr 1.2fr; gap: 2rem; margin-top: .9rem; }
 .session-related-history > div + div { padding-left: 2rem; border-left: 1px solid #e3e9ef; }

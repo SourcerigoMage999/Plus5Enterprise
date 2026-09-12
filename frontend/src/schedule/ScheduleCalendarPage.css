@@ -36,6 +36,7 @@
 }
 
 .schedule-page-actions button,
+.schedule-page-actions a,
 .schedule-board-header button {
   min-height: 2.35rem;
   padding: 0.5rem 0.85rem;
@@ -46,6 +47,8 @@
   font: inherit;
   font-size: 0.8rem;
   font-weight: 700;
+  text-align: center;
+  text-decoration: none;
 }
 
 .schedule-view-toggle {
@@ -66,6 +69,9 @@
 }
 
 .schedule-page-actions .schedule-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-color: #0757a4;
   color: #fff;
   background: #0757a4;

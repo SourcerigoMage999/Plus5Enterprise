@@ -239,3 +239,13 @@ Group/Student linkovi, status i neutralne buduće zone. Nema browser grešaka ni
 overflowa; široki roster pomiče se samo lokalno.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-4.2/README.md).
+
+## Phase 4.3 — Create session — PASS (2026-09-12)
+
+Canonical Screen 3.3 uspoređen je sa stvarnim Teacher-only create obrascem na desktopu
+1536×1024 i mobitelu 390×844. Potvrđeni su trostupčani canonical layout, stvarni owner-scoped
+Group, datum/vrijeme, lokacija, live sažetak, spremanje i pošteno zaključani budući contracti.
+Nema browser grešaka ni document overflowa. Grupna recurrence namjerno je disabled prema
+tekstualnom sourceu i zaključanoj granici redovitog Group rasporeda.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-4.3/README.md).

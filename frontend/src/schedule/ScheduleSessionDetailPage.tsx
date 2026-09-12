@@ -62,7 +62,7 @@ function DetailContent({ session }: { readonly session: ScheduleSessionDetail })
       <div className="session-right-column">
         <section className="session-card"><h2>⌂ Domaća zadaća</h2><div className="session-empty session-empty--compact"><strong>Nema domaće zadaće</strong><p>Homework workflow dolazi u Phase 12.</p></div><button className="session-outline-action" disabled>＋ Dodaj domaću zadaću</button></section>
         <section className="session-card session-notes"><h2>▱ Napomene učitelja</h2><div>{session.notes ?? 'Nema napomene za ovaj termin.'}</div><small>{session.notes?.length ?? 0} / 2000</small></section>
-        <section className="session-card session-actions"><h2>ϟ Akcije termina</h2><button disabled title="Otkazivanje pripada Phase 4.4 write contractu.">⊘ Otkaži termin</button><button disabled title="Dupliciranje termina nije dio Phase 4.2.">▣ Dupliciraj termin</button><button disabled title="Slanje ovisi o budućem notification contractu.">➤ Pošalji podsjetnik učenicima</button></section>
+        <section className="session-card session-actions"><h2>ϟ Akcije termina</h2><button disabled title="Otkazivanje pripada Phase 4.4 write contractu.">⊘ Otkaži termin</button><Link to={`/schedule/new?duplicate=${session.id}`}>▣ Dupliciraj termin</Link><button disabled title="Slanje ovisi o budućem notification contractu.">➤ Pošalji podsjetnik učenicima</button></section>
       </div>
     </div>
 

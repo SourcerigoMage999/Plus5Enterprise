@@ -60,7 +60,9 @@ vizualne hijerarhije, ali pošteno zaključani:
 - attendance i sažetak stvarno održanog sata čekaju delivery/evidence model Phase 10–11
 - domaća zadaća čeka Phase 12
 - notification slanje čeka Phase 16 contract
-- Uredi/Otkaži termin čekaju Phase 4.4 write contract; dupliciranje nije dio 4.2
+- Uredi/Otkaži termin čekaju Phase 4.4 write contract
+- Phase 4.3 aktivira dupliciranje kao prefill `/schedule/new?duplicate=:sessionId`; novi write
+  prolazi `SESSION_CREATION.md` i ne klonira izvornu recurrence seriju
 
 `Session.Notes` se prikazuje kao stvarna napomena uz termin, ali se u 4.2 ne uređuje. Niti
 jedna zaključana kontrola ne daje lažni uspjeh ili client-only write.
@@ -85,6 +87,7 @@ Prije completiona obavezno je dokazati:
 
 ## Izvan Phase 4.2
 
-Create/edit/cancel/duplicate Session writes, promjene jednog ili budućih termina, recurrence
+Create/edit/cancel Session writes, promjene jednog ili budućih termina, recurrence
 replenishment, attendance, LessonPlan, live lesson, Evidence, Homework, Material i Notification
-modeli nisu dio ove faze.
+modeli nisu dio Phase 4.2. Create i duplicate-prefill naknadno su definirani u
+`SESSION_CREATION.md`; ovaj dokument ostaje read-detail contract.

@@ -37,7 +37,7 @@ describe('schedule calendar', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: '3.1 Raspored' })).toBeInTheDocument()
     expect(screen.getByText('Pregledajte raspored svih grupa i individualnih sati.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '+ Novi termin' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: '+ Novi termin' })).toHaveAttribute('href', '/schedule/new?date=2026-09-16')
     expect(screen.getByRole('region', { name: /Kalendar termina/ })).toHaveAttribute('tabindex', '0')
     expect(screen.getAllByText('B1 Teens')).not.toHaveLength(0)
     expect(screen.getByRole('link', { name: /Otvori detalj termina B1 Teens/ })).toHaveAttribute('href', '/schedule/session-1')

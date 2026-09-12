@@ -68,7 +68,9 @@ Phase 4.1 zamjenjuje foundation `/schedule` stvarnim Screen 3.1 calendar routeom
 week/day i filtri ostaju URL navigation state; responsive tjedni grid ima lokalni scroll i ne
 uvodi globalni calendar store. Phase 4.2 dodaje deep-linkable `/schedule/:sessionId` read-only
 detalj s povratkom na datum, Group/Student vezama i lokalno pomičnim rosterom. Write kontrole
-ostaju onemogućene do Phase 4.3–4.4 i kasnijih domain gateova.
+za create i duplicate-prefill aktivirane su u Phase 4.3 kroz `/schedule/new`; uspjeh vodi na
+novi detalj, a dirty obrazac koristi postojeći navigation guard. Edit/cancel ostaju
+onemogućeni do Phase 4.4, dok reminders/notifications čekaju kasnije domain gateove.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

@@ -23,9 +23,10 @@ Phase 4.1 je owner-scoped read-only pregled postojećih `Session` zapisa:
   canonical zapisa
 - raspored se ne duplicira u zasebnu calendar tablicu niti se iz URL-a izvodi ownership
 
-`+ Novi termin`, detaljni izvještaj i centar podsjetnika pripadaju kasnijim fazama. Phase 4.2
-aktivira klik na termin i pojedini podsjetnik kao stvaran link na `/schedule/:sessionId` prema
-`SESSION_DETAIL.md`; ostale kontrole ostaju stvarno onemogućene.
+Phase 4.2 aktivira klik na termin i pojedini podsjetnik kao stvaran link na
+`/schedule/:sessionId` prema `SESSION_DETAIL.md`. Phase 4.3 aktivira `+ Novi termin`, prenosi
+odabrani datum u `/schedule/new?date=YYYY-MM-DD` i primjenjuje `SESSION_CREATION.md`. Detaljni
+izvještaj i centar podsjetnika ostaju stvarno onemogućeni.
 
 ## API
 

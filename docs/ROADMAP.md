@@ -213,7 +213,19 @@ nije započeta.
 
 **Završni SA approval: APPROVED — 2026-09-12.**
 
-## 4.3 Screen 3.3 Create session — TODO
+## 4.3 Screen 3.3 Create session — DONE — čeka završni SA review
+
+**Dovršeno 2026-09-12:** Teacher-only, CSRF-protected i Serializable atomski create za dodatni
+jednokratni Group Session te jednokratni ili tjedni Individual Session. Otvorena individualna
+serija sprema canonical recurrence i početnih 12 tjedana; grupni redoviti raspored ostaje 2.8/2.9.
+Owner/context/location zaštita, Europe/Zagreb DST validacija, Teacher/location/recurrence
+conflicti i concurrent write provjeravaju se na serveru. Calendar date flow, stvarni
+Group/Student/Location izbori, duplicate-prefill, dirty guard i navigation na novi detalj rade.
+Canonical desktop/mobile gate prolazi s 0 browser grešaka i bez document overflowa. Release
+build, 142 backend/SQL, 4 architecture i 55 frontend testova, format/lint/build, auditi te
+Docker health/non-root runtime prolaze. Contract: `SESSION_CREATION.md`; završni audit:
+`summaries/PHASE_4.3_SESSION_CREATION_SUMMARY.md`. Nema nove migracije ni dependencyja.
+
 ## 4.4 Screen 3.4 Edit session — TODO
 ## 4.5 Recurrence/series consistency tests — TODO
 

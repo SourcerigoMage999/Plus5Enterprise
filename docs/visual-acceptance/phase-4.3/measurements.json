@@ -1,0 +1,102 @@
+{
+  "screens": [
+    {
+      "name": "create-session",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "cards": [
+        {
+          "x": 226,
+          "y": 149,
+          "width": 452,
+          "height": 528
+        },
+        {
+          "x": 691,
+          "y": 149,
+          "width": 452,
+          "height": 528
+        },
+        {
+          "x": 226,
+          "y": 690,
+          "width": 452,
+          "height": 216
+        },
+        {
+          "x": 691,
+          "y": 690,
+          "width": 452,
+          "height": 216
+        },
+        {
+          "x": 1156,
+          "y": 690,
+          "width": 352,
+          "height": 216
+        }
+      ],
+      "summary": {
+        "x": 1156,
+        "y": 149,
+        "width": 352,
+        "height": 381
+      }
+    },
+    {
+      "name": "create-session",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "cards": [
+        {
+          "x": 22,
+          "y": 462,
+          "width": 345,
+          "height": 607
+        },
+        {
+          "x": 22,
+          "y": 1082,
+          "width": 345,
+          "height": 520
+        },
+        {
+          "x": 22,
+          "y": 1615,
+          "width": 345,
+          "height": 124
+        },
+        {
+          "x": 22,
+          "y": 1752,
+          "width": 345,
+          "height": 313
+        },
+        {
+          "x": 22,
+          "y": 2079,
+          "width": 345,
+          "height": 216
+        }
+      ],
+      "summary": {
+        "x": 22,
+        "y": 2308,
+        "width": 345,
+        "height": 381
+      }
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "desktop: canonical hierarchy, real owner-scoped group, responsive form, intentional future-control boundaries, no document overflow",
+    "mobile: canonical hierarchy, real owner-scoped group, responsive form, intentional future-control boundaries, no document overflow"
+  ],
+  "data": {
+    "contextId": "9ffbcd27-531c-4d68-be58-4203477058e7",
+    "date": "2026-10-03",
+    "writes": 0
+  }
+}

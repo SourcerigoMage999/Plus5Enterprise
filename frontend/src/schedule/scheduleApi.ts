@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getJson } from '../api/apiClient.ts'
+import { getJson, postJson } from '../api/apiClient.ts'
+import type { Group, Page } from '../groups/groupsApi.ts'
+import type { PagedStudents } from '../students/studentsApi.ts'
 
 export interface ScheduleOption { id: string; name: string }
 
@@ -81,6 +83,66 @@ export interface ScheduleSessionDetail {
   participants: ScheduleParticipant[]
 }
 
+export interface ScheduleLocation { id: string; name: string }
+
+export interface ScheduleCreateInput {
+  deliveryMode: 1 | 2
+  contextId: string
+  title: string | null
+  notes: string | null
+  date: string
+  startsAt: string
+  endsAt: string
+  repeatWeekly: boolean
+  endsOn: string | null
+  locationId: string | null
+  onlineMeetingUrl: string | null
+}
+
+export interface ScheduleCreateResult { id: string; sessionCount: number }
+
+export function createScheduleSession(input: ScheduleCreateInput) {
+  return postJson<ScheduleCreateResult>('/schedule', input)
+}
+
+export function useScheduleCreateContexts(mode: 1 | 2, search: string, revision: number) {
+  const query = new URLSearchParams({ page: '1', pageSize: '25', status: '1' })
+  if (search) query.set('search', search)
+  const path = mode === 2 ? `/groups?${query}` : `/students?${query}`
+  const [state, setState] = useState<{ path: string; revision: number; data?: Page<Group> | PagedStudents; error?: string }>()
+
+  useEffect(() => {
+    const controller = new AbortController()
+    getJson<Page<Group> | PagedStudents>(path, controller.signal).then(data => {
+      if (!controller.signal.aborted) setState({ path, revision, data })
+    }).catch((error: unknown) => {
+      if (!controller.signal.aborted) setState({ path, revision, error: error instanceof Error ? error.message : 'Grupe ili učenike nije moguće učitati.' })
+    })
+    return () => controller.abort()
+  }, [path, revision])
+
+  return state?.path === path && state.revision === revision ? state : undefined
+}
+
+export function useScheduleLocations(search: string, revision: number) {
+  const query = new URLSearchParams({ page: '1' })
+  if (search) query.set('search', search)
+  const path = `/groups/create-locations?${query}`
+  const [state, setState] = useState<{ path: string; revision: number; data?: Page<ScheduleLocation>; error?: string }>()
+
+  useEffect(() => {
+    const controller = new AbortController()
+    getJson<Page<ScheduleLocation>>(path, controller.signal).then(data => {
+      if (!controller.signal.aborted) setState({ path, revision, data })
+    }).catch((error: unknown) => {
+      if (!controller.signal.aborted) setState({ path, revision, error: error instanceof Error ? error.message : 'Lokacije nije moguće učitati.' })
+    })
+    return () => controller.abort()
+  }, [path, revision])
+
+  return state?.path === path && state.revision === revision ? state : undefined
+}
+
 export function useScheduleCalendar(path: string, revision: number) {
   const [state, setState] = useState<{ path: string; revision: number; data?: ScheduleCalendar; error?: string }>()
 
@@ -101,11 +163,12 @@ export function useScheduleCalendar(path: string, revision: number) {
   return state?.path === path && state.revision === revision ? state : undefined
 }
 
-export function useScheduleSessionDetail(sessionId: string, revision: number) {
+export function useScheduleSessionDetail(sessionId: string, revision: number, enabled = true) {
   const path = `/schedule/${encodeURIComponent(sessionId)}`
   const [state, setState] = useState<{ path: string; revision: number; data?: ScheduleSessionDetail; error?: string; status?: number }>()
 
   useEffect(() => {
+    if (!enabled) return
     const controller = new AbortController()
     getJson<ScheduleSessionDetail>(path, controller.signal).then((data) => {
       if (!controller.signal.aborted) setState({ path, revision, data })
@@ -118,7 +181,7 @@ export function useScheduleSessionDetail(sessionId: string, revision: number) {
       })
     })
     return () => controller.abort()
-  }, [path, revision])
+  }, [enabled, path, revision])
 
-  return state?.path === path && state.revision === revision ? state : undefined
+  return enabled && state?.path === path && state.revision === revision ? state : undefined
 }

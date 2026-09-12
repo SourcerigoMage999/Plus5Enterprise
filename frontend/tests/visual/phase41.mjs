@@ -56,7 +56,8 @@ try {
     await page.locator('.schedule-calendar').waitFor()
     const active = page.getByRole('link', { name: /Raspored/ })
     if (await active.getAttribute('aria-current') !== 'page') throw new Error('Schedule navigation is not active')
-    if (await page.getByRole('button', { name: '+ Novi termin' }).isEnabled()) throw new Error('Future create action must remain disabled')
+    const createLink = page.getByRole('link', { name: '+ Novi termin' })
+    if (!await createLink.getAttribute('href')) throw new Error('Create-session navigation is missing')
     await page.getByText('Jedinstvenih učenika').waitFor()
     await page.getByText('Planiranih dolazaka').waitFor()
     await shot('calendar-week')
@@ -66,7 +67,7 @@ try {
     await page.waitForFunction(() => document.querySelector('button[aria-pressed="true"]')?.textContent === 'Dan')
     await page.locator('.schedule-calendar--day').waitFor()
     await shot('calendar-day')
-    evidence.checks.push(`${size}: canonical calendar, week/day, filters, exact metrics, disabled future actions, no document overflow`)
+    evidence.checks.push(`${size}: canonical calendar, week/day, filters, exact metrics, Phase 4.3 create navigation, no document overflow`)
     await context.close()
   }
   if (evidence.errors.length) throw new Error('Browser errors occurred')
