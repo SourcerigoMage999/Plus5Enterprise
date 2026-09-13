@@ -29,11 +29,12 @@ describe('schedule session detail', () => {
     expect(screen.getByText('Termin je kreiran iz rasporeda.')).toBeInTheDocument()
   })
 
-  it('keeps future writes honest and disabled at the Phase 4.2 boundary', async () => {
+  it('links scheduled sessions to Phase 4.4 edit while keeping later writes disabled', async () => {
     vi.mocked(fetch).mockResolvedValue(json(detail))
     open()
     await screen.findAllByText('Grammar 8A')
-    expect(screen.getByRole('button', { name: /Uredi termin/ })).toBeDisabled()
+    expect(screen.getByRole('link', { name: /Uredi termin/ })).toHaveAttribute('href', '/schedule/session-1/edit')
+    expect(screen.getByRole('link', { name: /Otkaži termin/ })).toHaveAttribute('href', '/schedule/session-1/edit')
     expect(screen.getByRole('button', { name: /Pokreni sat/ })).toBeDisabled()
     expect(screen.getByRole('button', { name: /Pripremi sat/ })).toBeDisabled()
     expect(screen.getByRole('button', { name: /Dodaj domaću zadaću/ })).toBeDisabled()

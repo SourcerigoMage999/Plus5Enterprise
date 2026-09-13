@@ -50,6 +50,7 @@ public sealed class AuthenticationApiTests
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousSchedule = await client.GetAsync("/api/v1/schedule?from=2026-09-14&to=2026-09-21", CancellationToken.None);
         using var anonymousSessionDetail = await client.GetAsync($"/api/v1/schedule/{Guid.NewGuid()}", CancellationToken.None);
+        using var anonymousSessionEdit = await client.GetAsync($"/api/v1/schedule/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousSessionCreate = await client.PostAsJsonAsync("/api/v1/schedule", new { }, CancellationToken.None);
         using var missingCsrf = await client.PostAsJsonAsync(
             "/api/v1/auth/register",
@@ -64,6 +65,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousSchedule.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousSessionDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousSessionEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousSessionCreate.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, missingCsrf.StatusCode);
     }
@@ -150,11 +152,43 @@ public sealed class AuthenticationApiTests
             repeatWeekly = false,
         }, csrf, authCookie);
         var createdSession = await createSession.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        var createdSessionId = createdSession.GetProperty("id").GetGuid();
+        await using (var scope = app.Services.CreateAsyncScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<Plus5DbContext>();
+            var storedSession = await db.Sessions.SingleAsync(item => item.Id == createdSessionId);
+            db.Entry(storedSession).Property("RowVersion").CurrentValue = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            await db.SaveChangesAsync();
+        }
         using var createdSessionDetail = await GetWithCookiesAsync(
             client,
-            $"/api/v1/schedule/{createdSession.GetProperty("id").GetGuid()}",
+            $"/api/v1/schedule/{createdSessionId}",
             authCookie,
             csrf.Cookie);
+        using var sessionEdit = await GetWithCookiesAsync(
+            client, $"/api/v1/schedule/{createdSessionId}/edit", authCookie, csrf.Cookie);
+        var sessionEditModel = await sessionEdit.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        var sessionEditBody = new
+        {
+            title = "Updated API journey",
+            notes = "Changed safely.",
+            date = new DateOnly(2099, 9, 14),
+            startsAt = new TimeOnly(17, 0),
+            endsAt = new TimeOnly(18, 0),
+            locationId = (Guid?)null,
+            onlineMeetingUrl = (string?)null,
+            scope = 1,
+            rowVersion = sessionEditModel.GetProperty("rowVersion").GetString(),
+        };
+        using var previewSessionEdit = await PostAsync(
+            client, $"/api/v1/schedule/{createdSessionId}/conflicts", sessionEditBody, csrf, authCookie);
+        using var updateSession = await PutAsync(
+            client, $"/api/v1/schedule/{createdSessionId}", sessionEditBody, csrf, authCookie);
+        using var refreshedSessionEdit = await GetWithCookiesAsync(
+            client, $"/api/v1/schedule/{createdSessionId}/edit", authCookie, csrf.Cookie);
+        var refreshedSessionEditModel = await refreshedSessionEdit.Content.ReadFromJsonAsync<JsonElement>(CancellationToken.None);
+        using var cancelSession = await PostAsync(client, $"/api/v1/schedule/{createdSessionId}/cancel",
+            new { rowVersion = refreshedSessionEditModel.GetProperty("rowVersion").GetString() }, csrf, authCookie);
         using var invalidGroupRecurrence = await PostAsync(client, "/api/v1/schedule", new
         {
             deliveryMode = 2,
@@ -205,6 +239,13 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createSession.StatusCode);
         Assert.Equal(HttpStatusCode.OK, createdSessionDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, sessionEdit.StatusCode);
+        Assert.True(previewSessionEdit.StatusCode == HttpStatusCode.OK,
+            await previewSessionEdit.Content.ReadAsStringAsync(CancellationToken.None));
+        Assert.True(updateSession.StatusCode == HttpStatusCode.OK,
+            await updateSession.Content.ReadAsStringAsync(CancellationToken.None));
+        Assert.Equal(HttpStatusCode.OK, refreshedSessionEdit.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, cancelSession.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, invalidGroupRecurrence.StatusCode);
         Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
         Assert.Equal(HttpStatusCode.OK, edit.StatusCode);
@@ -382,6 +423,8 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IScheduleCalendarQuery, EfScheduleCalendarQuery>();
         builder.Services.AddScoped<IScheduleSessionDetailQuery, EfScheduleSessionDetailQuery>();
         builder.Services.AddScoped<IScheduleCreationService, EfScheduleCreationService>();
+        builder.Services.AddScoped<IScheduleEditingQuery, EfScheduleEditingQuery>();
+        builder.Services.AddScoped<IScheduleEditingService, EfScheduleEditingService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());

@@ -6,7 +6,7 @@
 .session-detail-header h1 { margin: 0; color: #0b3472; font-size: clamp(1.85rem, 2.8vw, 2.45rem); letter-spacing: -.04em; }
 .session-detail-header p { margin: .35rem 0 0; color: #657992; font-size: .9rem; }
 .session-detail-header-actions { display: flex; gap: .75rem; }
-.session-detail-header-actions button { min-width: 10.5rem; min-height: 2.7rem; padding: .6rem 1rem; border: 1px solid #c9d5e3; border-radius: .42rem; color: #123d78; background: #fff; font: inherit; font-size: .8rem; font-weight: 800; }
+.session-detail-header-actions button, .session-detail-header-actions a { min-width: 10.5rem; min-height: 2.7rem; padding: .6rem 1rem; border: 1px solid #c9d5e3; border-radius: .42rem; color: #123d78; background: #fff; font: inherit; font-size: .8rem; font-weight: 800; text-align: center; text-decoration: none; }
 .session-detail-header-actions .session-detail-primary { border-color: #0754e6; color: #fff; background: #0754e6; }
 .session-detail-header-actions button:disabled { cursor: not-allowed; opacity: .72; }
 .session-identity { display: grid; grid-template-columns: auto minmax(12rem, .75fr) minmax(28rem, 2fr) auto; align-items: center; gap: 1rem; margin-bottom: 1.15rem; padding: 1rem 1.25rem; border: 1px solid #dce5ee; border-radius: .6rem; background: #fff; box-shadow: 0 .2rem .75rem rgb(17 51 91 / 5%); }
@@ -57,6 +57,7 @@
 .session-actions h2 { margin-bottom: .45rem; }
 .session-actions button, .session-actions a { padding: .42rem .55rem; border: 1px solid #ccd8e4; border-radius: .28rem; color: #1c4b85; background: #fff; font: inherit; font-size: .62rem; font-weight: 700; text-align: left; text-decoration: none; }
 .session-actions button:first-of-type { color: #a2313f; }
+.session-actions .session-action-danger { color: #a2313f; }
 .session-related-history { display: grid; grid-template-columns: .8fr 1.2fr; gap: 2rem; margin-top: .9rem; }
 .session-related-history > div + div { padding-left: 2rem; border-left: 1px solid #e3e9ef; }
 .session-related-history dl { display: grid; grid-template-columns: 5rem 1fr; gap: .5rem; margin: 0; font-size: .65rem; }
@@ -89,7 +90,7 @@
 @media (max-width: 44rem) {
   .session-detail-header { align-items: stretch; flex-direction: column; }
   .session-detail-header-actions { display: grid; grid-template-columns: 1fr 1fr; }
-  .session-detail-header-actions button { min-width: 0; }
+  .session-detail-header-actions button, .session-detail-header-actions a { min-width: 0; }
   .session-identity { grid-template-columns: auto 1fr; padding: .85rem; }
   .session-context-avatar { width: 3.2rem; height: 3.2rem; }
   .session-facts { grid-template-columns: 1fr 1fr; }

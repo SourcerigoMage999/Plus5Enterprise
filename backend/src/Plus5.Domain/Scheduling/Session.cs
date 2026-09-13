@@ -80,12 +80,29 @@ public sealed class Session
 
     public void Reschedule(DateTimeOffset startsAtUtc, DateTimeOffset endsAtUtc, DateTimeOffset updatedAtUtc)
     {
+        UpdateDetails(startsAtUtc, endsAtUtc, Title, Notes, LocationId, OnlineMeetingUrl, updatedAtUtc);
+    }
+
+    public void UpdateDetails(
+        DateTimeOffset startsAtUtc,
+        DateTimeOffset endsAtUtc,
+        string? title,
+        string? notes,
+        Guid? locationId,
+        string? onlineMeetingUrl,
+        DateTimeOffset updatedAtUtc)
+    {
         EnsureScheduled();
         EnsureCanUpdate(updatedAtUtc);
         EnsureTimeRange(startsAtUtc, endsAtUtc);
+        EnsureLocation(locationId, onlineMeetingUrl);
 
         StartsAtUtc = startsAtUtc;
         EndsAtUtc = endsAtUtc;
+        Title = NormalizeOptionalText(title, TitleMaxLength, nameof(title));
+        Notes = NormalizeOptionalText(notes, NotesMaxLength, nameof(notes));
+        LocationId = locationId;
+        OnlineMeetingUrl = NormalizeOnlineMeetingUrl(onlineMeetingUrl);
         IsSeriesException = RecurringSessionSeriesId.HasValue;
         UpdatedAtUtc = updatedAtUtc;
     }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getJson, postJson } from '../api/apiClient.ts'
+import { getJson, postJson, putJson } from '../api/apiClient.ts'
 import type { Group, Page } from '../groups/groupsApi.ts'
 import type { PagedStudents } from '../students/studentsApi.ts'
 
@@ -101,8 +101,65 @@ export interface ScheduleCreateInput {
 
 export interface ScheduleCreateResult { id: string; sessionCount: number }
 
+export interface ScheduleEditItem {
+  detail: ScheduleSessionDetail
+  onlineMeetingUrl: string | null
+  rowVersion: string
+  canEditFutureSeries: boolean
+}
+
+export interface ScheduleEditInput {
+  title: string | null
+  notes: string | null
+  date: string
+  startsAt: string
+  endsAt: string
+  locationId: string | null
+  onlineMeetingUrl: string | null
+  scope: 1 | 2
+  rowVersion: string
+}
+
+export interface ScheduleEditResult { id: string; sessionCount: number }
+
+export interface ScheduleConflictPreview { hasConflict: boolean }
+
 export function createScheduleSession(input: ScheduleCreateInput) {
   return postJson<ScheduleCreateResult>('/schedule', input)
+}
+
+export function updateScheduleSession(sessionId: string, input: ScheduleEditInput) {
+  return putJson<ScheduleEditResult>(`/schedule/${encodeURIComponent(sessionId)}`, input)
+}
+
+export function previewScheduleSession(sessionId: string, input: ScheduleEditInput) {
+  return postJson<ScheduleConflictPreview>(`/schedule/${encodeURIComponent(sessionId)}/conflicts`, input, false)
+}
+
+export function cancelScheduleSession(sessionId: string, rowVersion: string) {
+  return postJson<void>(`/schedule/${encodeURIComponent(sessionId)}/cancel`, { rowVersion })
+}
+
+export function useScheduleEdit(sessionId: string, revision: number) {
+  const path = `/schedule/${encodeURIComponent(sessionId)}/edit`
+  const [state, setState] = useState<{ path: string; revision: number; data?: ScheduleEditItem; error?: string; status?: number }>()
+
+  useEffect(() => {
+    const controller = new AbortController()
+    getJson<ScheduleEditItem>(path, controller.signal).then(data => {
+      if (!controller.signal.aborted) setState({ path, revision, data })
+    }).catch((error: unknown) => {
+      if (!controller.signal.aborted) setState({
+        path,
+        revision,
+        error: error instanceof Error ? error.message : 'Podatke termina nije moguće učitati.',
+        status: typeof error === 'object' && error !== null && 'status' in error ? Number(error.status) : undefined,
+      })
+    })
+    return () => controller.abort()
+  }, [path, revision])
+
+  return state?.path === path && state.revision === revision ? state : undefined
 }
 
 export function useScheduleCreateContexts(mode: 1 | 2, search: string, revision: number) {

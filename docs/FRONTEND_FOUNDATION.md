@@ -70,7 +70,8 @@ uvodi globalni calendar store. Phase 4.2 dodaje deep-linkable `/schedule/:sessio
 detalj s povratkom na datum, Group/Student vezama i lokalno pomičnim rosterom. Write kontrole
 za create i duplicate-prefill aktivirane su u Phase 4.3 kroz `/schedule/new`; uspjeh vodi na
 novi detalj, a dirty obrazac koristi postojeći navigation guard. Edit/cancel ostaju
-onemogućeni do Phase 4.4, dok reminders/notifications čekaju kasnije domain gateove.
+aktivirani su u Phase 4.4 kroz `/schedule/:sessionId/edit`; update i cancel vraćaju se na
+odredišni detalj. Reminders/notifications i dalje čekaju kasnije domain gateove.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

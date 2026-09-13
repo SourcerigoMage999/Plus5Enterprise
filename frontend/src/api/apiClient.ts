@@ -120,6 +120,7 @@ function friendlyMessage(code?: string): string {
     case 'schedule_conflict': return 'Raspored se preklapa s drugim terminom. Promijenite termine prije spremanja.'
     case 'schedule_context_not_found': return 'Odabrana grupa, učenik ili lokacija više nisu dostupni. Osvježite podatke.'
     case 'schedule_context_unavailable': return 'Termin je moguće zakazati samo za aktivnu grupu ili učenika koji nije neaktivan.'
+    case 'schedule_session_unavailable': return 'Ovaj termin više nije moguće promijeniti ili otkazati.'
     case 'invalid_local_time': return 'Termin pada na nepostojeće ili dvosmisleno lokalno vrijeme pri promjeni sata. Odaberite drugo vrijeme.'
     case 'invalid_credentials':
       return 'E-mail adresa ili lozinka nisu ispravni.'

@@ -111,7 +111,8 @@ Student list API/UI contract, filteri i neutralni progress boundary nalaze se u 
 
 Group create/edit i Schedule contracti nalaze se u [`docs/GROUP_CREATION.md`](docs/GROUP_CREATION.md),
 [`docs/GROUP_EDITING.md`](docs/GROUP_EDITING.md), [`docs/SCHEDULE_CALENDAR.md`](docs/SCHEDULE_CALENDAR.md)
-[`docs/SESSION_DETAIL.md`](docs/SESSION_DETAIL.md) i [`docs/SESSION_CREATION.md`](docs/SESSION_CREATION.md).
+[`docs/SESSION_DETAIL.md`](docs/SESSION_DETAIL.md), [`docs/SESSION_CREATION.md`](docs/SESSION_CREATION.md)
+i [`docs/SESSION_EDITING.md`](docs/SESSION_EDITING.md).
 
 ## Struktura
 

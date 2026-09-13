@@ -249,3 +249,13 @@ Nema browser grešaka ni document overflowa. Grupna recurrence namjerno je disab
 tekstualnom sourceu i zaključanoj granici redovitog Group rasporeda.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-4.3/README.md).
+
+## Phase 4.4 — Edit session — PASS (2026-09-13)
+
+Canonical Screen 3.4 uspoređen je sa stvarnim Teacher-only edit obrascem aktivnog Sessiona iz
+serije na desktopu 1536×1024 i mobitelu 390×844. Potvrđeni su prefill, zaključani kontekst,
+one-occurrence/future-series scope, vrijeme/lokacija, conflict zona, cancel/duplicate akcije i
+pošteno zaključani budući contracti. Nema browser grešaka, document overflowa ni writeova
+tijekom visual gatea.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-4.4/README.md).

@@ -19,7 +19,17 @@ public static class ScheduleCalendarEndpoints
             .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
         group.MapGet("/", GetAsync);
         group.MapGet("/{sessionId:guid}", DetailAsync);
-        group.MapPost("/", CreateAsync).AddEndpointFilter(async (context, next) =>
+        group.MapGet("/{sessionId:guid}/edit", EditAsync);
+        RequireCsrf(group.MapPost("/", CreateAsync));
+        RequireCsrf(group.MapPut("/{sessionId:guid}", UpdateAsync));
+        RequireCsrf(group.MapPost("/{sessionId:guid}/conflicts", PreviewAsync));
+        RequireCsrf(group.MapPost("/{sessionId:guid}/cancel", CancelAsync));
+
+        return endpoints;
+    }
+
+    private static void RequireCsrf(RouteHandlerBuilder builder) =>
+        builder.AddEndpointFilter(async (context, next) =>
         {
             try
             {
@@ -34,7 +44,71 @@ public static class ScheduleCalendarEndpoints
             return await next(context);
         });
 
-        return endpoints;
+    private static async Task<IResult> EditAsync(
+        Guid sessionId,
+        HttpContext context,
+        IScheduleEditingQuery query,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var owner, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var item = await query.GetAsync(owner, sessionId, cancellationToken);
+        return item is null ? TypedResults.NotFound() : TypedResults.Ok(item);
+    }
+
+    private static async Task<IResult> UpdateAsync(
+        Guid sessionId,
+        EditRequest request,
+        HttpContext context,
+        IScheduleEditingService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var owner, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await service.UpdateAsync(owner, sessionId, Map(request), cancellationToken);
+        return result.Failure == ScheduleEditFailure.None
+            ? TypedResults.Ok(new EditedResponse(result.SessionId!.Value, result.SessionCount))
+            : EditProblem(result.Failure);
+    }
+
+    private static async Task<IResult> PreviewAsync(
+        Guid sessionId,
+        EditRequest request,
+        HttpContext context,
+        IScheduleEditingService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var owner, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await service.PreviewAsync(owner, sessionId, Map(request), cancellationToken);
+        return result.Failure is ScheduleEditFailure.None or ScheduleEditFailure.ScheduleConflict
+            ? TypedResults.Ok(new ConflictResponse(result.HasConflict))
+            : EditProblem(result.Failure);
+    }
+
+    private static async Task<IResult> CancelAsync(
+        Guid sessionId,
+        CancelRequest request,
+        HttpContext context,
+        IScheduleEditingService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var owner, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await service.CancelAsync(owner, sessionId, request.RowVersion, cancellationToken);
+        return result == ScheduleEditFailure.None ? TypedResults.NoContent() : EditProblem(result);
     }
 
     private static async Task<IResult> DetailAsync(
@@ -161,6 +235,27 @@ public static class ScheduleCalendarEndpoints
         title: "Calendar request could not be completed.",
         extensions: new Dictionary<string, object?> { ["code"] = code });
 
+    private static IResult EditProblem(ScheduleEditFailure failure) => failure switch
+    {
+        ScheduleEditFailure.Invalid => Problem(400, "invalid_request"),
+        ScheduleEditFailure.NotFound => Problem(404, "schedule_context_not_found"),
+        ScheduleEditFailure.Unavailable => Problem(409, "schedule_session_unavailable"),
+        ScheduleEditFailure.ScheduleConflict => Problem(409, "schedule_conflict"),
+        ScheduleEditFailure.InvalidLocalTime => Problem(400, "invalid_local_time"),
+        _ => Problem(409, "concurrency_conflict"),
+    };
+
+    private static ScheduleEditCommand Map(EditRequest request) => new(
+        request.Title,
+        request.Notes,
+        request.Date,
+        request.StartsAt,
+        request.EndsAt,
+        request.LocationId,
+        request.OnlineMeetingUrl,
+        request.Scope,
+        request.RowVersion);
+
     public sealed record CalendarRequest(
         DateOnly? From,
         DateOnly? To,
@@ -195,6 +290,75 @@ public static class ScheduleCalendarEndpoints
         int AvailableSeats);
 
     public sealed record OptionResponse(Guid Id, string Name);
+
+    public sealed record EditedResponse(Guid Id, int SessionCount);
+
+    public sealed record ConflictResponse(bool HasConflict);
+
+    public sealed record CancelRequest
+    {
+        [MinLength(8)]
+        [MaxLength(8)]
+        public byte[] RowVersion { get; init; } = [];
+    }
+
+    public sealed record EditRequest : IValidatableObject
+    {
+        [StringLength(200)]
+        public string? Title { get; init; }
+
+        [StringLength(2000)]
+        public string? Notes { get; init; }
+
+        public DateOnly Date { get; init; }
+
+        public TimeOnly StartsAt { get; init; }
+
+        public TimeOnly EndsAt { get; init; }
+
+        public Guid? LocationId { get; init; }
+
+        [StringLength(2048)]
+        public string? OnlineMeetingUrl { get; init; }
+
+        [Range(1, 2)]
+        public int Scope { get; init; }
+
+        [MinLength(8)]
+        [MaxLength(8)]
+        public byte[] RowVersion { get; init; } = [];
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Date == default)
+            {
+                yield return new("A date is required.", [nameof(Date)]);
+            }
+
+            if (EndsAt <= StartsAt)
+            {
+                yield return new("The end time must be after the start time.", [nameof(EndsAt)]);
+            }
+
+            if (LocationId == Guid.Empty)
+            {
+                yield return new("The location identifier is invalid.", [nameof(LocationId)]);
+            }
+
+            if (LocationId.HasValue && !string.IsNullOrWhiteSpace(OnlineMeetingUrl))
+            {
+                yield return new("A physical and online location cannot be selected together.",
+                    [nameof(LocationId), nameof(OnlineMeetingUrl)]);
+            }
+
+            if (!string.IsNullOrWhiteSpace(OnlineMeetingUrl)
+                && (!Uri.TryCreate(OnlineMeetingUrl.Trim(), UriKind.Absolute, out var uri)
+                    || !string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)))
+            {
+                yield return new("The online meeting URL must use HTTPS.", [nameof(OnlineMeetingUrl)]);
+            }
+        }
+    }
 
     public sealed record CreateRequest : IValidatableObject
     {

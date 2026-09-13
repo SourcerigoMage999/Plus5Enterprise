@@ -36,9 +36,11 @@ try {
     await page.getByRole('heading', { name: '3.2 Detalj termina' }).waitFor()
     await page.locator('.session-detail-columns').waitFor()
     if (await page.getByRole('link', { name: 'Raspored', exact: true }).first().getAttribute('href') === null) throw new Error('Calendar breadcrumb is missing')
-    for (const name of [/Uredi termin/, /Pokreni sat/, /Pripremi sat/, /Otkaži termin/]) {
+    for (const name of [/Pokreni sat/, /Pripremi sat/]) {
       if (await page.getByRole('button', { name }).isEnabled()) throw new Error(`Future action ${name} must remain disabled`)
     }
+    if (!await page.getByRole('link', { name: /Uredi termin/ }).getAttribute('href')) throw new Error('Phase 4.4 edit link is missing')
+    if (!await page.getByRole('link', { name: /Otkaži termin/ }).getAttribute('href')) throw new Error('Phase 4.4 cancellation route is missing')
     const dimensions = await page.evaluate(() => ({
       viewport: innerWidth,
       document: document.documentElement.scrollWidth,
@@ -54,7 +56,7 @@ try {
     })
     await page.screenshot({ path: `${output}/session-detail-${size}.png`, fullPage: true, animations: 'disabled' })
     evidence.screens.push({ name: 'session-detail', size, ...dimensions })
-    evidence.checks.push(`${size}: canonical hierarchy, real session/context/participants, disabled future writes, no document overflow`)
+    evidence.checks.push(`${size}: canonical hierarchy, real session/context/participants, Phase 4.4 edit/cancel navigation, disabled later writes, no document overflow`)
     await context.close()
   }
   if (evidence.errors.length) throw new Error(`Browser errors occurred: ${evidence.errors.join('; ')}`)

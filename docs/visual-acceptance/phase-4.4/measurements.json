@@ -1,0 +1,56 @@
+{
+  "screens": [
+    {
+      "name": "edit-session",
+      "size": "desktop",
+      "viewport": 1536,
+      "document": 1536,
+      "basic": {
+        "x": 226,
+        "y": 142,
+        "width": 452
+      },
+      "center": {
+        "x": 691,
+        "y": 142,
+        "width": 452
+      },
+      "aside": {
+        "x": 1156,
+        "y": 142,
+        "width": 352
+      }
+    },
+    {
+      "name": "edit-session",
+      "size": "mobile",
+      "viewport": 390,
+      "document": 390,
+      "basic": {
+        "x": 22,
+        "y": 471,
+        "width": 345
+      },
+      "center": {
+        "x": 22,
+        "y": 986,
+        "width": 345
+      },
+      "aside": {
+        "x": 22,
+        "y": 2019,
+        "width": 345
+      }
+    }
+  ],
+  "errors": [],
+  "checks": [
+    "desktop: canonical hierarchy, real active-series Session, safe scope switch, live conflict preview, future-control boundaries, no overflow",
+    "mobile: canonical hierarchy, real active-series Session, safe scope switch, live conflict preview, future-control boundaries, no overflow"
+  ],
+  "data": {
+    "sessionId": "36547e35-1b3f-4533-b435-a44122453c1c",
+    "contextName": "Grupa 3.6 desktop mtx2v22d",
+    "writes": 0
+  }
+}

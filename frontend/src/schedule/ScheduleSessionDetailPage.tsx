@@ -28,7 +28,7 @@ function DetailContent({ session }: { readonly session: ScheduleSessionDetail })
     <nav className="session-detail-breadcrumb" aria-label="Putanja"><Link to={`/schedule?date=${start.date}`}>Raspored</Link><span>›</span><Link to={contextLink}>{session.contextName}</Link><span>›</span><strong>{dateShort(session.startsAtUtc, session.timeZoneId)}</strong></nav>
     <header className="session-detail-header">
       <div><h1>3.2 Detalj termina</h1><p>Pregled i upravljanje detaljima ovog termina.</p></div>
-      <div className="session-detail-header-actions"><button disabled title="Uređivanje jednog termina dolazi u Phase 4.4.">✎ Uredi termin</button><button className="session-detail-primary" disabled title="Pokretanje sata ovisi o pripremi sata i delivery modelu.">▷ Pokreni sat</button></div>
+      <div className="session-detail-header-actions">{session.status === 1 ? <Link to={`/schedule/${session.id}/edit`}>✎ Uredi termin</Link> : <button disabled title="Mijenjati se može samo zakazani termin.">✎ Uredi termin</button>}<button className="session-detail-primary" disabled title="Pokretanje sata ovisi o pripremi sata i delivery modelu.">▷ Pokreni sat</button></div>
     </header>
 
     <section className="session-identity ds-card" aria-label="Sažetak termina">
@@ -62,7 +62,7 @@ function DetailContent({ session }: { readonly session: ScheduleSessionDetail })
       <div className="session-right-column">
         <section className="session-card"><h2>⌂ Domaća zadaća</h2><div className="session-empty session-empty--compact"><strong>Nema domaće zadaće</strong><p>Homework workflow dolazi u Phase 12.</p></div><button className="session-outline-action" disabled>＋ Dodaj domaću zadaću</button></section>
         <section className="session-card session-notes"><h2>▱ Napomene učitelja</h2><div>{session.notes ?? 'Nema napomene za ovaj termin.'}</div><small>{session.notes?.length ?? 0} / 2000</small></section>
-        <section className="session-card session-actions"><h2>ϟ Akcije termina</h2><button disabled title="Otkazivanje pripada Phase 4.4 write contractu.">⊘ Otkaži termin</button><Link to={`/schedule/new?duplicate=${session.id}`}>▣ Dupliciraj termin</Link><button disabled title="Slanje ovisi o budućem notification contractu.">➤ Pošalji podsjetnik učenicima</button></section>
+        <section className="session-card session-actions"><h2>ϟ Akcije termina</h2>{session.status === 1 ? <Link className="session-action-danger" to={`/schedule/${session.id}/edit`}>⊘ Otkaži termin</Link> : <button disabled>⊘ Otkaži termin</button>}<Link to={`/schedule/new?duplicate=${session.id}`}>▣ Dupliciraj termin</Link><button disabled title="Slanje ovisi o budućem notification contractu.">➤ Pošalji podsjetnik učenicima</button></section>
       </div>
     </div>
 

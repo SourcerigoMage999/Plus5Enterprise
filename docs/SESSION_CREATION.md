@@ -6,7 +6,8 @@
 
 Ovaj dokument zaključava write granicu za Screen 3.3 Novi termin. Primjenjuje
 `SCHEDULING_FOUNDATION.md`, ADR-0012 i ADR-0015 te source-spec `3.3_Novi_termin.md` bez
-uvođenja Phase 4.4 edit/cancel ili kasnijih notification/delivery modela.
+uvođenja kasnijih notification/delivery modela. Phase 4.4 edit/cancel naknadno je zaključan u
+`SESSION_EDITING.md`; ne mijenja ovaj create contract.
 
 ## Poslovni opseg
 

@@ -213,7 +213,7 @@ nije započeta.
 
 **Završni SA approval: APPROVED — 2026-09-12.**
 
-## 4.3 Screen 3.3 Create session — DONE — čeka završni SA review
+## 4.3 Screen 3.3 Create session — DONE
 
 **Dovršeno 2026-09-12:** Teacher-only, CSRF-protected i Serializable atomski create za dodatni
 jednokratni Group Session te jednokratni ili tjedni Individual Session. Otvorena individualna
@@ -226,7 +226,21 @@ build, 142 backend/SQL, 4 architecture i 55 frontend testova, format/lint/build,
 Docker health/non-root runtime prolaze. Contract: `SESSION_CREATION.md`; završni audit:
 `summaries/PHASE_4.3_SESSION_CREATION_SUMMARY.md`. Nema nove migracije ni dependencyja.
 
-## 4.4 Screen 3.4 Edit session — TODO
+**Završni SA approval: APPROVED — 2026-09-12.**
+
+## 4.4 Screen 3.4 Edit session — DONE — čeka završni SA review
+
+**Dovršeno 2026-09-13:** Teacher-only owner-scoped edit/cancel, RowVersion i CSRF zaštita,
+server conflict preview te Serializable update jedne instance ili jednostavne promjene
+vremena/lokacije buduće serije. Jedna instanca postaje series exception; buduća promjena
+supersedira staru seriju, stvara successor i materializira 12 tjedana bez gubitka povijesti.
+Cancel mijenja status bez brisanja. Kontekst/mode i budući notification/reminder contracti
+ostaju pošteno zaključani, a Group day/slot struktura vodi u 2.9. Canonical desktop/mobile gate
+prolazi sa stvarnim Sessionom, 0 writeova, 0 browser grešaka i bez document overflowa. Release
+build, 143 backend/SQL, 4 architecture i 59 frontend testova, format/lint/build, auditi te
+Docker health/non-root runtime prolaze. Contract: `SESSION_EDITING.md`; završni audit:
+`summaries/PHASE_4.4_SESSION_EDITING_SUMMARY.md`. Nema nove migracije ni dependencyja.
+
 ## 4.5 Recurrence/series consistency tests — TODO
 
 **Acceptance cijele faze:** promjena termina ne smije nekonzistentno mijenjati trajni raspored grupe; ponašanje “samo ovaj termin” i buduća serija mora biti eksplicitno testirano.
