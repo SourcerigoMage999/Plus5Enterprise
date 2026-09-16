@@ -2,7 +2,7 @@
 
 ## Status
 
-`DONE — čeka završni SA review`
+`DONE — FINAL LOCK`
 
 ## Datum
 
@@ -142,5 +142,5 @@ u `OPEN_QUESTIONS.md` i ne blokiraju ovaj contract.
 
 ## Točna početna točka za sljedeću fazu
 
-Phase 4.6 i ukupna Phase 4 čekaju završni SA review. Phase 5.1 ne počinje prije tog acceptancea
-i zasebnog commit/push odobrenja.
+Završni SA acceptance Phase 4.6 i ukupne Phase 4 dan je 2026-09-16. Gate je zadovoljen i
+Phase 5.1 smije početi prema zasebno zaključanom contractu.

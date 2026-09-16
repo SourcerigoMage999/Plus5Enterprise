@@ -102,3 +102,79 @@ internal sealed class CurriculumConfiguration : IEntityTypeConfiguration<Curricu
             .HasDatabaseName("UX_Curricula_Code_Version");
     }
 }
+
+internal sealed class CurriculumOutcomeConfiguration
+    : IEntityTypeConfiguration<CurriculumOutcome>
+{
+    public void Configure(EntityTypeBuilder<CurriculumOutcome> builder)
+    {
+        builder.ToTable("CurriculumOutcomes", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_CurriculumOutcomes_SortOrder",
+                "[SortOrder] >= 0");
+            table.HasCheckConstraint(
+                "CK_CurriculumOutcomes_NotOwnParent",
+                "[ParentOutcomeId] IS NULL OR [ParentOutcomeId] <> [Id]");
+            table.HasCheckConstraint(
+                "CK_CurriculumOutcomes_NotOwnPredecessor",
+                "[SupersedesOutcomeId] IS NULL OR [SupersedesOutcomeId] <> [Id]");
+            table.HasCheckConstraint(
+                "CK_CurriculumOutcomes_OfficialCodeProvenance",
+                "[OfficialCode] IS NULL OR ([SourceAuthority] IS NOT NULL AND [SourceReference] IS NOT NULL)");
+        });
+
+        builder.HasKey(outcome => outcome.Id);
+        builder.HasAlternateKey(outcome => new { outcome.CurriculumId, outcome.Id })
+            .HasName("AK_CurriculumOutcomes_Curriculum_Id");
+        builder.Property(outcome => outcome.OfficialCode)
+            .HasMaxLength(CurriculumOutcome.OfficialCodeMaxLength);
+        builder.Property(outcome => outcome.SourceAuthority)
+            .HasMaxLength(CurriculumOutcome.SourceAuthorityMaxLength);
+        builder.Property(outcome => outcome.SourceReference)
+            .HasMaxLength(CurriculumOutcome.SourceReferenceMaxLength);
+        builder.Property(outcome => outcome.Title)
+            .HasMaxLength(CurriculumOutcome.TitleMaxLength)
+            .IsRequired();
+        builder.Property(outcome => outcome.Description)
+            .HasMaxLength(CurriculumOutcome.DescriptionMaxLength);
+        builder.Property(outcome => outcome.SortOrder).IsRequired();
+
+        builder.HasOne<Curriculum>()
+            .WithMany()
+            .HasForeignKey(outcome => outcome.CurriculumId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<CurriculumOutcome>()
+            .WithMany()
+            .HasForeignKey(outcome => new
+            {
+                outcome.CurriculumId,
+                outcome.ParentOutcomeId,
+            })
+            .HasPrincipalKey(outcome => new
+            {
+                outcome.CurriculumId,
+                outcome.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<CurriculumOutcome>()
+            .WithMany()
+            .HasForeignKey(outcome => outcome.SupersedesOutcomeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(outcome => new { outcome.CurriculumId, outcome.OfficialCode })
+            .IsUnique()
+            .HasFilter("[OfficialCode] IS NOT NULL")
+            .HasDatabaseName("UX_CurriculumOutcomes_Curriculum_OfficialCode");
+        builder.HasIndex(outcome => new
+        {
+            outcome.CurriculumId,
+            outcome.ParentOutcomeId,
+            outcome.SortOrder,
+            outcome.Id,
+        })
+            .HasDatabaseName("IX_CurriculumOutcomes_Curriculum_Parent_Sort_Id");
+        builder.HasIndex(outcome => outcome.SupersedesOutcomeId)
+            .HasDatabaseName("IX_CurriculumOutcomes_SupersedesOutcomeId");
+    }
+}

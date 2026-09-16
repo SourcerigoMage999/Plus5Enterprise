@@ -1,5 +1,27 @@
 # DECISION_LOG
 
+### ADR-0018 — Version-bound CurriculumOutcome adjacency hierarchy
+- **Datum:** 2026-09-16
+- **Status:** Accepted — SA odluka za Phase 5.1.
+- **Kontekst:** Knowledge/Evidence faza treba stabilnu curriculum hijerarhiju, ali ne postoji
+  odobren authoritative katalog niti dokaz da je jedna pedagoška taksonomija univerzalna.
+- **Odluka:** `CurriculumOutcome` je globalni referentni entitet unutar konkretne `Curriculum`
+  verzije. Hijerarhija koristi nullable self-referencing parent, nema hardkodiranu dubinu ni
+  tipove, zahtijeva same-Curriculum parent, zabranjuje self/cycle i ima eksplicitni
+  `SortOrder`.
+- **Identitet/provenance:** interni GUID nije službeni identifikator. `OfficialCode` je nullable,
+  čuva objavljenu vrijednost, jedinstven je unutar Curriculum verzije i smije postojati samo uz
+  `SourceAuthority` + `SourceReference`. Phase 5.1 ne odobrava niti uvozi katalog.
+- **Versioning:** Curriculum verzija je granica nepromjenjivosti; nema per-outcome temporalnih
+  polja ni in-place verzioniranja. Nullable `SupersedesOutcomeId` dopušten je samo prema drugoj
+  verziji iste Curriculum obitelji kada je lineage poznat: `Curriculum.Code` mora biti isti, a
+  `Curriculum.Version` različit.
+- **Knowledge granica:** outcome nije Knowledge Component i nema mastery/readiness/evidence
+  podatke. Budući odnos je eksplicitni M:N mapping, ali mapping model ne nastaje u 5.1.
+- **Posljedice:** uvodi se samo domain/persistence/query-test foundation i migracija, bez API-ja,
+  UI-ja, seeda, importa ili Teacher authoring lifecyclea. Detalji su u
+  `CURRICULUM_HIERARCHY.md`.
+
 ### ADR-0017 — Rolling recurrence replenishment zatvara Schedule fazu
 - **Datum:** 2026-09-16
 - **Status:** Accepted — SA odluka nakon Phase 4.5 reviewa.

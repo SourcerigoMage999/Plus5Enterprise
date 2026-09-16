@@ -260,7 +260,7 @@ promjene niti replenishment workera.
 future-series promjena versionira seriju, čuva eksplicitne occurrence odluke i pod
 concurrencyjem ne stvara divergentne successore. Ukupna Phase 4 ostaje otvorena do 4.6.
 
-## 4.6 Recurrence materialization replenishment — DONE — čeka završni SA review
+## 4.6 Recurrence materialization replenishment — FINAL LOCK
 
 **Cilj:** održavati zaključani rolling 12-week `Session` horizont za aktivne open-ended
 `RecurringSessionSeries` tako da canonical serija nastavi stvarati konkretne termine i nakon
@@ -289,14 +289,15 @@ idempotency, migration-upgrade i issue-lifecycle gateovi prolaze 9/9; puni backe
 te Docker migration/health/non-root/runtime smoke test prolaze. Završni audit:
 `summaries/PHASE_4.6_RECURRENCE_MATERIALIZATION_REPLENISHMENT_SUMMARY.md`.
 
-**Acceptance 4.6: PASS — čeka završni SA review.** Replenishment održava prozor bez duplikata,
+**Acceptance 4.6: PASS — nastavak odobren 2026-09-16.** Replenishment održava prozor bez duplikata,
 ne vraća eksplicitne ili terminalne occurrence odluke, jedna globalna instanca obrađuje batch, a
 operativni problemi ostaju vidljivi i auditabilni.
 
-**Acceptance cijele Phase 4: PASS — čeka završni SA review 4.6.** 4.1–4.5 regression gateovi
+**Acceptance cijele Phase 4: FINAL LOCK.** 4.1–4.5 regression gateovi
 ostaju zeleni; replenishment održava 12-tjedni prozor bez duplikata i bez vraćanja eksplicitno
 izmijenjenih ili terminalnih occurrencea; paralelno izvršavanje ne stvara divergentno stanje;
-operativni neuspjesi su vidljivi. Phase 5.1 počinje tek nakon završnog SA acceptancea 4.6.
+operativni neuspjesi su vidljivi. Završni SA acceptance 4.6 dan je 2026-09-16 i gate za 5.1
+je zadovoljen.
 
 ---
 
@@ -304,7 +305,33 @@ operativni neuspjesi su vidljivi. Phase 5.1 počinje tek nakon završnog SA acce
 
 > Ova faza je temelj za readiness, detalje znanja, inteligentne preporuke, materijale, zadatke, domaće zadaće i Ploču. Ne smije se svesti na UI postotke.
 
-## 5.1 Curriculum hierarchy — TODO
+## 5.1 Curriculum hierarchy — FINAL LOCK
+
+**Cilj:** uvesti globalni `CurriculumOutcome` model-only adjacency tree unutar konkretne
+Curriculum verzije, sa službenim identifier/provenance granicama, opcionalnim cross-version
+lineageom i stvarnim relational integrity gateom.
+
+**Zaključani scope 2026-09-16:** same-Curriculum parent, bez hardkodirane dubine/tipa, bez
+ciklusa, eksplicitni `SortOrder`, nullable authoritative `OfficialCode`, Curriculum-version
+immutability i budući eksplicitni M:N Knowledge mapping. Nema production kataloga/importa,
+Knowledge/Evidence modela, API-ja ili UI-ja. Source of truth: `CURRICULUM_HIERARCHY.md` i
+ADR-0018.
+
+**Dovršeno 2026-09-16:** uveden je globalni, version-bound `CurriculumOutcome` adjacency tree
+bez Teacher ownershipa, produkcijskog kataloga ili Knowledge/Evidence semantike. Domena i baza
+štite nenegativni redoslijed, same-Curriculum parent, self-reference, arbitrary cycle te
+supersession samo između različitih verzija iste `Curriculum.Code` obitelji. Nova
+migracija prolazi upgrade i idempotentni script gate protiv stvarnog SQL Servera, ne mijenja
+postojeće podatke i ostavlja katalog praznim. Phase suite prolazi 10/10, puni backend suite
+165/165, architecture 4/4 i frontend 59/59; Release build, format/lint/build, oba security
+audita te Docker migration/health/non-root/runtime smoke testovi prolaze. Završni audit:
+`summaries/PHASE_5.1_CURRICULUM_HIERARCHY_SUMMARY.md`.
+
+**Acceptance 5.1: FINAL LOCK — odobreno 2026-09-16.** Hijerarhija, službeni identitet,
+provenance i version lineage imaju
+relational integrity i testnu osnovu; nema izmišljenih outcomea, javnog API-ja ni preuranjenog
+Knowledge mappinga. Gate za Phase 5.2 je zadovoljen; nastavak ostaje zasebna podfaza.
+
 ## 5.2 Knowledge Component model — TODO
 ## 5.3 Evidence Event model — TODO
 ## 5.4 Evidence metadata: difficulty, help, evidence type — TODO

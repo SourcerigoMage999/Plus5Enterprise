@@ -42,7 +42,11 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 
 - prije Program management UI/API-ja zaključati rename/status/archive/delete lifecycle i permissions
 - prije prvog unosa stvarnih referentnih podataka odobriti SchoolGrade, ProficiencyLevel framework i Curriculum katalog/import source
-- prije Phase 5.1 zaključati CurriculumOutcome hijerarhiju, službene identifikatore, vremensku valjanost i mapiranje na Knowledge Model
+- **RIJEŠENO 2026-09-16 — Phase 5.1, ADR-0018:** `CurriculumOutcome` je globalni
+  version-bound adjacency tree bez hardkodirane dubine/tipa; službeni code je nullable i traži
+  provenance, Curriculum verzija je temporalna granica, lineage ostaje unutar istog
+  `Curriculum.Code` uz različit `Version`, a budući Knowledge odnos je eksplicitni M:N mapping.
+  Phase 5.1 nema production katalog/import. Detalji: `CURRICULUM_HIERARCHY.md`.
 
 - Materials: storage, format/size/upload security, ownership/sharing, versioning i AI-confirmation contract
 - Lesson Builder: formalni Lesson Plan, Activity Template i Lesson Activity domain contract

@@ -61,7 +61,9 @@ Kombinacija `FrameworkCode + Code` je globalno jedinstvena. Ne pretpostavlja se 
 | `Name` | obavezni naziv, najviše 200 znakova |
 | `Version` | obavezna identifikacija verzije izdanja, najviše 64 znaka |
 
-Kombinacija `Code + Version` je globalno jedinstvena. Ishodi, podishodi, hijerarhija, vremenska valjanost i mapiranje na Knowledge Components pripadaju Phase 5.1+.
+Kombinacija `Code + Version` je globalno jedinstvena. Phase 5.1 proširuje ovaj korijen
+version-bound `CurriculumOutcome` hijerarhijom u `CURRICULUM_HIERARCHY.md`; produkcijski katalog,
+import i mapiranje na Knowledge Components ostaju kasnije faze.
 
 ## Persistence contract
 
@@ -84,3 +86,10 @@ Program ownership uvijek se izvodi iz autentificiranog Teacher accounta; budući
 - CurriculumOutcome i curriculum hijerarhija
 - KnowledgeArea, KnowledgeComponent i KnowledgeModel
 - Material metadata, LearningGoal, readiness/evidence logika
+
+## Phase 5.1 proširenje
+
+`CURRICULUM_HIERARCHY.md` zaključava model-only `CurriculumOutcome` adjacency tree, službeni
+identifier/provenance granicu, Curriculum-version immutability i opcionalni cross-version
+lineage. Taj dodatak ne mijenja Program/SchoolGrade/ProficiencyLevel contract niti uvodi
+referentni seed/import sadržaj.

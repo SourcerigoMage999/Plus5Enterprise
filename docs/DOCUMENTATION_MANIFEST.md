@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
 
 ## Source snapshotovi
 
@@ -55,7 +55,10 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
   regression matricu za Phase 4.
 - [PHASE_4.6_RECURRENCE_MATERIALIZATION_REPLENISHMENT_SUMMARY.md](summaries/PHASE_4.6_RECURRENCE_MATERIALIZATION_REPLENISHMENT_SUMMARY.md)
   sadrži background replenishment, SQL lease, durable issue, idempotency/concurrency i runtime
-  evidence kojim Phase 4 čeka završni SA review.
+  evidence kojim je Phase 4 završno zaključana.
+- [PHASE_5.1_CURRICULUM_HIERARCHY_SUMMARY.md](summaries/PHASE_5.1_CURRICULUM_HIERARCHY_SUMMARY.md)
+  sadrži domain/persistence contract, stvarni SQL hierarchy gate, migration evidence i puni
+  regression audit za model-only curriculum hierarchy.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

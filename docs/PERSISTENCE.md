@@ -111,7 +111,20 @@ Phase 2.1 dodaje četiri odvojena 3NF korijena:
 - `ProficiencyLevels` — globalni framework/code/name/sort katalog; CEFR nije hardkodiran kao jedini okvir
 - `Curricula` — globalni code/name/version korijen s jedinstvenom code/version kombinacijom
 
-Program nema SchoolGrade, ProficiencyLevel ni Curriculum FK. Nema Student/Group/Material veza, CurriculumOutcome hijerarhije, seed podataka ni feature API-ja. Detaljni contract je u `CORE_TEACHING_FOUNDATION.md`.
+Program nema SchoolGrade, ProficiencyLevel ni Curriculum FK. Phase 2.1 nije uvodio
+Student/Group/Material veze, CurriculumOutcome hijerarhiju, seed podatke ni feature API.
+Detaljni foundation contract je u `CORE_TEACHING_FOUNDATION.md`.
+
+## Phase 5.1 curriculum outcome hierarchy schema
+
+Migracija `AddCurriculumOutcomeHierarchy` dodaje globalnu `CurriculumOutcomes` adjacency-list
+tablicu bez seeda ili backfilla. Composite same-Curriculum parent FK, restriktivni deleteovi,
+CHECK constrainti, filtrirani official-code unique indeks i hierarchy trigger štite version
+ownership, provenance, self/cycle zabrane te lineage samo između različitih verzija iste
+`Curriculum.Code` obitelji. Query indeks
+`CurriculumId + ParentOutcomeId + SortOrder + Id` podržava determinističan traversal bez
+hardkodirane dubine. Nema Knowledge/Evidence mapiranja ni public write surfacea. Detalji su u
+`CURRICULUM_HIERARCHY.md`.
 
 ## Phase 2.2 Student profile schema
 
