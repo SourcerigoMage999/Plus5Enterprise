@@ -76,6 +76,21 @@ Prije prihvaćanja svake schema promjene obavezno je:
 
 Phase 1.2 clean apply, ponovljeni idempotent apply, named-volume restart, readiness i least-privilege provjere izvršene su na stvarnom SQL Server 2025 containeru.
 
+## Phase 4.6 materialization schema
+
+Migracija `AddScheduleMaterializationReplenishment` dodaje dvije ograničene tablice bez seeda
+ili backfilla:
+
+- `ScheduleMaterializationIssues` — durable per-series/per-date/per-type evidence s restriktivnim
+  FK-om, CHECK constraintima za tip/brojač/vremenski slijed, unique issue identitetom i
+  filtered indeksom za neriješene issuee
+- `ScheduleMaterializationLeases` — globalni SQL-backed expiring lease za multi-instance
+  `Plus5.Api` worker; ne sadrži business payload.
+
+Filtered work-queue indeks na aktivnim open-ended `RecurringSessionSeries` podupire bounded
+scan po `CreatedAtUtc, Id`. Postojeći `UX_Sessions_Series_Occurrence` ostaje zadnja DB zaštita
+idempotentnosti. Detaljni operational contract je u `RECURRENCE_MATERIALIZATION.md`.
+
 ## Phase 1.6 identity schema
 
 Migracija `AddTeacherAuthenticationFoundation` dodaje:

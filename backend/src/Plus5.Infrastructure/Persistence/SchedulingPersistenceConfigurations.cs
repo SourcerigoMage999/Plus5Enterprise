@@ -116,6 +116,9 @@ internal sealed class RecurringSessionSeriesConfiguration
             .IsUnique()
             .HasFilter("[PreviousSeriesId] IS NOT NULL")
             .HasDatabaseName("UX_RecurringSessionSeries_PreviousSeriesId");
+        builder.HasIndex(series => new { series.CreatedAtUtc, series.Id })
+            .HasFilter("[EndsOn] IS NULL AND [SupersededAtUtc] IS NULL")
+            .HasDatabaseName("IX_RecurringSessionSeries_MaterializationQueue");
     }
 }
 
@@ -203,5 +206,73 @@ internal sealed class SessionConfiguration : IEntityTypeConfiguration<Session>
             .IsUnique()
             .HasFilter("[RecurringSessionSeriesId] IS NOT NULL")
             .HasDatabaseName("UX_Sessions_Series_Occurrence");
+    }
+}
+
+internal sealed class ScheduleMaterializationIssueConfiguration
+    : IEntityTypeConfiguration<ScheduleMaterializationIssue>
+{
+    public void Configure(EntityTypeBuilder<ScheduleMaterializationIssue> builder)
+    {
+        builder.ToTable("ScheduleMaterializationIssues", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_ScheduleMaterializationIssues_Type",
+                "[IssueType] IN (1, 2, 3, 4, 5, 6)");
+            table.HasCheckConstraint(
+                "CK_ScheduleMaterializationIssues_AttemptCount",
+                "[AttemptCount] > 0");
+            table.HasCheckConstraint(
+                "CK_ScheduleMaterializationIssues_ObservedRange",
+                "[LastSeenAtUtc] >= [FirstSeenAtUtc]");
+            table.HasCheckConstraint(
+                "CK_ScheduleMaterializationIssues_ResolvedRange",
+                "[ResolvedAtUtc] IS NULL OR [ResolvedAtUtc] >= [LastSeenAtUtc]");
+        });
+
+        builder.HasKey(issue => issue.Id);
+        builder.Property(issue => issue.OccurrenceLocalDate).HasColumnType("date").IsRequired();
+        builder.Property(issue => issue.IssueType).HasConversion<int>().IsRequired();
+        builder.Property(issue => issue.FirstSeenAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(issue => issue.LastSeenAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(issue => issue.ResolvedAtUtc).HasPrecision(7);
+
+        builder.HasOne<RecurringSessionSeries>()
+            .WithMany()
+            .HasForeignKey(issue => issue.RecurringSessionSeriesId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(issue => new
+        {
+            issue.RecurringSessionSeriesId,
+            issue.OccurrenceLocalDate,
+            issue.IssueType,
+        })
+            .IsUnique()
+            .HasDatabaseName("UX_ScheduleMaterializationIssues_Series_Date_Type");
+        builder.HasIndex(issue => issue.LastSeenAtUtc)
+            .HasFilter("[ResolvedAtUtc] IS NULL")
+            .HasDatabaseName("IX_ScheduleMaterializationIssues_Unresolved_LastSeen");
+    }
+}
+
+internal sealed class ScheduleMaterializationLeaseConfiguration
+    : IEntityTypeConfiguration<ScheduleMaterializationLease>
+{
+    public void Configure(EntityTypeBuilder<ScheduleMaterializationLease> builder)
+    {
+        builder.ToTable("ScheduleMaterializationLeases", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_ScheduleMaterializationLeases_TimeRange",
+                "[ExpiresAtUtc] >= [UpdatedAtUtc]");
+        });
+
+        builder.HasKey(lease => lease.Name);
+        builder.Property(lease => lease.Name)
+            .HasMaxLength(ScheduleMaterializationLease.NameMaxLength);
+        builder.Property(lease => lease.OwnerId)
+            .HasMaxLength(ScheduleMaterializationLease.OwnerIdMaxLength);
+        builder.Property(lease => lease.ExpiresAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(lease => lease.UpdatedAtUtc).HasPrecision(7).IsRequired();
     }
 }

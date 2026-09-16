@@ -42,8 +42,12 @@ Ovaj dokument formalizira recurrence gate iz source specifikacija 3.3/3.4 i defi
   overridea.
 - Izvršavanje mora biti sigurno u više instanci, imati strukturirane logove/observability i
   stvarne SQL concurrency/idempotency testove.
-- Phase 4.6 ne uvodi novi UI. Prije implementacije contract mora zaključati cadence/trigger,
-  operational ownership te conflict retry/visibility ponašanje.
+- Phase 4.6 contract je zaključan u `RECURRENCE_MATERIALIZATION.md`: `Plus5.Api`
+  `BackgroundService` radi startup catch-up i zatim svakih 6 sati, koordinira se SQL-backed
+  expiring leaseom, obrađuje kratke bounded transakcije po seriji i trajno zapisuje
+  `ScheduleMaterializationIssue`. Conflict/DST problem preskače samo occurrence i ponovno se
+  evaluira u sljedećem runu; tranzijentni infrastrukturni retry ima najviše tri pokušaja.
+- Phase 4.6 ne uvodi novi UI ni javni API.
 
 ## Kontekst i lokacija
 

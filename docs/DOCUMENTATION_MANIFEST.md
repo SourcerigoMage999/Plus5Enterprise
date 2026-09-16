@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
 
 ## Source snapshotovi
 
@@ -53,6 +53,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_4.5_RECURRENCE_SERIES_CONSISTENCY_SUMMARY.md](summaries/PHASE_4.5_RECURRENCE_SERIES_CONSISTENCY_SUMMARY.md)
   sadrži završnu recurrence/series preservation, lineage, bounded generation i concurrency
   regression matricu za Phase 4.
+- [PHASE_4.6_RECURRENCE_MATERIALIZATION_REPLENISHMENT_SUMMARY.md](summaries/PHASE_4.6_RECURRENCE_MATERIALIZATION_REPLENISHMENT_SUMMARY.md)
+  sadrži background replenishment, SQL lease, durable issue, idempotency/concurrency i runtime
+  evidence kojim Phase 4 čeka završni SA review.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

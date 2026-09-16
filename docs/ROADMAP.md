@@ -260,7 +260,7 @@ promjene niti replenishment workera.
 future-series promjena versionira seriju, čuva eksplicitne occurrence odluke i pod
 concurrencyjem ne stvara divergentne successore. Ukupna Phase 4 ostaje otvorena do 4.6.
 
-## 4.6 Recurrence materialization replenishment — TODO
+## 4.6 Recurrence materialization replenishment — DONE — čeka završni SA review
 
 **Cilj:** održavati zaključani rolling 12-week `Session` horizont za aktivne open-ended
 `RecurringSessionSeries` tako da canonical serija nastavi stvarati konkretne termine i nakon
@@ -272,14 +272,31 @@ poštovanje supersession lineagea, DST i conflict pravila; multi-instance safe k
 strukturirani logovi i observability; stvarni SQL concurrency/idempotency testovi. Nema novog
 UI-ja.
 
-**Gate prije implementacije:** u Phase 4.6 contractu eksplicitno zaključati cadence/trigger i
-operational ownership, ponašanje pojedinačnog conflict occurrencea te retry/visibility pravila,
-bez uvođenja Teacher `Save anyway` overridea.
+**Contract zaključan 2026-09-16:** `Plus5.Api` `BackgroundService`, startup catch-up, 6-satna
+cadence, SQL-backed expiring lease, kratke bounded transakcije, per-occurrence conflict/DST
+skip, durable issue evidence, najviše tri tranzijentna pokušaja i strukturirani operational
+logovi. Nema Teacher `Save anyway` overridea. Source of truth:
+`RECURRENCE_MATERIALIZATION.md` i ADR-0017.
 
-**Acceptance cijele Phase 4:** 4.1–4.5 regression gateovi ostaju zeleni; replenishment održava
-12-tjedni prozor bez duplikata i bez vraćanja eksplicitno izmijenjenih ili terminalnih
-occurrencea; paralelno izvršavanje ne stvara divergentno stanje; operativni neuspjesi su
-vidljivi. Phase 5.1 počinje tek nakon završnog SA acceptancea 4.6.
+**Dovršeno 2026-09-16:** startup catch-up i 6-satni worker održavaju rolling 12-week horizont
+aktivnih open-ended serija. SQL-backed lease, batch od najviše 50 serija, kratka transakcija po
+seriji, revalidacija lineagea/DST-a/konflikata i unique DB zaštita osiguravaju multi-instance
+sigurnost i idempotentnost. Conflict i DST problem preskaču samo occurrence, ostavljaju durable
+`ScheduleMaterializationIssue` i ponovno se evaluiraju u sljedećem runu; tranzijentni SQL kvar
+ima najviše tri pokušaja. Nema novog UI-ja ni javnog API-ja. Stvarni SQL concurrency,
+idempotency, migration-upgrade i issue-lifecycle gateovi prolaze 9/9; puni backend suite prolazi
+155/155, architecture 4/4 i frontend 59/59. Release build, format/lint/build, oba security audita
+te Docker migration/health/non-root/runtime smoke test prolaze. Završni audit:
+`summaries/PHASE_4.6_RECURRENCE_MATERIALIZATION_REPLENISHMENT_SUMMARY.md`.
+
+**Acceptance 4.6: PASS — čeka završni SA review.** Replenishment održava prozor bez duplikata,
+ne vraća eksplicitne ili terminalne occurrence odluke, jedna globalna instanca obrađuje batch, a
+operativni problemi ostaju vidljivi i auditabilni.
+
+**Acceptance cijele Phase 4: PASS — čeka završni SA review 4.6.** 4.1–4.5 regression gateovi
+ostaju zeleni; replenishment održava 12-tjedni prozor bez duplikata i bez vraćanja eksplicitno
+izmijenjenih ili terminalnih occurrencea; paralelno izvršavanje ne stvara divergentno stanje;
+operativni neuspjesi su vidljivi. Phase 5.1 počinje tek nakon završnog SA acceptancea 4.6.
 
 ---
 

@@ -89,9 +89,11 @@ Detaljni screen/lifecycle source sada postoji za 4.1, 4.4–4.5, 5.1–5.6, 6.1�
   tjedana; rolling održavanje budućeg prozora obavezna je Phase 4.6 prije Phase 5, bez UI-ja.
   Replenishment mora biti idempotentan, bounded, multi-instance safe, poštovati postojeće
   occurrence odluke, lineage, DST i konflikte te imati stvarne SQL concurrency testove.
-- **OTVORENO — Phase 4.6 contract gate:** zaključati točnu cadence/trigger i operational
-  ownership, ponašanje pojedinačnog conflict occurrencea te retry/visibility pravila prije
-  implementacije workera.
+- **RIJEŠENO — Phase 4.6, ADR-0017:** vlasnik je `Plus5.Api` `BackgroundService`; radi
+  startup catch-up i zatim svakih 6 sati. SQL-backed expiring lease daje multi-instance
+  sigurnost. Conflict/DST preskače samo occurrence i ostavlja durable issue; business retry je
+  sljedeći scheduled run, a tranzijentni infrastrukturni retry ima najviše tri pokušaja.
+  Detalji su zaključani u `RECURRENCE_MATERIALIZATION.md`.
 - definirati smije li Teacher svjesno overrideati conflict upozorenje i pod kojim audit pravilima
 - arbitrary recurrence/overnight, shared room permissions, reminders i notification delivery ostaju zasebni gateovi
 

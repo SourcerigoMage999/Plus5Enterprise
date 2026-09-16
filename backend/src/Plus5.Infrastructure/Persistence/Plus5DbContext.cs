@@ -41,6 +41,12 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<Session> Sessions => Set<Session>();
 
+    public DbSet<ScheduleMaterializationIssue> ScheduleMaterializationIssues =>
+        Set<ScheduleMaterializationIssue>();
+
+    internal DbSet<ScheduleMaterializationLease> ScheduleMaterializationLeases =>
+        Set<ScheduleMaterializationLease>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);

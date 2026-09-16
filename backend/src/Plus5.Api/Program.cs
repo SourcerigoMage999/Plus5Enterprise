@@ -34,6 +34,7 @@ builder.Services.AddHealthChecks()
         tags: ["ready"],
         customTestQuery: async (dbContext, cancellationToken) =>
             !(await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).Any());
+builder.Services.AddHostedService<ScheduleMaterializationWorker>();
 
 var app = builder.Build();
 

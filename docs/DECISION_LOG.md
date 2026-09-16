@@ -8,15 +8,25 @@
   aktivna, dok se novi konkretni `Session` zapisi nakon isteka početnog prozora više ne bi
   pojavljivali.
 - **Odluka:** prije Phase 5 uvodi se Phase 4.6 — Recurrence materialization replenishment.
-  Periodički proces održava približno sljedećih 12 tjedana za aktivne open-ended serije i
-  idempotentno stvara samo nedostajuće occurrencee u ograničenim batchovima.
+  `Plus5.Api` `BackgroundService` radi startup catch-up i zatim svakih 6 sati. Održava
+  sljedećih 12 tjedana za aktivne open-ended serije i idempotentno stvara samo nedostajuće
+  occurrencee u ograničenim batchovima i kratkim transakcijama po seriji.
 - **Invarijante:** postojeći exception, `Cancelled`, `Held` i `InProgress` occurrence datumi
   ne regeneriraju se; poštuju se supersession lineage, DST i conflict pravila. Izvršavanje
   mora biti sigurno u više instanci, observable i dokazano stvarnim SQL concurrency/
   idempotency testovima.
-- **Granice:** nema novog UI-ja. Točna cadence/trigger i operativno ponašanje pojedinačnog
-  conflict occurrencea moraju se eksplicitno zaključati u Phase 4.6 contractu prije
-  implementacije; Teacher conflict override ostaje zasebna odgođena odluka.
+- **Koordinacija:** SQL-backed expiring lease dopušta samo jedan globalni run. Instanca koja
+  ne dobije lease radi `skip run`, što nije greška. In-memory singleton, SQL Agent, vanjski
+  cron i novi infrastrukturni servis nisu vlasnici procesa.
+- **Conflict/retry:** business conflict ili DST problem preskače samo occurrence, trajno se
+  evidentira i ponovno evaluira u sljedećem 6-satnom runu. Nema automatskog pomicanja,
+  overridea ili promjene serije. Tranzijentni infrastrukturni kvar ima najviše tri pokušaja s
+  exponential backoffom; nema beskonačnog retryja.
+- **Evidence:** `ScheduleMaterializationIssue` čuva stabilni issue tip, occurrence datum,
+  first/last seen, attempt count i resolution vrijeme bez exception stack tracea ili
+  osjetljivog payloada. Strukturirani logovi pokrivaju run, lease, rezultate i failure.
+- **Granice:** nema novog UI-ja ni javnog API-ja. Detaljni zaključani contract je
+  `RECURRENCE_MATERIALIZATION.md`; Teacher conflict override ostaje zasebna odgođena odluka.
 - **Posljedice:** Phase 4 nije završena prihvaćanjem 4.5. Phase 5.1 ne počinje prije završnog
   acceptancea Phase 4.6.
 

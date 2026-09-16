@@ -35,6 +35,12 @@ Ne zapisuje se konkretni URL path, query string, headeri, body, cookie, authoriz
 
 Uspješni `GET /health/live` zahtjevi ne stvaraju completion log ni server trace kako container healthcheck ne bi stvarao nepotrebnu buku. `/health/ready` ostaje vidljiv jer provjerava vanjsku ovisnost i migration stanje.
 
+Phase 4.6 schedule materialization worker koristi evente `4500`–`4503` za početak, završni
+bounded rezultat, cancellation i failure te `4600`–`4607` za lease, ograničeni retry i
+per-series failure. Završni rezultat sadrži samo bounded brojače i trajanje: pregledane
+serije, stvorene/preskočene occurrencee, konflikte i zapisane/riješene issuee. Ne logira
+Student/Group sadržaj, bilješke, connection string ili exception detalje u trajnu issue tablicu.
+
 ## Korelacija
 
 ASP.NET Core koristi W3C Trace Context. Valjani dolazni `traceparent` nastavlja se; inače server stvara novi trace. Svaki odgovor dobiva header:

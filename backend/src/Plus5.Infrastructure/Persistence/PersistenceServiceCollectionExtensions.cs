@@ -103,6 +103,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IScheduleCreationService, EfScheduleCreationService>();
         services.AddScoped<IScheduleEditingQuery, EfScheduleEditingQuery>();
         services.AddScoped<IScheduleEditingService, EfScheduleEditingService>();
+        services.AddScoped<IScheduleMaterializationService, EfScheduleMaterializationService>();
         services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         services.AddScoped<IStudentEditingService, EfStudentEditingService>();
