@@ -85,8 +85,13 @@ Detaljni screen/lifecycle source sada postoji za 4.1, 4.4–4.5, 5.1–5.6, 6.1�
 
 ## Odgođene Schedule odluke
 
-- početni materialization horizon je zaključan na 12 tjedana (ADR-0015); replenishment
-  cadence i održavanje budućeg prozora ostaju Phase 4 operational zadatak
+- **RIJEŠENO — Phase placement, ADR-0017:** početni materialization horizon ostaje 12
+  tjedana; rolling održavanje budućeg prozora obavezna je Phase 4.6 prije Phase 5, bez UI-ja.
+  Replenishment mora biti idempotentan, bounded, multi-instance safe, poštovati postojeće
+  occurrence odluke, lineage, DST i konflikte te imati stvarne SQL concurrency testove.
+- **OTVORENO — Phase 4.6 contract gate:** zaključati točnu cadence/trigger i operational
+  ownership, ponašanje pojedinačnog conflict occurrencea te retry/visibility pravila prije
+  implementacije workera.
 - definirati smije li Teacher svjesno overrideati conflict upozorenje i pod kojim audit pravilima
 - arbitrary recurrence/overnight, shared room permissions, reminders i notification delivery ostaju zasebni gateovi
 

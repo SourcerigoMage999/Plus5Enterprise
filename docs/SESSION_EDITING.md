@@ -22,8 +22,10 @@ Način rada i Group/Student kontekst ostaju nepromjenjivi. Promjena može vrijed
 `Svi budući termini` dostupan je samo za neizmijenjenu instancu aktivne serije. Datum, naziv i
 napomena tada su zaključani. Jednostavna promjena vremena/lokacije supersedira staru seriju,
 stvara successor s `PreviousSeriesId` i materializira njegov početni horizont od 12 tjedana.
-Stari budući `Scheduled` Sessioni od efektivnog datuma dobivaju status `Cancelled`; održani,
-otkazani i raniji zapisi ostaju sačuvani. Nema in-place izmjene recurrence povijesti.
+Stari budući `Scheduled` Sessioni koji nisu ručne iznimke od efektivnog datuma dobivaju status
+`Cancelled`. Postojeće ručne iznimke te započeti, održani, otkazani i raniji zapisi ostaju
+sačuvani; successor ne materializira drugi Session za njihove occurrence datume. Nema in-place
+izmjene recurrence povijesti niti tihog poništavanja ranije eksplicitne occurrence odluke.
 
 Promjena dana ili strukture redovitog grupnog rasporeda nije Session edit. Ona ide kroz
 Screen 2.9 Uredi grupu i njegov versioning contract.

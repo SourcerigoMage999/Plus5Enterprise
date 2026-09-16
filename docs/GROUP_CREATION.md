@@ -39,7 +39,7 @@ unutar iste kratke Serializable transakcije kao write. SQL unique indeksi i rowv
 dodatno arbitriraju race; deadlock/concurrency/unique race vraća kontrolirani 409, bez
 automatskog retryja ili djelomičnog commita. Nema Save anyway.
 
-Phase 4 replenishment mora ponovno provjeriti DST/konflikte pri širenju prozora.
+Phase 4.6 replenishment mora ponovno provjeriti DST/konflikte pri širenju prozora.
 Početni save ne jamči da su svi beskonačni budući termini generirani ili nekonfliktni.
 Nema background workera u ovoj fazi.
 

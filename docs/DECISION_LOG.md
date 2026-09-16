@@ -1,5 +1,25 @@
 # DECISION_LOG
 
+### ADR-0017 — Rolling recurrence replenishment zatvara Schedule fazu
+- **Datum:** 2026-09-16
+- **Status:** Accepted — SA odluka nakon Phase 4.5 reviewa.
+- **Kontekst:** open-ended `RecurringSessionSeries` ima `EndsOn = null`, ali početni create
+  materializira samo zaključanih 12 tjedana. Bez replenishmenta canonical serija ostaje
+  aktivna, dok se novi konkretni `Session` zapisi nakon isteka početnog prozora više ne bi
+  pojavljivali.
+- **Odluka:** prije Phase 5 uvodi se Phase 4.6 — Recurrence materialization replenishment.
+  Periodički proces održava približno sljedećih 12 tjedana za aktivne open-ended serije i
+  idempotentno stvara samo nedostajuće occurrencee u ograničenim batchovima.
+- **Invarijante:** postojeći exception, `Cancelled`, `Held` i `InProgress` occurrence datumi
+  ne regeneriraju se; poštuju se supersession lineage, DST i conflict pravila. Izvršavanje
+  mora biti sigurno u više instanci, observable i dokazano stvarnim SQL concurrency/
+  idempotency testovima.
+- **Granice:** nema novog UI-ja. Točna cadence/trigger i operativno ponašanje pojedinačnog
+  conflict occurrencea moraju se eksplicitno zaključati u Phase 4.6 contractu prije
+  implementacije; Teacher conflict override ostaje zasebna odgođena odluka.
+- **Posljedice:** Phase 4 nije završena prihvaćanjem 4.5. Phase 5.1 ne počinje prije završnog
+  acceptancea Phase 4.6.
+
 ### ADR-0016 — Promjena Programa grupe samo bez aktivnih članstava
 - **Datum:** 2026-09-11
 - **Status:** Accepted — SA odluka za Phase 3.7.
@@ -21,7 +41,7 @@
 - **Odluka:** grupa se sprema kao Active s 0..N učenika i 0..N rasporeda. Broj članova ne mijenja status; automatska deaktivacija je rejected behavior. Nema MinimumStudents.
 - **Raspored:** canonical serija može imati `EndsOn = null`. Početna materializacija obuhvaća 12 tjedana (84 lokalna dana), od kasnijeg od današnjeg datuma u Europe/Zagreb i StartsOn, s exclusive gornjom granicom; raniji uneseni EndsOn uključiv je i skraćuje prozor. Ne generiraju se već započeti termini. Nema business limita trajanja serije.
 - **Integritet:** grupa, početna članstva, serije i početni Sessioni jedna su Serializable transakcija. Ownership, capacity, Student rowversion, aktivno članstvo i vremenski konflikti validiraju se prije commita. Konflikt nema override.
-- **Operativne granice:** početni generator je bounded; Phase 4 replenishment mora ponovno provjeriti konflikte/DST pri svakom širenju prozora. Spremanje nije jamstvo nekonfliktnosti svih budućih beskonačnih pojava. Nema background servisa u 3.6.
+- **Operativne granice:** početni generator je bounded; Phase 4.6 replenishment mora ponovno provjeriti konflikte/DST pri svakom širenju prozora. Spremanje nije jamstvo nekonfliktnosti svih budućih beskonačnih pojava. Nema background servisa u 3.6.
 - **Posljedice:** nullable EndsOn migracija bez izmjene postojećih datuma; postojeći read model mora uključiti otvorene serije. Zaštita veličine pojedinačnog create zahtjeva: najviše 100 početnih članova i 14 tjednih slotova; to nije ograničenje Capacity grupe.
 - **Navigacija:** postojeći React Router data-router adapter omogućuje službeni useBlocker za potpuni SPA Back/Forward gate; nema nove biblioteke ili server-state migracije.
 

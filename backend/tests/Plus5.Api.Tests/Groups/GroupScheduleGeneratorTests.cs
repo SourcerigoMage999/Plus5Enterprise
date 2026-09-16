@@ -33,4 +33,24 @@ public sealed class GroupScheduleGeneratorTests
         var now = new DateTimeOffset(date.AddDays(-1).ToDateTime(TimeOnly.MinValue), TimeSpan.Zero);
         Assert.Null(GroupScheduleGenerator.Generate([new(0, new(2, 30), new(3, 30))], date, date, now));
     }
+
+    [Fact]
+    public void SameBoundedRuleProducesTheSameUniqueOccurrenceSet()
+    {
+        var now = new DateTimeOffset(2026, 9, 7, 8, 0, 0, TimeSpan.Zero);
+        var slots = new[]
+        {
+            new GroupScheduleSlot(1, new(16, 0), new(17, 0)),
+            new GroupScheduleSlot(4, new(18, 0), new(19, 0)),
+        };
+
+        var first = GroupScheduleGenerator.Generate(slots, new(2026, 9, 7), null, now)!;
+        var second = GroupScheduleGenerator.Generate(slots, new(2026, 9, 7), null, now)!;
+
+        Assert.Equal(first, second);
+        Assert.Equal(24, first.Count);
+        Assert.Equal(first.Count, first.Select(item => (item.SlotIndex, item.Date)).Distinct().Count());
+        Assert.All(first, item => Assert.True(item.Start >= now));
+        Assert.Equal(new DateOnly(2026, 11, 26), first[^1].Date);
+    }
 }

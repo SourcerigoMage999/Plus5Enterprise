@@ -24,7 +24,7 @@ potpuni dirty-navigation gate. Neutralne buduće zone ne spremaju lažne podatke
 ## Namjerno nije implementirano
 
 Hard delete, archive workflow s posljedicama za raspored, location CRUD, conflict override,
-arbitrary recurrence, Phase 4 replenishment, Knowledge/readiness, materials/goals/notes i
+arbitrary recurrence, Phase 4.6 replenishment, Knowledge/readiness, materials/goals/notes i
 postavke privatnosti. Nema nove migracije, entiteta, dependencyja, commita ili pusha.
 
 ## Glavne datoteke

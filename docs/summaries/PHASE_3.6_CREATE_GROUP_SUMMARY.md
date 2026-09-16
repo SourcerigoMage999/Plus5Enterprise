@@ -22,7 +22,7 @@ single-flight submit i potvrdu uspjeha s odabranom novom grupom. Native dialog/u
 refresh/zatvaranje. Uspješan save i obavezni auth redirect ne ostaju blokirani.
 
 ## Namjerno nije implementirano
-Replenishment/background worker (Phase 4), MinimumStudents, automatska deaktivacija
+Replenishment/background worker (Phase 4.6), MinimumStudents, automatska deaktivacija
 (rejected), Group edit (3.7), notes/goals/materials/Knowledge/file uploads/sharing,
 lokacijski CRUD, konflikt override ili novi draft model. Nema limita 12 mjeseci.
 Nema novih dependencyja, produkcijskog deploymenta, commita ili pusha.

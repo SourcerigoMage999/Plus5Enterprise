@@ -228,7 +228,7 @@ Docker health/non-root runtime prolaze. Contract: `SESSION_CREATION.md`; završn
 
 **Završni SA approval: APPROVED — 2026-09-12.**
 
-## 4.4 Screen 3.4 Edit session — DONE — čeka završni SA review
+## 4.4 Screen 3.4 Edit session — DONE
 
 **Dovršeno 2026-09-13:** Teacher-only owner-scoped edit/cancel, RowVersion i CSRF zaštita,
 server conflict preview te Serializable update jedne instance ili jednostavne promjene
@@ -241,9 +241,45 @@ build, 143 backend/SQL, 4 architecture i 59 frontend testova, format/lint/build,
 Docker health/non-root runtime prolaze. Contract: `SESSION_EDITING.md`; završni audit:
 `summaries/PHASE_4.4_SESSION_EDITING_SUMMARY.md`. Nema nove migracije ni dependencyja.
 
-## 4.5 Recurrence/series consistency tests — TODO
+**Završni SA approval: APPROVED — 2026-09-13.**
 
-**Acceptance cijele faze:** promjena termina ne smije nekonzistentno mijenjati trajni raspored grupe; ponašanje “samo ovaj termin” i buduća serija mora biti eksplicitno testirano.
+## 4.5 Recurrence/series consistency tests — DONE — čeka završni SA review
+
+**Dovršeno 2026-09-16:** stvarni SQL regression gate potvrđuje one-occurrence izolaciju,
+future-series supersession/lineage, 12-tjedni bounded horizont, očuvanje ručnih exceptiona te
+`InProgress`, `Held` i `Cancelled` occurrencea, preskakanje njihovih datuma u successoru,
+otkazivanje samo običnih budućih `Scheduled` instanci i točno jednog successora pri
+konkurentnim writeovima. Generator je dodatno zaključan kao determinističan i jedinstven po
+slotu/datumu; postojeći DST/EndsOn/conflict/ownership testovi ostaju zeleni. Release build,
+146 backend/SQL, 4 architecture i 59 frontend testova, format/lint/build, auditi te Docker
+health/non-root runtime prolaze. Završni audit:
+`summaries/PHASE_4.5_RECURRENCE_SERIES_CONSISTENCY_SUMMARY.md`. Nema API/UI/schema/dependency
+promjene niti replenishment workera.
+
+**Acceptance 4.5: PASS.** Promjena jednog termina ne mijenja canonical raspored;
+future-series promjena versionira seriju, čuva eksplicitne occurrence odluke i pod
+concurrencyjem ne stvara divergentne successore. Ukupna Phase 4 ostaje otvorena do 4.6.
+
+## 4.6 Recurrence materialization replenishment — TODO
+
+**Cilj:** održavati zaključani rolling 12-week `Session` horizont za aktivne open-ended
+`RecurringSessionSeries` tako da canonical serija nastavi stvarati konkretne termine i nakon
+isteka početnog prozora.
+
+**Minimalni scope:** periodičko bounded-batch izvršavanje; idempotentno stvaranje samo
+nedostajućih occurrencea; očuvanje exception, `Cancelled`, `Held` i `InProgress` datuma;
+poštovanje supersession lineagea, DST i conflict pravila; multi-instance safe koordinacija;
+strukturirani logovi i observability; stvarni SQL concurrency/idempotency testovi. Nema novog
+UI-ja.
+
+**Gate prije implementacije:** u Phase 4.6 contractu eksplicitno zaključati cadence/trigger i
+operational ownership, ponašanje pojedinačnog conflict occurrencea te retry/visibility pravila,
+bez uvođenja Teacher `Save anyway` overridea.
+
+**Acceptance cijele Phase 4:** 4.1–4.5 regression gateovi ostaju zeleni; replenishment održava
+12-tjedni prozor bez duplikata i bez vraćanja eksplicitno izmijenjenih ili terminalnih
+occurrencea; paralelno izvršavanje ne stvara divergentno stanje; operativni neuspjesi su
+vidljivi. Phase 5.1 počinje tek nakon završnog SA acceptancea 4.6.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-**MERGED PROJECT MANIFEST — ažurirano 2026-09-13**
+**MERGED PROJECT MANIFEST — ažurirano 2026-09-16**
 
 Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnih teacher i
 full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za projektne dokumente.
@@ -50,6 +50,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_4.4_SESSION_EDITING_SUMMARY.md](summaries/PHASE_4.4_SESSION_EDITING_SUMMARY.md) i
   [phase-4.4 visual acceptance](visual-acceptance/phase-4.4/README.md) sadrže Session edit/cancel,
   occurrence/future-series SQL gate i canonical desktop/mobile dokaz.
+- [PHASE_4.5_RECURRENCE_SERIES_CONSISTENCY_SUMMARY.md](summaries/PHASE_4.5_RECURRENCE_SERIES_CONSISTENCY_SUMMARY.md)
+  sadrži završnu recurrence/series preservation, lineage, bounded generation i concurrency
+  regression matricu za Phase 4.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

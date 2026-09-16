@@ -318,17 +318,25 @@ public sealed class EfScheduleEditingService(Plus5DbContext db, TimeProvider clo
             return new(null, ScheduleEditFailure.Invalid);
         }
 
-        var replaceable = await db.Sessions.Where(item =>
+        var affected = await db.Sessions.Where(item =>
                 item.RecurringSessionSeriesId == series.Id
-                && item.SeriesOccurrenceDate >= command.Date
-                && item.Status == SessionStatus.Scheduled)
+                && item.SeriesOccurrenceDate >= command.Date)
             .ToListAsync(cancellationToken);
+        var replaceable = affected.Where(item =>
+                item.Status == SessionStatus.Scheduled && !item.IsSeriesException)
+            .ToList();
         if (!replaceable.Any(item => item.Id == session.Id))
         {
             return new(null, ScheduleEditFailure.Unavailable);
         }
 
-        return new(new(session, series, generated, replaceable), ScheduleEditFailure.None);
+        var preservedDates = affected.Where(item =>
+                item.Status != SessionStatus.Scheduled || item.IsSeriesException)
+            .Select(item => item.SeriesOccurrenceDate!.Value)
+            .ToHashSet();
+        var materialized = generated.Where(item => !preservedDates.Contains(item.Date)).ToList();
+
+        return new(new(session, series, materialized, replaceable), ScheduleEditFailure.None);
     }
 
     private async Task<bool> HasConflictAsync(
