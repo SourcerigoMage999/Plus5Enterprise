@@ -1,5 +1,25 @@
 # DECISION_LOG
 
+### ADR-0019 — Versioned Knowledge Model with single-parent component trees
+- **Datum:** 2026-09-16
+- **Status:** Accepted — SA odluka za Phase 5.2.
+- **Kontekst:** Curriculum hijerarhija postoji, ali kontrolirana interna struktura znanja mora
+  ostati odvojena od Curriculuma, slobodnih tagova, Teacher ownershipa i budućih individualnih
+  evidence/mastery podataka.
+- **Odluka:** `KnowledgeModel` je globalna versioning granica sa stanjima `Draft`, `Published`
+  i `Retired`. Odvojeni `KnowledgeArea` organizira single-parent `KnowledgeComponent` stablo;
+  parent je uvijek iz istog modela i Area, bez ciklusa i hardkodirane dubine.
+- **Lifecycle:** Draft struktura se može uređivati; Published/Retired semantika i hijerarhija
+  su immutable i ne hard-deleteaju se. Promjena kroz verzije dobiva novi Component ID i
+  opcionalni lineage samo unutar istog `KnowledgeModel.Code`, uz različit `Version`.
+- **Integracija:** `CurriculumOutcomeKnowledgeComponent` je čisti M:N s composite PK-om, bez
+  weighting/readiness polja. Mapping INSERT/UPDATE/DELETE dopušteni su samo dok je pripadajući
+  `KnowledgeModel` Draft; Published/Retired mapping je immutable. Komponente nemaju
+  Curriculum/Grade/Level/Program/Teacher FK.
+- **Evidence granica:** budući direct Evidence cilja samo leaf; Phase 5.2 ne sprema eligibility,
+  evidence, mastery, readiness ili postotke i ne uvodi produkcijski katalog.
+- **Detalji:** `KNOWLEDGE_COMPONENT_MODEL.md`.
+
 ### ADR-0018 — Version-bound CurriculumOutcome adjacency hierarchy
 - **Datum:** 2026-09-16
 - **Status:** Accepted — SA odluka za Phase 5.1.

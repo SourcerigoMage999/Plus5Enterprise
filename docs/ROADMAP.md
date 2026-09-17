@@ -332,7 +332,37 @@ provenance i version lineage imaju
 relational integrity i testnu osnovu; nema izmišljenih outcomea, javnog API-ja ni preuranjenog
 Knowledge mappinga. Gate za Phase 5.2 je zadovoljen; nastavak ostaje zasebna podfaza.
 
-## 5.2 Knowledge Component model — TODO
+## 5.2 Knowledge Component model — FINAL LOCK
+
+**Cilj:** uvesti globalni versioned `KnowledgeModel`, odvojeni `KnowledgeArea`, single-parent
+`KnowledgeComponent` tree i eksplicitni CurriculumOutcome M:N, bez produkcijskog kataloga,
+Evidencea, masteryja, readinessa, API-ja ili UI-ja.
+
+**Zaključani scope 2026-09-16:** `Draft → Published → Retired` model lifecycle; immutable
+Published/Retired struktura; same-model/same-area parent, bez DAG-a/ciklusa/hardkodirane dubine;
+Active/Deprecated komponenta; optional same-family/different-version lineage; future direct
+Evidence samo na leafu; čisti CurriculumOutcome M:N bez weighting polja, uz mapping mutacije
+samo dok je KnowledgeModel Draft. Source of truth: `KNOWLEDGE_COMPONENT_MODEL.md` i ADR-0019.
+
+**Dovršeno 2026-09-16:** uvedeni su globalni versioned `KnowledgeModel`, odvojeni
+`KnowledgeArea`, single-parent `KnowledgeComponent` tree i čisti CurriculumOutcome M:N.
+Domena, composite FK-ovi i SQL triggeri štite lifecycle, immutable objavljenu strukturu,
+same-model/same-area parent, arbitrary cycle, cross-version same-family lineage i povijest bez
+hard-deletea. Aditivni Curriculum mapping lifecycle guard zaključava mapping nakon objave
+modela i ostaje primjenjiv na baze koje već imaju početnu 5.2 migraciju. Leaf se izvodi
+queryjem, a katalog/mapping ostaju prazni bez seeda. Aktualni Phase suite na stvarnom SQL
+Serveru prolazi 13/13 bez skipova, uključujući apply cijelog migration chaina i Draft,
+Published/Retired mapping lifecycle gate. Raniji puni SQL regression prolazi 177/177, aktualni
+host regression 152/178 uz 26 očekivano preskočenih opt-in SQL testova, architecture 4/4,
+Release build, format i EF/idempotent migration gate prolaze. Prethodni
+Docker/migration/health/non-root/runtime evidence ostaje valjan. Završni audit:
+`summaries/PHASE_5.2_KNOWLEDGE_COMPONENT_MODEL_SUMMARY.md`.
+
+**Acceptance 5.2: FINAL LOCK — odobreno 2026-09-18.** Version/lifecycle, Area/tree, lineage,
+leaf i Curriculum mapping granice imaju domain i stvarni SQL relational integrity evidence;
+nema produkcijskog kataloga, Evidencea, masteryja, readinessa, API-ja ni UI-ja. Phase 5.3 može
+početi tek nakon zasebno zaključanog Evidence Event contracta.
+
 ## 5.3 Evidence Event model — TODO
 ## 5.4 Evidence metadata: difficulty, help, evidence type — TODO
 ## 5.5 Readiness calculation rules — BLOCKED

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Plus5.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Plus5.Infrastructure.Persistence;
 namespace Plus5.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(Plus5DbContext))]
-    partial class Plus5DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260916205538_AddKnowledgeComponentModel")]
+    partial class AddKnowledgeComponentModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -873,12 +876,7 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasIndex("KnowledgeComponentId")
                         .HasDatabaseName("IX_CurriculumOutcomeKnowledgeComponents_ComponentId");
 
-                    b.ToTable("CurriculumOutcomeKnowledgeComponents", null, t =>
-                        {
-                            t.HasTrigger("TR_CurriculumOutcomeKnowledgeComponents_ProtectPublishedModel");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                    b.ToTable("CurriculumOutcomeKnowledgeComponents", (string)null);
                 });
 
             modelBuilder.Entity("Plus5.Domain.Teaching.KnowledgeArea", b =>

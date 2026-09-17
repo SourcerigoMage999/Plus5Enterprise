@@ -29,6 +29,15 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<CurriculumOutcome> CurriculumOutcomes => Set<CurriculumOutcome>();
 
+    public DbSet<KnowledgeModel> KnowledgeModels => Set<KnowledgeModel>();
+
+    public DbSet<KnowledgeArea> KnowledgeAreas => Set<KnowledgeArea>();
+
+    public DbSet<KnowledgeComponent> KnowledgeComponents => Set<KnowledgeComponent>();
+
+    public DbSet<CurriculumOutcomeKnowledgeComponent> CurriculumOutcomeKnowledgeComponents =>
+        Set<CurriculumOutcomeKnowledgeComponent>();
+
     public DbSet<Student> Students => Set<Student>();
 
     public DbSet<Guardian> Guardians => Set<Guardian>();

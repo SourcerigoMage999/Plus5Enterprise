@@ -90,10 +90,9 @@ izvor ne daje pouzdanu lineage informaciju. Brisanje prethodnika je restriktivno
 
 ## Odnos prema Knowledge Modelu
 
-`CurriculumOutcome` opisuje što službeni curriculum očekuje. Nije `KnowledgeComponent`, ne
-sadrži mastery/readiness/evidence podatke i nema 1:1 Knowledge vezu. Buduća integracija je
-eksplicitni M:N mapping `CurriculumOutcomeKnowledgeComponent`, ali mapping tablica ne pripada
-Phase 5.1 jer `KnowledgeComponent` još nije zaključan.
+`CurriculumOutcome` opisuje što službeni curriculum očekuje. Nije `KnowledgeComponent` i ne
+sadrži mastery/readiness/evidence podatke. Phase 5.2 uvodi eksplicitni M:N mapping
+`CurriculumOutcomeKnowledgeComponent`; detalji su u `KNOWLEDGE_COMPONENT_MODEL.md`.
 
 ## Izvan Phase 5.1
 

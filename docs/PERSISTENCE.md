@@ -126,6 +126,19 @@ ownership, provenance, self/cycle zabrane te lineage samo između različitih ve
 hardkodirane dubine. Nema Knowledge/Evidence mapiranja ni public write surfacea. Detalji su u
 `CURRICULUM_HIERARCHY.md`.
 
+## Phase 5.2 knowledge component schema
+
+Migracija `AddKnowledgeComponentModel` dodaje `KnowledgeModels`, `KnowledgeAreas`,
+`KnowledgeComponents` i čisti M:N `CurriculumOutcomeKnowledgeComponents`. Model/Area/parent
+composite FK-ovi, restriktivni deleteovi, status/sort/self CHECK constrainti i SQL triggeri
+štite Draft–Published–Retired lifecycle, immutable objavljenu strukturu, tree cycle zabranu te
+same-family/different-version lineage. Junction lifecycle trigger dopušta CurriculumOutcome
+mapping INSERT/UPDATE/DELETE samo dok je pripadajući `KnowledgeModel` Draft te odbija mutaciju
+Published/Retired mappinga. Tree i mapping indeksi podržavaju deterministične read projekcije
+i leaf query bez spremanja izvedenog `EvidenceEligible` polja. Nema seeda, produkcijskog
+kataloga, Evidencea ni API write surfacea. Detalji su u
+`KNOWLEDGE_COMPONENT_MODEL.md`.
+
 ## Phase 2.2 Student profile schema
 
 Phase 2.2 dodaje dva 3NF modela bez feature endpointa:

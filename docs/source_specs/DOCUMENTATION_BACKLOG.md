@@ -4,8 +4,8 @@
 `Materijali koje treba napraviti.txt`.
 
 ## Domenski dokumenti koje još treba posebno izraditi/zaključati
-- Knowledge Model
-- Knowledge Components
+- ~~Knowledge Model~~ — LOCKED za Phase 5.2 u `KNOWLEDGE_COMPONENT_MODEL.md`
+- ~~Knowledge Components~~ — LOCKED za Phase 5.2 u `KNOWLEDGE_COMPONENT_MODEL.md`
 - Knowledge Block
 - Evidence Events
 - CEFR

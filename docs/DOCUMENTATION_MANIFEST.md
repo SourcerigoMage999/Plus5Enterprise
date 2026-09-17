@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `KNOWLEDGE_COMPONENT_MODEL.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
 
 ## Source snapshotovi
 
@@ -59,6 +59,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_5.1_CURRICULUM_HIERARCHY_SUMMARY.md](summaries/PHASE_5.1_CURRICULUM_HIERARCHY_SUMMARY.md)
   sadrži domain/persistence contract, stvarni SQL hierarchy gate, migration evidence i puni
   regression audit za model-only curriculum hierarchy.
+- [PHASE_5.2_KNOWLEDGE_COMPONENT_MODEL_SUMMARY.md](summaries/PHASE_5.2_KNOWLEDGE_COMPONENT_MODEL_SUMMARY.md)
+  sadrži versioned Knowledge Model lifecycle, Area/component tree, Curriculum M:N, stvarni SQL
+  integrity gate i puni regression audit.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

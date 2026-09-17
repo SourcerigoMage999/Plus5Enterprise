@@ -93,3 +93,9 @@ Program ownership uvijek se izvodi iz autentificiranog Teacher accounta; budući
 identifier/provenance granicu, Curriculum-version immutability i opcionalni cross-version
 lineage. Taj dodatak ne mijenja Program/SchoolGrade/ProficiencyLevel contract niti uvodi
 referentni seed/import sadržaj.
+
+## Phase 5.2 proširenje
+
+`KNOWLEDGE_COMPONENT_MODEL.md` zaključava globalni versioned `KnowledgeModel`, odvojeni
+`KnowledgeArea`, single-parent `KnowledgeComponent` tree i eksplicitni CurriculumOutcome M:N.
+Model ne mijenja Program/Grade/Level ownership i ne uvodi Evidence/Mastery/Readiness podatke.
