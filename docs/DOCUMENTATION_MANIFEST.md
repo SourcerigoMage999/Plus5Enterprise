@@ -2,7 +2,7 @@
 
 ## Status
 
-**MERGED PROJECT MANIFEST — ažurirano 2026-09-16**
+**MERGED PROJECT MANIFEST — ažurirano 2026-09-24**
 
 Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnih teacher i
 full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za projektne dokumente.
@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `KNOWLEDGE_COMPONENT_MODEL.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `KNOWLEDGE_COMPONENT_MODEL.md`, `EVIDENCE_EVENT.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
 
 ## Source snapshotovi
 
@@ -62,6 +62,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_5.2_KNOWLEDGE_COMPONENT_MODEL_SUMMARY.md](summaries/PHASE_5.2_KNOWLEDGE_COMPONENT_MODEL_SUMMARY.md)
   sadrži versioned Knowledge Model lifecycle, Area/component tree, Curriculum M:N, stvarni SQL
   integrity gate i puni regression audit.
+- [PHASE_5.3_EVIDENCE_EVENT_MODEL_SUMMARY.md](summaries/PHASE_5.3_EVIDENCE_EVENT_MODEL_SUMMARY.md)
+  sadrži Student-specific provenance/idempotency model, append-only correction/invalidation
+  lifecycle, Knowledge target SQL integrity i puni regression audit.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

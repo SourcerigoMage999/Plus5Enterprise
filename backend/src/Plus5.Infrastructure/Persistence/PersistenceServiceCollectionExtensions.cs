@@ -14,6 +14,8 @@ using Plus5.Domain.Identity;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Students;
 using Plus5.Application.Scheduling;
+using Plus5.Application.Evidence;
+using Plus5.Infrastructure.Evidence;
 using Plus5.Infrastructure.Scheduling;
 
 namespace Plus5.Infrastructure.Persistence;
@@ -107,6 +109,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         services.AddScoped<IStudentEditingService, EfStudentEditingService>();
+        services.AddScoped<IEvidenceEmissionService, EfEvidenceEmissionService>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);
 

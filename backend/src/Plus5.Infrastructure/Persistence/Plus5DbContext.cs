@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Plus5.Domain.Evidence;
 using Plus5.Domain.Groups;
 using Plus5.Domain.Identity;
 using Plus5.Domain.Scheduling;
@@ -37,6 +38,11 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<CurriculumOutcomeKnowledgeComponent> CurriculumOutcomeKnowledgeComponents =>
         Set<CurriculumOutcomeKnowledgeComponent>();
+
+    public DbSet<EvidenceEvent> EvidenceEvents => Set<EvidenceEvent>();
+
+    public DbSet<EvidenceEventKnowledgeComponent> EvidenceEventKnowledgeComponents =>
+        Set<EvidenceEventKnowledgeComponent>();
 
     public DbSet<Student> Students => Set<Student>();
 

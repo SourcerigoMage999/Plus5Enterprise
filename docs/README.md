@@ -28,6 +28,9 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `SESSION_DETAIL.md` nakon Phase 4.2 za owner-scoped detalj termina, temporalni roster i granice prema delivery/evidence modelu
    - `SESSION_CREATION.md` nakon Phase 4.3 za atomski create, lokalno vrijeme, recurrence, conflict i duplicate-prefill granice
    - `SESSION_EDITING.md` nakon Phase 4.4 za one-occurrence exception, future-series supersession, conflict, cancel i concurrency granice
+   - `CURRICULUM_HIERARCHY.md` nakon Phase 5.1 za version-bound CurriculumOutcome tree i lineage granice
+   - `KNOWLEDGE_COMPONENT_MODEL.md` nakon Phase 5.2 za KnowledgeModel lifecycle, Area/component tree i Curriculum mapping
+   - `EVIDENCE_EVENT.md` nakon Phase 5.3 za provenance, idempotency, leaf targete i append-only Evidence lifecycle
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`

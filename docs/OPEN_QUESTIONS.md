@@ -11,11 +11,12 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 5. ~~Kako se modeliraju redoviti termini grupe naspram konkretnih instanci termina i promjena serije?~~ **RIJEŠENO 2026-08-28:** versioned weekly `RecurringSessionSeries`, materialized `Session`, one-occurrence exception i successor-series contract zaključani su u `SCHEDULING_FOUNDATION.md` i ADR-0013.
 6. Koja je politika pohrane datoteka/materijala, maksimalne veličine i podržani formati?
 7. Koja je granica AI funkcionalnosti u prezentacijama/lesson builderu i mora li učitelj potvrditi svaki AI prijedlog prije objave/korištenja?
-8. **DJELOMIČNO RIJEŠENO 2026-09-16 — Phase 5.2, ADR-0019:** `KnowledgeModel` i
-   `KnowledgeComponent` lifecycle, version boundary, Area/tree struktura, leaf evidence granica,
-   lineage i CurriculumOutcome M:N zaključani su u `KNOWLEDGE_COMPONENT_MODEL.md`.
-   `KnowledgeBlock` te `EvidenceEvent` emission/correction lifecycle ostaju blocking gateovi
-   svojih kasnijih faza.
+8. **DJELOMIČNO RIJEŠENO 2026-09-24 — Phase 5.2/5.3, ADR-0019/0020:** `KnowledgeModel` i
+   `KnowledgeComponent` lifecycle, version boundary, Area/tree struktura, lineage i
+   CurriculumOutcome M:N zaključani su u `KNOWLEDGE_COMPONENT_MODEL.md`. Student-specific
+   Evidence provenance, idempotentni emission, leaf targeti i append-only
+   Observation/Correction/Invalidation lifecycle zaključani su u `EVIDENCE_EVENT.md`.
+   `KnowledgeBlock` ostaje blocking gate svoje kasnije faze.
 9. Koji je finalni participant/permission/retention/delivery contract za Poruke i privitke?
 10. Koje su finalne metric definitions, privacy, export/PDF i immutable `ReportSnapshot` politike za Izvještaje?
 11. Je li Finance samo interna evidencija ili uključuje payment processing, račune, fiskalizaciju ili porezne obveze; koji su currency/precision contracti?

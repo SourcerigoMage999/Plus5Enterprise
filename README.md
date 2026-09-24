@@ -21,8 +21,11 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - Teacher-owned Group, vremenska povijest članstva, one-active-group zaštita i concurrency-safe kapacitet
 - konkretni Session, verzionirane tjedne recurrence serije, Teacher-owned lokacije i eksplicitne series exceptions
 - autorizirani, pretraživi i filtrirani popis vlastitih učenika s pregledom statusa i programa
+- zaključani Curriculum/Knowledge temelj te Student-specific append-only Evidence Event model
 
-Student create, dossier, edit i Group feature ekrani iz ostatka Phase 3 još nisu implementirani.
+Phase 3 Students/Groups i Phase 4 Schedule funkcionalnosti su implementirane; Phase 5 trenutno
+sadrži Curriculum, Knowledge Component i Evidence Event model foundation bez preuranjenog UI-ja,
+production emitera ili readiness matematike.
 
 ## Preduvjeti
 
@@ -137,6 +140,11 @@ Group create/edit i Schedule contracti nalaze se u [`docs/GROUP_CREATION.md`](do
 [`docs/GROUP_EDITING.md`](docs/GROUP_EDITING.md), [`docs/SCHEDULE_CALENDAR.md`](docs/SCHEDULE_CALENDAR.md)
 [`docs/SESSION_DETAIL.md`](docs/SESSION_DETAIL.md), [`docs/SESSION_CREATION.md`](docs/SESSION_CREATION.md)
 i [`docs/SESSION_EDITING.md`](docs/SESSION_EDITING.md).
+
+Curriculum, Knowledge i Evidence contracti nalaze se u
+[`docs/CURRICULUM_HIERARCHY.md`](docs/CURRICULUM_HIERARCHY.md),
+[`docs/KNOWLEDGE_COMPONENT_MODEL.md`](docs/KNOWLEDGE_COMPONENT_MODEL.md) i
+[`docs/EVIDENCE_EVENT.md`](docs/EVIDENCE_EVENT.md).
 
 ## Struktura
 

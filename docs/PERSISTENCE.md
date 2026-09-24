@@ -139,6 +139,20 @@ i leaf query bez spremanja izvedenog `EvidenceEligible` polja. Nema seeda, produ
 kataloga, Evidencea ni API write surfacea. Detalji su u
 `KNOWLEDGE_COMPONENT_MODEL.md`.
 
+## Phase 5.3 evidence event schema
+
+Migracija `AddEvidenceEventModel` dodaje `EvidenceEvents` i čisti M:N
+`EvidenceEventKnowledgeComponents` bez seeda ili backfilla. Restriktivni Student/Knowledge FK-ovi,
+composite source-chain alternate key, filtered unique root/successor indeksi i CHECK constrainti
+štite Student-specific provenance, jedan root po source rezultatu, lifecycle shape, bounded kodove
+i UTC vremena. Composite self-FK zahtijeva isti Student/source identitet u cijelom chainu.
+
+SQL triggeri zabranjuju event UPDATE/DELETE, mapping UPDATE/DELETE, fork/cycle, successor nakon
+Invalidationa te Invalidation, Draft ili parent Knowledge target. Observation/Correction target
+kardinalnost i atomski zapis eventa s mappingom provodi interni server-controlled emission service
+u Serializable transakciji; nema javnog generic Evidence write surfacea. Nema Evidence metadata,
+scorea, masteryja, readinessa ni production emitera. Detalji su u `EVIDENCE_EVENT.md`.
+
 ## Phase 2.2 Student profile schema
 
 Phase 2.2 dodaje dva 3NF modela bez feature endpointa:

@@ -1,5 +1,24 @@
 # DECISION_LOG
 
+### ADR-0020 — Student-specific append-only Evidence Event chain
+- **Datum:** 2026-09-24
+- **Status:** Accepted — SA odluka za Phase 5.3.
+- **Kontekst:** budući Attempt i drugi rezultati mogu biti ulaz u pedagošku procjenu, ali
+  Attempt, completion i accuracy nisu sami po sebi Evidence niti mastery.
+- **Odluka:** Evidence nastaje samo eksplicitnim server-controlled emissionom. Student-specific
+  root ima obavezni `SourceKind`/`SourceId` provenance i idempotency po
+  `(StudentId, SourceKind, SourceId)`. Nema generičkog javnog write API-ja.
+- **Targeti:** jedan EvidenceEvent mapira se čistim M:N odnosom na jedan ili više leaf
+  KnowledgeComponenta iz Published ili Retired modela. Draft, parent i KnowledgeArea targeti
+  nisu dopušteni; nema weighta, scorea, masteryja ili readinessa.
+- **Lifecycle:** povijest je append-only linearni `Observation → Correction → Invalidation`
+  chain. Correction je potpuna zamjena efektivnog Phase 5.3 payloada, Invalidation je bez
+  targeta i terminalna, fork/cycle/in-place rewrite/hard-delete su zabranjeni.
+- **Ownership/vrijeme:** ownership se izvodi preko Studenta bez dupliciranog Teacher FK-a;
+  svaki write provjerava Teacher ownership. `OccurredAtUtc` i `RecordedAtUtc` ostaju odvojeni.
+- **Granice:** Phase 5.4 definira metadata, Phase 5.5 scoring/readiness, a stvarni emitters
+  nastaju samo u svojim feature fazama. Detalji: `EVIDENCE_EVENT.md`.
+
 ### ADR-0019 — Versioned Knowledge Model with single-parent component trees
 - **Datum:** 2026-09-16
 - **Status:** Accepted — SA odluka za Phase 5.2.

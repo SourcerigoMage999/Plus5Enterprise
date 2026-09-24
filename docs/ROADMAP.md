@@ -363,7 +363,30 @@ leaf i Curriculum mapping granice imaju domain i stvarni SQL relational integrit
 nema produkcijskog kataloga, Evidencea, masteryja, readinessa, API-ja ni UI-ja. Phase 5.3 može
 početi tek nakon zasebno zaključanog Evidence Event contracta.
 
-## 5.3 Evidence Event model — TODO
+## 5.3 Evidence Event model — IMPLEMENTED / REVIEW READY
+
+**Cilj:** uvesti Student-specific, provenance-backed i append-only EvidenceEvent aggregate bez
+automatskog pretvaranja Attempta u Evidence, javnog generic write API-ja ili preuranjenog
+scoring/readiness modela.
+
+**Zaključani scope 2026-09-24:** idempotentni root po `(StudentId, SourceKind, SourceId)`, čisti
+M:N prema leaf komponentama Published/Retired KnowledgeModela, linearni
+`Observation → Correction → Invalidation` lifecycle, potpuni correction payload, terminalna
+invalidacija, bez in-place izmjene ili hard-deletea. Ownership se izvodi preko Studenta, a
+`OccurredAtUtc` i `RecordedAtUtc` su odvojeni. Source of truth: `EVIDENCE_EVENT.md` i ADR-0020.
+
+**Implementirano 2026-09-24:** dodani su domain aggregate/factoryji, interni server-controlled
+emission service, EF mapping, restriktivni FK-ovi, composite keyevi, unique filtered indeksi,
+CHECK constrainti i SQL triggeri za append-only lifecycle, chain identitet/cycle/terminalnost te
+leaf/Draft target granice. Migracija ne seedira Evidence i nema javnog API-ja ni UI-ja.
+Release build, 189/189 backend i 4/4 architecture testa, fokusirani SQL 6/6, frontend 59/59,
+format/lint/typecheck/build, oba vulnerability audita, EF/idempotent migration gate te čisti
+Docker build/migration/health/non-root/runtime schema smoke prolaze. Završni evidence nalazi se
+u `summaries/PHASE_5.3_EVIDENCE_EVENT_MODEL_SUMMARY.md`.
+
+**Acceptance 5.3:** implementacija je spremna za završni SA review. Final LOCK i gate za 5.4
+ne proglašavaju se prije eksplicitnog odobrenja.
+
 ## 5.4 Evidence metadata: difficulty, help, evidence type — TODO
 ## 5.5 Readiness calculation rules — BLOCKED
 **Gate:** matematička/poslovna pravila agregacije moraju biti eksplicitno definirana; specifikacija trenutno definira koncept, ali ne puni algoritam.
