@@ -7,7 +7,8 @@
 - ~~Knowledge Model~~ — LOCKED za Phase 5.2 u `KNOWLEDGE_COMPONENT_MODEL.md`
 - ~~Knowledge Components~~ — LOCKED za Phase 5.2 u `KNOWLEDGE_COMPONENT_MODEL.md`
 - Knowledge Block
-- ~~Evidence Events~~ — LOCKED za Phase 5.3 u `../EVIDENCE_EVENT.md`
+- ~~Evidence Events i metadata~~ — lifecycle LOCKED za Phase 5.3 u `../EVIDENCE_EVENT.md`, a
+  snapshot/katalozi LOCKED za Phase 5.4 u `../EVIDENCE_METADATA.md`
 - CEFR
 - Nadolazeći ispiti
 - Lesson Activity

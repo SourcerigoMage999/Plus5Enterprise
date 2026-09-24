@@ -2,7 +2,7 @@
 
 ## Status
 
-**LOCKED business contract — Phase 5.3 implementiran; završni review čeka odobrenje**
+**FINAL LOCK — Phase 5.3; metadata proširenje definirano zasebnim Phase 5.4 contractom**
 
 ## Svrha i granica
 
@@ -126,7 +126,8 @@ Konkurentni duplikat ili pokušaj drugog successora završava conflict rezultato
 
 ## Namjerno odgođeno
 
-- difficulty, assistance level, EvidenceType i EvidenceContext — Phase 5.4
+- difficulty, assistance level, EvidenceType i EvidenceContext — zaključani u
+  `EVIDENCE_METADATA.md` kroz Phase 5.4
 - weighting, confidence, decay, thresholds, mastery i readiness — Phase 5.5
 - stvarni Lesson/Homework/Board emitteri i Attempt lifecycle — njihove feature faze
 - Student progress i drugi UI prikazi — kasnije ROADMAP faze
@@ -141,4 +142,3 @@ Konkurentni duplikat ili pokušaj drugog successora završava conflict rezultato
   supersession
 - Published i Retired leaf targeti ostaju valjani
 - nema produkcijskih Evidence redaka, javnog API-ja ni emitera iz budućih featurea
-

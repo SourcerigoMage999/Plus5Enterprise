@@ -67,6 +67,7 @@ public sealed class EfEvidenceEmissionService(
                 command.SourceId,
                 command.OccurredAtUtc,
                 clock.GetUtcNow(),
+                CreateMetadata(command),
                 targets);
             AddEvidence(evidenceEvent);
             await db.SaveChangesAsync(cancellationToken);
@@ -131,6 +132,7 @@ public sealed class EfEvidenceEmissionService(
                 command.CorrectedOccurredAtUtc,
                 clock.GetUtcNow(),
                 command.ReasonCode,
+                CreateMetadata(command),
                 targets);
             AddEvidence(evidenceEvent);
             await db.SaveChangesAsync(cancellationToken);
@@ -302,6 +304,20 @@ public sealed class EfEvidenceEmissionService(
         var normalized = value?.Trim().ToUpperInvariant();
         return string.IsNullOrWhiteSpace(normalized) ? null : normalized;
     }
+
+    private static EvidenceMetadata CreateMetadata(EvidenceObservationCommand command) =>
+        new(
+            command.Difficulty,
+            command.EvidenceType,
+            command.AssistanceLevel,
+            command.EvidenceContext);
+
+    private static EvidenceMetadata CreateMetadata(EvidenceCorrectionCommand command) =>
+        new(
+            command.Difficulty,
+            command.EvidenceType,
+            command.AssistanceLevel,
+            command.EvidenceContext);
 
     private static EvidenceWriteResult Success(Guid evidenceEventId) =>
         new(evidenceEventId, EvidenceWriteFailure.None);

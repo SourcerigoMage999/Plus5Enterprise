@@ -31,6 +31,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `CURRICULUM_HIERARCHY.md` nakon Phase 5.1 za version-bound CurriculumOutcome tree i lineage granice
    - `KNOWLEDGE_COMPONENT_MODEL.md` nakon Phase 5.2 za KnowledgeModel lifecycle, Area/component tree i Curriculum mapping
    - `EVIDENCE_EVENT.md` nakon Phase 5.3 za provenance, idempotency, leaf targete i append-only Evidence lifecycle
+   - `EVIDENCE_METADATA.md` nakon Phase 5.4 za immutable metadata snapshot, canonical codeove i correction semantics
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`

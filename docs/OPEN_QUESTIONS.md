@@ -7,7 +7,11 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
 1. ~~Koji je službeni tehnološki stack i ciljane verzije?~~ **RIJEŠENO 2026-08-23:** React + TypeScript + Vite frontend; C# + ASP.NET Core/.NET 10 backend; SQL Server + EF Core; Docker. Vidi `ARCHITECTURE_BASELINE.md` i ADR-0001–0005.
 2. ~~Koji je detaljni authentication model, vrste korisnika i permissions model?~~ **RIJEŠENO 2026-08-24:** samo Teacher ima account u Phase 1.6; javna Teacher registracija s potvrdom e-maila; Student/Guardian bez accounta u ovoj fazi; nema Administrator rolea; revocable secure cookie auth i deny-by-default ownership authorization. Vidi `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md` i ADR-0009.
 3. ~~`4.1 Biblioteka materijala.docx` je 0 B.~~ **RIJEŠENO 2026-09-01:** novi teacher source detaljno opisuje 4.1 kroz `source_specs/4.1_Biblioteka_materijala.md`.
-4. Koji je točan algoritam readiness procjene iz Evidence Eventa (weighting, decay, broj dokaza, confidence, thresholds)?
+4. Koji je točan algoritam readiness procjene iz Evidence Eventa (weighting, decay, broj dokaza,
+   confidence, thresholds)? **Phase 5.4 metadata input contract je RIJEŠEN 2026-09-24 u
+   `EVIDENCE_METADATA.md` i ADR-0021:** Difficulty je ordinalan `1..5`, a EvidenceType,
+   AssistanceLevel i EvidenceContext imaju zaključane canonical codeove. Ta odluka namjerno ne
+   definira weighting ili drugi algoritamski učinak, pa readiness pitanje ostaje blocking za 5.5.
 5. ~~Kako se modeliraju redoviti termini grupe naspram konkretnih instanci termina i promjena serije?~~ **RIJEŠENO 2026-08-28:** versioned weekly `RecurringSessionSeries`, materialized `Session`, one-occurrence exception i successor-series contract zaključani su u `SCHEDULING_FOUNDATION.md` i ADR-0013.
 6. Koja je politika pohrane datoteka/materijala, maksimalne veličine i podržani formati?
 7. Koja je granica AI funkcionalnosti u prezentacijama/lesson builderu i mora li učitelj potvrditi svaki AI prijedlog prije objave/korištenja?
@@ -15,7 +19,8 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
    `KnowledgeComponent` lifecycle, version boundary, Area/tree struktura, lineage i
    CurriculumOutcome M:N zaključani su u `KNOWLEDGE_COMPONENT_MODEL.md`. Student-specific
    Evidence provenance, idempotentni emission, leaf targeti i append-only
-   Observation/Correction/Invalidation lifecycle zaključani su u `EVIDENCE_EVENT.md`.
+   Observation/Correction/Invalidation lifecycle zaključani su u `EVIDENCE_EVENT.md`, a potpuni
+   immutable metadata snapshot i bounded katalozi u `EVIDENCE_METADATA.md`.
    `KnowledgeBlock` ostaje blocking gate svoje kasnije faze.
 9. Koji je finalni participant/permission/retention/delivery contract za Poruke i privitke?
 10. Koje su finalne metric definitions, privacy, export/PDF i immutable `ReportSnapshot` politike za Izvještaje?

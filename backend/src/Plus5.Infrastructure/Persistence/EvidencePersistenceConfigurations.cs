@@ -41,6 +41,28 @@ internal sealed class EvidenceEventConfiguration : IEntityTypeConfiguration<Evid
                 "CK_EvidenceEvents_Utc",
                 "DATEPART(TZOFFSET, [OccurredAtUtc]) = 0 " +
                 "AND DATEPART(TZOFFSET, [RecordedAtUtc]) = 0");
+            table.HasCheckConstraint(
+                "CK_EvidenceEvents_MetadataShape",
+                "([Kind] IN (1, 2) AND [Difficulty] IS NOT NULL " +
+                "AND [EvidenceType] IS NOT NULL AND [AssistanceLevel] IS NOT NULL " +
+                "AND [EvidenceContext] IS NOT NULL) OR ([Kind] = 3 AND [Difficulty] IS NULL " +
+                "AND [EvidenceType] IS NULL AND [AssistanceLevel] IS NULL " +
+                "AND [EvidenceContext] IS NULL)");
+            table.HasCheckConstraint(
+                "CK_EvidenceEvents_Difficulty",
+                "[Difficulty] IS NULL OR [Difficulty] BETWEEN 1 AND 5");
+            table.HasCheckConstraint(
+                "CK_EvidenceEvents_EvidenceType",
+                "[EvidenceType] IS NULL OR [EvidenceType] IN " +
+                "(N'Recognition', N'Understanding', N'Application', N'Production')");
+            table.HasCheckConstraint(
+                "CK_EvidenceEvents_AssistanceLevel",
+                "[AssistanceLevel] IS NULL OR [AssistanceLevel] IN " +
+                "(N'Independent', N'MinorAssistance', N'SignificantAssistance', N'NotObserved')");
+            table.HasCheckConstraint(
+                "CK_EvidenceEvents_EvidenceContext",
+                "[EvidenceContext] IS NULL OR [EvidenceContext] IN " +
+                "(N'Lesson', N'Homework', N'Assessment', N'IndependentPractice')");
             table.HasTrigger("TR_EvidenceEvents_ValidateAppendOnly");
             table.HasTrigger("TR_EvidenceEvents_BlockDelete");
         });
@@ -68,6 +90,15 @@ internal sealed class EvidenceEventConfiguration : IEntityTypeConfiguration<Evid
             .IsRequired();
         builder.Property(evidence => evidence.ReasonCode)
             .HasMaxLength(EvidenceEvent.ReasonCodeMaxLength);
+        builder.Property(evidence => evidence.EvidenceType)
+            .HasConversion<string>()
+            .HasMaxLength(16);
+        builder.Property(evidence => evidence.AssistanceLevel)
+            .HasConversion<string>()
+            .HasMaxLength(24);
+        builder.Property(evidence => evidence.EvidenceContext)
+            .HasConversion<string>()
+            .HasMaxLength(24);
         builder.Ignore(evidence => evidence.KnowledgeComponents);
 
         builder.HasOne<Student>()

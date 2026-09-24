@@ -20,7 +20,8 @@ public sealed class EvidenceEvent
         DateTimeOffset occurredAtUtc,
         DateTimeOffset recordedAtUtc,
         Guid? supersedesEvidenceEventId,
-        string? reasonCode)
+        string? reasonCode,
+        EvidenceMetadata? metadata)
     {
         EnsureIdentifier(id, nameof(id));
         EnsureIdentifier(studentId, nameof(studentId));
@@ -37,6 +38,10 @@ public sealed class EvidenceEvent
         RecordedAtUtc = recordedAtUtc;
         SupersedesEvidenceEventId = supersedesEvidenceEventId;
         ReasonCode = reasonCode;
+        Difficulty = metadata?.Difficulty;
+        EvidenceType = metadata?.EvidenceType;
+        AssistanceLevel = metadata?.AssistanceLevel;
+        EvidenceContext = metadata?.EvidenceContext;
     }
 
     public Guid Id { get; private set; }
@@ -57,6 +62,14 @@ public sealed class EvidenceEvent
 
     public string? ReasonCode { get; private set; }
 
+    public int? Difficulty { get; private set; }
+
+    public EvidenceType? EvidenceType { get; private set; }
+
+    public AssistanceLevel? AssistanceLevel { get; private set; }
+
+    public EvidenceContext? EvidenceContext { get; private set; }
+
     public IReadOnlyCollection<EvidenceEventKnowledgeComponent> KnowledgeComponents =>
         knowledgeComponents;
 
@@ -67,8 +80,10 @@ public sealed class EvidenceEvent
         Guid sourceId,
         DateTimeOffset occurredAtUtc,
         DateTimeOffset recordedAtUtc,
+        EvidenceMetadata metadata,
         IReadOnlyCollection<EvidenceKnowledgeTarget> targets)
     {
+        ArgumentNullException.ThrowIfNull(metadata);
         var evidenceEvent = new EvidenceEvent(
             id,
             studentId,
@@ -78,7 +93,8 @@ public sealed class EvidenceEvent
             occurredAtUtc,
             recordedAtUtc,
             supersedesEvidenceEventId: null,
-            reasonCode: null);
+            reasonCode: null,
+            metadata);
         evidenceEvent.SetTargets(targets);
         return evidenceEvent;
     }
@@ -89,9 +105,11 @@ public sealed class EvidenceEvent
         DateTimeOffset correctedOccurredAtUtc,
         DateTimeOffset recordedAtUtc,
         string reasonCode,
+        EvidenceMetadata metadata,
         IReadOnlyCollection<EvidenceKnowledgeTarget> targets)
     {
         EnsureCanSupersede(id, predecessor);
+        ArgumentNullException.ThrowIfNull(metadata);
 
         var evidenceEvent = new EvidenceEvent(
             id,
@@ -102,7 +120,8 @@ public sealed class EvidenceEvent
             correctedOccurredAtUtc,
             recordedAtUtc,
             predecessor.Id,
-            NormalizeCode(reasonCode, ReasonCodeMaxLength, nameof(reasonCode)));
+            NormalizeCode(reasonCode, ReasonCodeMaxLength, nameof(reasonCode)),
+            metadata);
         evidenceEvent.SetTargets(targets);
         return evidenceEvent;
     }
@@ -124,7 +143,8 @@ public sealed class EvidenceEvent
             predecessor.OccurredAtUtc,
             recordedAtUtc,
             predecessor.Id,
-            NormalizeCode(reasonCode, ReasonCodeMaxLength, nameof(reasonCode)));
+            NormalizeCode(reasonCode, ReasonCodeMaxLength, nameof(reasonCode)),
+            metadata: null);
     }
 
     private void SetTargets(IReadOnlyCollection<EvidenceKnowledgeTarget> targets)

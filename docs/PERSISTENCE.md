@@ -150,8 +150,18 @@ i UTC vremena. Composite self-FK zahtijeva isti Student/source identitet u cijel
 SQL triggeri zabranjuju event UPDATE/DELETE, mapping UPDATE/DELETE, fork/cycle, successor nakon
 Invalidationa te Invalidation, Draft ili parent Knowledge target. Observation/Correction target
 kardinalnost i atomski zapis eventa s mappingom provodi interni server-controlled emission service
-u Serializable transakciji; nema javnog generic Evidence write surfacea. Nema Evidence metadata,
-scorea, masteryja, readinessa ni production emitera. Detalji su u `EVIDENCE_EVENT.md`.
+u Serializable transakciji; nema javnog generic Evidence write surfacea. Nema scorea, masteryja,
+readinessa ni production emitera. Detalji su u `EVIDENCE_EVENT.md`.
+
+## Phase 5.4 evidence metadata schema
+
+Migracija `AddEvidenceMetadata` aditivno proširuje `EvidenceEvents` nullable persistence kolonama
+`Difficulty`, `EvidenceType`, `AssistanceLevel` i `EvidenceContext`, bez seeda, defaulta ili
+backfilla. Conditional lifecycle CHECK zahtijeva sva četiri polja za Observation/Correction i sva
+četiri `NULL` za Invalidation. Dodatni CHECK constrainti ograničavaju Difficulty na `1..5` i
+string vrijednosti na zaključane bounded canonical kataloge. Postojeći append-only trigger štiti
+i metadata kolone od in-place UPDATE-a. Correction sprema potpuni zamjenski snapshot, dok stari
+event ostaje nepromijenjen. Detalji su u `EVIDENCE_METADATA.md`.
 
 ## Phase 2.2 Student profile schema
 

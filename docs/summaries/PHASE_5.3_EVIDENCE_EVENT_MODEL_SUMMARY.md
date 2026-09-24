@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED — REVIEW READY; FINAL LOCK čeka eksplicitno SA odobrenje`
+`FINAL LOCK — odobreno prije Phase 5.4 odluke 2026-09-24`
 
 ## Datum
 
@@ -148,5 +148,5 @@ svi disposable database scenariji stvarno izvršavaju cijeli migration chain.
 
 ## Točna početna točka za sljedeću fazu
 
-Phase 5.3 je implementirana i spremna za završni SA review. Nakon eksplicitnog FINAL LOCK-a
-ROADMAP status može se zaključati i tek tada se otvara Phase 5.4 kao zasebna faza.
+Phase 5.3 je završno zaključana. Phase 5.4 počinje zasebnim zaključanim metadata contractom bez
+ponovnog otvaranja provenance, target ili append-only lifecycle odluka.

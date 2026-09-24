@@ -27,6 +27,7 @@ public sealed class EvidenceEventTests
             sourceId,
             OccurredAtUtc,
             RecordedAtUtc,
+            CreateMetadata(),
             [new EvidenceKnowledgeTarget(publishedLeaf, publishedModel, isLeaf: true)]);
 
         Assert.Equal(EvidenceEventKind.Observation, observation.Kind);
@@ -35,6 +36,10 @@ public sealed class EvidenceEventTests
         Assert.Equal(sourceId, observation.SourceId);
         Assert.Null(observation.SupersedesEvidenceEventId);
         Assert.Null(observation.ReasonCode);
+        Assert.Equal(2, observation.Difficulty);
+        Assert.Equal(EvidenceType.Application, observation.EvidenceType);
+        Assert.Equal(AssistanceLevel.NotObserved, observation.AssistanceLevel);
+        Assert.Equal(EvidenceContext.Assessment, observation.EvidenceContext);
         Assert.Equal(
             publishedLeaf.Id,
             Assert.Single(observation.KnowledgeComponents).KnowledgeComponentId);
@@ -46,6 +51,7 @@ public sealed class EvidenceEventTests
             sourceId,
             OccurredAtUtc,
             RecordedAtUtc,
+            CreateMetadata(),
             []));
 
         var draftModel = new KnowledgeModel(Guid.NewGuid(), "CORE", "V2");
@@ -71,6 +77,11 @@ public sealed class EvidenceEventTests
         var observation = CreateObservation(model, firstLeaf);
         var (correctedModel, _, correctedLeaf) = CreatePublishedTree("CORE", "V2");
         var correctedOccurrence = OccurredAtUtc.AddMinutes(5);
+        var correctedMetadata = new EvidenceMetadata(
+            4,
+            EvidenceType.Production,
+            AssistanceLevel.Independent,
+            EvidenceContext.Lesson);
 
         var correction = EvidenceEvent.CreateCorrection(
             Guid.NewGuid(),
@@ -78,6 +89,7 @@ public sealed class EvidenceEventTests
             correctedOccurrence,
             RecordedAtUtc.AddMinutes(10),
             " mapping_error ",
+            correctedMetadata,
             [new EvidenceKnowledgeTarget(correctedLeaf, correctedModel, true)]);
 
         Assert.Equal(EvidenceEventKind.Correction, correction.Kind);
@@ -87,6 +99,12 @@ public sealed class EvidenceEventTests
         Assert.Equal(observation.SourceId, correction.SourceId);
         Assert.Equal(correctedOccurrence, correction.OccurredAtUtc);
         Assert.Equal("MAPPING_ERROR", correction.ReasonCode);
+        Assert.Equal(2, observation.Difficulty);
+        Assert.Equal(EvidenceType.Application, observation.EvidenceType);
+        Assert.Equal(4, correction.Difficulty);
+        Assert.Equal(EvidenceType.Production, correction.EvidenceType);
+        Assert.Equal(AssistanceLevel.Independent, correction.AssistanceLevel);
+        Assert.Equal(EvidenceContext.Lesson, correction.EvidenceContext);
         Assert.Equal(firstLeaf.Id, Assert.Single(observation.KnowledgeComponents).KnowledgeComponentId);
         Assert.Equal(correctedLeaf.Id, Assert.Single(correction.KnowledgeComponents).KnowledgeComponentId);
     }
@@ -106,6 +124,10 @@ public sealed class EvidenceEventTests
         Assert.Equal(observation.Id, invalidation.SupersedesEvidenceEventId);
         Assert.Equal(observation.OccurredAtUtc, invalidation.OccurredAtUtc);
         Assert.Equal("SOURCE_VOIDED", invalidation.ReasonCode);
+        Assert.Null(invalidation.Difficulty);
+        Assert.Null(invalidation.EvidenceType);
+        Assert.Null(invalidation.AssistanceLevel);
+        Assert.Null(invalidation.EvidenceContext);
         Assert.Empty(invalidation.KnowledgeComponents);
         Assert.Throws<InvalidOperationException>(() => EvidenceEvent.CreateCorrection(
             Guid.NewGuid(),
@@ -113,6 +135,7 @@ public sealed class EvidenceEventTests
             OccurredAtUtc,
             RecordedAtUtc.AddHours(2),
             "INVALID",
+            CreateMetadata(),
             [new EvidenceKnowledgeTarget(leaf, model, true)]));
     }
 
@@ -129,6 +152,7 @@ public sealed class EvidenceEventTests
             Guid.NewGuid(),
             OccurredAtUtc,
             RecordedAtUtc,
+            CreateMetadata(),
             [target]));
         Assert.Throws<ArgumentException>(() => EvidenceEvent.CreateObservation(
             Guid.NewGuid(),
@@ -137,7 +161,38 @@ public sealed class EvidenceEventTests
             Guid.NewGuid(),
             OccurredAtUtc.ToOffset(TimeSpan.FromHours(2)),
             RecordedAtUtc,
+            CreateMetadata(),
             [target]));
+    }
+
+    [Fact]
+    public void MetadataUsesOnlyLockedCanonicalValues()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new EvidenceMetadata(
+            0,
+            EvidenceType.Application,
+            AssistanceLevel.Independent,
+            EvidenceContext.Lesson));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new EvidenceMetadata(
+            6,
+            EvidenceType.Application,
+            AssistanceLevel.Independent,
+            EvidenceContext.Lesson));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new EvidenceMetadata(
+            3,
+            (EvidenceType)999,
+            AssistanceLevel.Independent,
+            EvidenceContext.Lesson));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new EvidenceMetadata(
+            3,
+            EvidenceType.Application,
+            (AssistanceLevel)999,
+            EvidenceContext.Lesson));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new EvidenceMetadata(
+            3,
+            EvidenceType.Application,
+            AssistanceLevel.NotObserved,
+            (EvidenceContext)999));
     }
 
     [Fact]
@@ -149,8 +204,18 @@ public sealed class EvidenceEventTests
 
         Assert.DoesNotContain(evidence.GetProperties(), property =>
             property.Name is "TeacherAccountId" or "MasteryScore" or "ReadinessScore"
-                or "Confidence" or "Weight" or "Difficulty" or "AssistanceLevel"
-                or "EvidenceType" or "EvidenceContext");
+                or "Confidence" or "Weight");
+        Assert.Contains(evidence.GetProperties(), property =>
+            property.Name == nameof(EvidenceEvent.Difficulty));
+        Assert.Equal(
+            16,
+            evidence.FindProperty(nameof(EvidenceEvent.EvidenceType))!.GetMaxLength());
+        Assert.Equal(
+            24,
+            evidence.FindProperty(nameof(EvidenceEvent.AssistanceLevel))!.GetMaxLength());
+        Assert.Equal(
+            24,
+            evidence.FindProperty(nameof(EvidenceEvent.EvidenceContext))!.GetMaxLength());
         Assert.Equal(2, evidence.GetForeignKeys().Count());
         Assert.All(evidence.GetForeignKeys(), foreignKey =>
             Assert.Equal(DeleteBehavior.Restrict, foreignKey.DeleteBehavior));
@@ -180,7 +245,15 @@ public sealed class EvidenceEventTests
             Guid.NewGuid(),
             OccurredAtUtc,
             RecordedAtUtc,
+            CreateMetadata(),
             [new EvidenceKnowledgeTarget(leaf, model, true)]);
+
+    private static EvidenceMetadata CreateMetadata() =>
+        new(
+            2,
+            EvidenceType.Application,
+            AssistanceLevel.NotObserved,
+            EvidenceContext.Assessment);
 
     private static (KnowledgeModel Model, KnowledgeComponent Parent, KnowledgeComponent Leaf)
         CreatePublishedTree(string code, string version)

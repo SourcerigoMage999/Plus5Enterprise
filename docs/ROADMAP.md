@@ -363,7 +363,7 @@ leaf i Curriculum mapping granice imaju domain i stvarni SQL relational integrit
 nema produkcijskog kataloga, Evidencea, masteryja, readinessa, API-ja ni UI-ja. Phase 5.3 može
 početi tek nakon zasebno zaključanog Evidence Event contracta.
 
-## 5.3 Evidence Event model — IMPLEMENTED / REVIEW READY
+## 5.3 Evidence Event model — FINAL LOCK
 
 **Cilj:** uvesti Student-specific, provenance-backed i append-only EvidenceEvent aggregate bez
 automatskog pretvaranja Attempta u Evidence, javnog generic write API-ja ili preuranjenog
@@ -384,10 +384,30 @@ format/lint/typecheck/build, oba vulnerability audita, EF/idempotent migration g
 Docker build/migration/health/non-root/runtime schema smoke prolaze. Završni evidence nalazi se
 u `summaries/PHASE_5.3_EVIDENCE_EVENT_MODEL_SUMMARY.md`.
 
-**Acceptance 5.3:** implementacija je spremna za završni SA review. Final LOCK i gate za 5.4
-ne proglašavaju se prije eksplicitnog odobrenja.
+**Acceptance 5.3: FINAL LOCK — odobreno prije Phase 5.4 odluke 2026-09-24.** Zaključani
+provenance, idempotency, ownership, target i append-only lifecycle ostaju nepromijenjeni. Raniji
+REVIEW READY status administrativno je usklađen bez ponovnog otvaranja faze.
 
-## 5.4 Evidence metadata: difficulty, help, evidence type — TODO
+## 5.4 Evidence metadata: difficulty, help, evidence type — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-24:** potpuni immutable metadata snapshot na svakom
+Observation/Correction događaju: `Difficulty 1..5`, četiri EvidenceType codea, četiri
+AssistanceLevel codea i četiri EvidenceContext codea. Invalidation nema metadata, Correction
+zamjenjuje cijeli efektivni snapshot, a source promjene ne mijenjaju povijest. Nema weightinga,
+readinessa, Task redizajna, UI-ja, javnog API-ja ili production emitera. Source of truth:
+`EVIDENCE_METADATA.md` i ADR-0021.
+
+**Implementirano 2026-09-24:** domain snapshot, interni emission contract, EF string mapping,
+aditivna migracija bez backfilla te lifecycle/range/canonical-code CHECK constrainti. Correction
+sprema puni zamjenski snapshot, Invalidation nema metadata, a postojeći append-only trigger štiti
+kolone od in-place izmjene. Release build, fokusirani 13/13 i puni stvarni SQL 191/191 suite,
+architecture 4/4, frontend 59/59, format, EF/idempotent script, dependency auditi te čisti Docker
+rebuild/migration/health/non-root/runtime-schema gate prolaze. Završni evidence nalazi se u
+`summaries/PHASE_5.4_EVIDENCE_METADATA_SUMMARY.md`.
+
+**Acceptance 5.4: IMPLEMENTED / REVIEW READY.** Final LOCK čeka review; Phase 5.5 ostaje blokirana
+na zasebnoj odluci o readiness matematici i ne smije iz Phase 5.4 izvesti implicitni weighting.
+
 ## 5.5 Readiness calculation rules — BLOCKED
 **Gate:** matematička/poslovna pravila agregacije moraju biti eksplicitno definirana; specifikacija trenutno definira koncept, ali ne puni algoritam.
 

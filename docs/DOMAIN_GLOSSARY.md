@@ -80,10 +80,10 @@ Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prem
 | `AssessableTask` | Procjenjivi zadatak | Atomsko pitanje ili zadatak s kriterijem vrednovanja, povezan s jednom ili više Knowledge Components. Ne koristi se generički `Activity` za ovaj pojam. |
 | `StudentAttempt` | Pokušaj učenika | Konkretan učenikov odgovor ili izvedba procjenjivog zadatka, s rezultatom, vremenom, pomoći i kontekstom. Pokušaj je ulaz za Evidence Event, a nije agregirana procjena znanja. |
 | `EvidenceEvent` | Dokazni događaj / dokaz znanja | Standardizirani zapis pedagoški relevantnog rezultata jednog pokušaja u odnosu na Knowledge Component(s), uz metapodatke poput težine, vrste dokaza, pomoći i konteksta. Ne mijenja procjenu izravno proizvoljnim postotkom. Lifecycle i korekcije zapisa zaključavaju se u evidence fazi. |
-| `EvidenceType` | Vrsta dokaza | Kontrolirana klasifikacija onoga što rezultat pokazuje, npr. prepoznavanje, razumijevanje, primjena ili produkcija. Konačan katalog zaključava se u fazi 5.4. |
-| `Difficulty` | Težina zadatka | Kontrolirana procjena zahtjevnosti procjenjivog zadatka. Konačna skala i utjecaj na izračun zaključavaju se u fazama 5.4–5.5. |
-| `AssistanceLevel` | Razina pomoći | Evidencija koliko je učenik bio samostalan pri pokušaju, npr. samostalno, uz manju pomoć ili uz značajnu pomoć. Konačan katalog i weighting nisu zaključani. |
-| `EvidenceContext` | Kontekst dokaza | Izvorna nastavna situacija pokušaja, npr. sat, domaća zadaća, test ili samostalna vježba. Svi konteksti proizvode isti standardizirani Evidence Event contract. |
+| `EvidenceType` | Vrsta dokaza | Zaključani v1 code opisuje što rezultat pokazuje: Recognition, Understanding, Application ili Production. Nije izvor/kontekst dokaza. |
+| `Difficulty` | Težina zadatka | Ordinalna zahtjevnost `1..5`, od najmanje do najveće. Matematički utjecaj nije definiran prije 5.5. |
+| `AssistanceLevel` | Razina pomoći | Zaključani v1 code: Independent, MinorAssistance, SignificantAssistance ili NotObserved. NotObserved nije isto što i Independent. |
+| `EvidenceContext` | Kontekst dokaza | Zaključani v1 code nastavne situacije: Lesson, Homework, Assessment ili IndependentPractice. Nije isto što i tehnički SourceKind. |
 | `Tag` | Tag / oznaka | Fleksibilna oznaka za pretraživanje, organizaciju, filtriranje i preporuku sadržaja. Tag nije Knowledge Component i sam ne utječe na procjenu znanja. |
 | `MaterialVersion` | Verzija materijala | Identificirana verzija sadržaja materijala potrebna za sigurno ponovno korištenje i tumačenje povezanih zadataka. Detaljna versioning pravila zaključavaju se u fazi materijala/editor fazi. |
 
@@ -121,7 +121,8 @@ Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prem
 - kardinalnost i vremenska valjanost veze Student–Program–Group
 - model redovitog rasporeda, serije termina i iznimki
 - algoritam za MasteryEstimate, ReadinessEstimate i ConfidenceLevel
-- konačni katalozi Difficulty, EvidenceType, AssistanceLevel i EvidenceContext
+- algoritamski utjecaj Difficulty, EvidenceType, AssistanceLevel i EvidenceContext na
+  weighting/readiness (katalozi i snapshot lifecycle zaključani su u Phase 5.4)
 - file storage politika i podržani formati
 - pravila kasnijih modula koji imaju dokumentacijski gate
 

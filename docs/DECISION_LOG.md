@@ -1,5 +1,23 @@
 # DECISION_LOG
 
+### ADR-0021 — Complete immutable Evidence metadata snapshot
+- **Datum:** 2026-09-24
+- **Status:** Accepted — SA odluka za Phase 5.4.
+- **Kontekst:** EvidenceEvent lifecycle je zaključan u 5.3, ali glossary je ostavio otvorene
+  canonical metadata kataloge i granicu između source authoringa i povijesnog evidence zapisa.
+- **Odluka:** svaki Observation/Correction sprema potpuni snapshot: ordinalni `Difficulty 1..5`,
+  `EvidenceType` (`Recognition`, `Understanding`, `Application`, `Production`),
+  `AssistanceLevel` (`Independent`, `MinorAssistance`, `SignificantAssistance`, `NotObserved`) i
+  `EvidenceContext` (`Lesson`, `Homework`, `Assessment`, `IndependentPractice`).
+- **Lifecycle:** Correction zamjenjuje cijeli efektivni snapshot bez read-time nasljeđivanja;
+  Invalidation nema metadata. Snapshot ostaje nepromijenjen kada se kasnije promijeni source.
+- **Persistence:** canonical codeovi su bounded string vrijednosti s DB CHECK zaštitom; nema
+  lookup tablica, backfilla ili zasebne metadata-version kolone. Katalozi su stabilni i buduće
+  proširenje može biti samo aditivno.
+- **Granice:** Difficulty može potjecati iz budućeg Task authoringa, ali 5.4 ne uvodi Task model.
+  Assistance i Context opisuju runtime evidence trenutak. Nema weightinga, masteryja, readinessa,
+  UI-ja, javnog API-ja ili production emitera. Detalji: `EVIDENCE_METADATA.md`.
+
 ### ADR-0020 — Student-specific append-only Evidence Event chain
 - **Datum:** 2026-09-24
 - **Status:** Accepted — SA odluka za Phase 5.3.

@@ -1,3 +1,5 @@
+using Plus5.Domain.Evidence;
+
 namespace Plus5.Application.Evidence;
 
 public sealed record EvidenceObservationCommand(
@@ -5,12 +7,20 @@ public sealed record EvidenceObservationCommand(
     string SourceKind,
     Guid SourceId,
     DateTimeOffset OccurredAtUtc,
+    int Difficulty,
+    EvidenceType EvidenceType,
+    AssistanceLevel AssistanceLevel,
+    EvidenceContext EvidenceContext,
     IReadOnlyList<Guid> KnowledgeComponentIds);
 
 public sealed record EvidenceCorrectionCommand(
     Guid SupersededEvidenceEventId,
     DateTimeOffset CorrectedOccurredAtUtc,
     string ReasonCode,
+    int Difficulty,
+    EvidenceType EvidenceType,
+    AssistanceLevel AssistanceLevel,
+    EvidenceContext EvidenceContext,
     IReadOnlyList<Guid> KnowledgeComponentIds);
 
 public sealed record EvidenceInvalidationCommand(

@@ -15,7 +15,7 @@ namespace Plus5.Api.Tests.Evidence;
 public sealed class EvidenceEventSqlTests
 {
     private const string PreviousMigration =
-        "20260917224652_AddKnowledgeMappingLifecycleGuard";
+        "20260924130925_AddEvidenceEventModel";
     private static readonly DateTimeOffset Now =
         new(2026, 9, 24, 12, 0, 0, TimeSpan.Zero);
     private static readonly int[] DuplicateKeyErrorNumbers = [2601, 2627];
@@ -74,6 +74,10 @@ public sealed class EvidenceEventSqlTests
                         "STUDENT_ATTEMPT",
                         sourceId,
                         Now.AddMinutes(-15),
+                        2,
+                        EvidenceType.Application,
+                        AssistanceLevel.NotObserved,
+                        EvidenceContext.Assessment,
                         [fixture.LeafId]),
                     CancellationToken.None);
 
@@ -90,6 +94,10 @@ public sealed class EvidenceEventSqlTests
                         "student_attempt",
                         sourceId,
                         Now.AddMinutes(-15),
+                        2,
+                        EvidenceType.Application,
+                        AssistanceLevel.NotObserved,
+                        EvidenceContext.Assessment,
                         [fixture.LeafId]),
                     CancellationToken.None);
                 Assert.Equal(EvidenceWriteFailure.DuplicateSource, duplicate.Failure);
@@ -103,6 +111,10 @@ public sealed class EvidenceEventSqlTests
                         observationId,
                         Now.AddMinutes(-14),
                         "MAPPING_ERROR",
+                        3,
+                        EvidenceType.Production,
+                        AssistanceLevel.Independent,
+                        EvidenceContext.Lesson,
                         [fixture.SecondLeafId]),
                     CancellationToken.None);
                 Assert.Equal(EvidenceWriteFailure.NotFound, hidden.Failure);
@@ -118,6 +130,10 @@ public sealed class EvidenceEventSqlTests
                             "TEACHER_ASSESSMENT",
                             Guid.NewGuid(),
                             Now.AddMinutes(-15),
+                            2,
+                            EvidenceType.Understanding,
+                            AssistanceLevel.MinorAssistance,
+                            EvidenceContext.Lesson,
                             []),
                         CancellationToken.None);
                 Assert.Equal(
@@ -140,6 +156,10 @@ public sealed class EvidenceEventSqlTests
                         observationId,
                         Now.AddMinutes(-14),
                         "MAPPING_ERROR",
+                        3,
+                        EvidenceType.Production,
+                        AssistanceLevel.Independent,
+                        EvidenceContext.Lesson,
                         [fixture.SecondLeafId]),
                     CancellationToken.None);
                 Assert.Equal(EvidenceWriteFailure.None, corrected.Failure);
@@ -154,6 +174,10 @@ public sealed class EvidenceEventSqlTests
                         observationId,
                         Now.AddMinutes(-13),
                         "SECOND_CORRECTION",
+                        4,
+                        EvidenceType.Production,
+                        AssistanceLevel.Independent,
+                        EvidenceContext.Assessment,
                         [fixture.LeafId]),
                     CancellationToken.None);
                 Assert.Equal(EvidenceWriteFailure.Conflict, fork.Failure);
@@ -178,6 +202,10 @@ public sealed class EvidenceEventSqlTests
                         invalidationId,
                         Now,
                         "NOT_ALLOWED",
+                        1,
+                        EvidenceType.Recognition,
+                        AssistanceLevel.NotObserved,
+                        EvidenceContext.Homework,
                         [fixture.LeafId]),
                     CancellationToken.None);
                 Assert.Equal(EvidenceWriteFailure.Conflict, terminal.Failure);
@@ -201,6 +229,18 @@ public sealed class EvidenceEventSqlTests
             Assert.Equal(observation.Id, correction.SupersedesEvidenceEventId);
             Assert.Equal(correction.Id, invalidation.SupersedesEvidenceEventId);
             Assert.Equal(correction.OccurredAtUtc, invalidation.OccurredAtUtc);
+            Assert.Equal(2, observation.Difficulty);
+            Assert.Equal(EvidenceType.Application, observation.EvidenceType);
+            Assert.Equal(AssistanceLevel.NotObserved, observation.AssistanceLevel);
+            Assert.Equal(EvidenceContext.Assessment, observation.EvidenceContext);
+            Assert.Equal(3, correction.Difficulty);
+            Assert.Equal(EvidenceType.Production, correction.EvidenceType);
+            Assert.Equal(AssistanceLevel.Independent, correction.AssistanceLevel);
+            Assert.Equal(EvidenceContext.Lesson, correction.EvidenceContext);
+            Assert.Null(invalidation.Difficulty);
+            Assert.Null(invalidation.EvidenceType);
+            Assert.Null(invalidation.AssistanceLevel);
+            Assert.Null(invalidation.EvidenceContext);
             Assert.Equal(2, await verify.EvidenceEventKnowledgeComponents.CountAsync());
             Assert.False(await verify.EvidenceEventKnowledgeComponents
                 .AnyAsync(mapping => mapping.EvidenceEventId == invalidationId));
@@ -237,6 +277,10 @@ public sealed class EvidenceEventSqlTests
                         "TEACHER_ASSESSMENT",
                         Guid.NewGuid(),
                         Now,
+                        3,
+                        EvidenceType.Understanding,
+                        AssistanceLevel.MinorAssistance,
+                        EvidenceContext.Lesson,
                         [published.LeafId]),
                     CancellationToken.None);
                 observationId = Assert.IsType<Guid>(result.EvidenceEventId);
@@ -315,6 +359,10 @@ public sealed class EvidenceEventSqlTests
                         "STUDENT_ATTEMPT",
                         Guid.NewGuid(),
                         Now,
+                        2,
+                        EvidenceType.Application,
+                        AssistanceLevel.NotObserved,
+                        EvidenceContext.Assessment,
                         [fixture.LeafId]),
                     CancellationToken.None);
                 observationId = Assert.IsType<Guid>(result.EvidenceEventId);
@@ -325,7 +373,7 @@ public sealed class EvidenceEventSqlTests
                 var exception = await Assert.ThrowsAsync<SqlException>(() =>
                     updateEvent.Database.ExecuteSqlInterpolatedAsync($$"""
                         UPDATE [EvidenceEvents]
-                        SET [OccurredAtUtc] = {{Now.AddMinutes(1)}}
+                        SET [Difficulty] = 5
                         WHERE [Id] = {{observationId}};
                         """));
                 Assert.Equal(51110, exception.Number);
@@ -357,7 +405,15 @@ public sealed class EvidenceEventSqlTests
             {
                 var result = await CreateService(correct).CorrectAsync(
                     fixture.OwnerId,
-                    new(observationId, Now, "FIX", [fixture.SecondLeafId]),
+                    new(
+                        observationId,
+                        Now,
+                        "FIX",
+                        4,
+                        EvidenceType.Production,
+                        AssistanceLevel.Independent,
+                        EvidenceContext.Lesson,
+                        [fixture.SecondLeafId]),
                     CancellationToken.None);
                 correctionId = Assert.IsType<Guid>(result.EvidenceEventId);
             }
@@ -371,16 +427,123 @@ public sealed class EvidenceEventSqlTests
                         INSERT INTO [EvidenceEvents]
                             ([Id], [StudentId], [Kind], [SourceKind], [SourceId],
                              [OccurredAtUtc], [RecordedAtUtc], [SupersedesEvidenceEventId],
-                             [ReasonCode])
+                             [ReasonCode], [Difficulty], [EvidenceType], [AssistanceLevel],
+                             [EvidenceContext])
                         VALUES
                             ({{Guid.NewGuid()}}, {{predecessor.StudentId}}, 2,
                              {{predecessor.SourceKind}}, {{predecessor.SourceId}},
-                             {{Now}}, {{Now.AddMinutes(2)}}, {{observationId}}, N'FORK');
+                             {{Now}}, {{Now.AddMinutes(2)}}, {{observationId}}, N'FORK',
+                             2, N'Application', N'NotObserved', N'Assessment');
                         """));
                 Assert.Contains(exception.Number, DuplicateKeyErrorNumbers);
             }
 
             Assert.NotEqual(observationId, correctionId);
+        }
+        finally
+        {
+            await DeleteDatabase(options, databaseName);
+        }
+    }
+
+    [LocalSqlFact]
+    public async Task SqlEnforcesEvidenceMetadataShapeRangesAndCanonicalCodes()
+    {
+        var (options, databaseName) = CreateDatabase();
+
+        try
+        {
+            EvidenceFixture fixture;
+            Guid observationId;
+            await using (var seed = new Plus5DbContext(options))
+            {
+                await seed.Database.MigrateAsync();
+                fixture = await SeedAsync(seed, publishModel: true);
+            }
+
+            await using (var create = new Plus5DbContext(options))
+            {
+                var result = await CreateService(create).RecordObservationAsync(
+                    fixture.OwnerId,
+                    new(
+                        fixture.StudentId,
+                        "TEACHER_ASSESSMENT",
+                        Guid.NewGuid(),
+                        Now,
+                        2,
+                        EvidenceType.Application,
+                        AssistanceLevel.NotObserved,
+                        EvidenceContext.Assessment,
+                        [fixture.LeafId]),
+                    CancellationToken.None);
+                observationId = Assert.IsType<Guid>(result.EvidenceEventId);
+            }
+
+            await AssertObservationRejectedAsync(
+                options,
+                fixture.StudentId,
+                0,
+                "Application",
+                "NotObserved",
+                "Assessment",
+                "CK_EvidenceEvents_Difficulty");
+            await AssertObservationRejectedAsync(
+                options,
+                fixture.StudentId,
+                6,
+                "Application",
+                "NotObserved",
+                "Assessment",
+                "CK_EvidenceEvents_Difficulty");
+            await AssertObservationRejectedAsync(
+                options,
+                fixture.StudentId,
+                2,
+                "Guessing",
+                "NotObserved",
+                "Assessment",
+                "CK_EvidenceEvents_EvidenceType");
+            await AssertObservationRejectedAsync(
+                options,
+                fixture.StudentId,
+                2,
+                "Application",
+                "Prompted",
+                "Assessment",
+                "CK_EvidenceEvents_AssistanceLevel");
+            await AssertObservationRejectedAsync(
+                options,
+                fixture.StudentId,
+                2,
+                "Application",
+                "NotObserved",
+                "Whiteboard",
+                "CK_EvidenceEvents_EvidenceContext");
+            await AssertObservationRejectedAsync(
+                options,
+                fixture.StudentId,
+                null,
+                "Application",
+                "NotObserved",
+                "Assessment",
+                "CK_EvidenceEvents_MetadataShape");
+
+            await using var invalidation = new Plus5DbContext(options);
+            var shapeException = await Assert.ThrowsAsync<SqlException>(() =>
+                invalidation.Database.ExecuteSqlInterpolatedAsync($$"""
+                    INSERT INTO [EvidenceEvents]
+                        ([Id], [StudentId], [Kind], [SourceKind], [SourceId],
+                         [OccurredAtUtc], [RecordedAtUtc], [SupersedesEvidenceEventId],
+                         [ReasonCode], [Difficulty], [EvidenceType], [AssistanceLevel],
+                         [EvidenceContext])
+                    SELECT {{Guid.NewGuid()}}, [StudentId], 3, [SourceKind], [SourceId],
+                           [OccurredAtUtc], {{Now.AddMinutes(1)}}, [Id], N'VOIDED',
+                           2, N'Application', N'NotObserved', N'Assessment'
+                    FROM [EvidenceEvents]
+                    WHERE [Id] = {{observationId}};
+                    """));
+            Assert.Equal(547, shapeException.Number);
+            Assert.Contains("CK_EvidenceEvents_MetadataShape", shapeException.Message);
         }
         finally
         {
@@ -417,6 +580,10 @@ public sealed class EvidenceEventSqlTests
                         "STUDENT_ATTEMPT",
                         Guid.NewGuid(),
                         Now,
+                        2,
+                        EvidenceType.Application,
+                        AssistanceLevel.NotObserved,
+                        EvidenceContext.Assessment,
                         [first.LeafId]),
                     CancellationToken.None);
                 observationId = Assert.IsType<Guid>(observation.EvidenceEventId);
@@ -428,6 +595,10 @@ public sealed class EvidenceEventSqlTests
                         "TEACHER_ASSESSMENT",
                         Guid.NewGuid(),
                         Now,
+                        1,
+                        EvidenceType.Recognition,
+                        AssistanceLevel.SignificantAssistance,
+                        EvidenceContext.Lesson,
                         [first.LeafId]),
                     CancellationToken.None);
                 ownershipRootId = Assert.IsType<Guid>(ownershipRoot.EvidenceEventId);
@@ -451,11 +622,13 @@ public sealed class EvidenceEventSqlTests
                         INSERT INTO [EvidenceEvents]
                             ([Id], [StudentId], [Kind], [SourceKind], [SourceId],
                              [OccurredAtUtc], [RecordedAtUtc], [SupersedesEvidenceEventId],
-                             [ReasonCode])
+                             [ReasonCode], [Difficulty], [EvidenceType], [AssistanceLevel],
+                             [EvidenceContext])
                         VALUES
                             ({{Guid.NewGuid()}}, {{invalidation.StudentId}}, 2,
                              {{invalidation.SourceKind}}, {{invalidation.SourceId}},
-                             {{Now}}, {{Now.AddMinutes(3)}}, {{invalidationId}}, N'LATE_FIX');
+                             {{Now}}, {{Now.AddMinutes(3)}}, {{invalidationId}}, N'LATE_FIX',
+                             2, N'Application', N'NotObserved', N'Assessment');
                         """));
                 Assert.Equal(51111, exception.Number);
             }
@@ -469,11 +642,13 @@ public sealed class EvidenceEventSqlTests
                         INSERT INTO [EvidenceEvents]
                             ([Id], [StudentId], [Kind], [SourceKind], [SourceId],
                              [OccurredAtUtc], [RecordedAtUtc], [SupersedesEvidenceEventId],
-                             [ReasonCode])
+                             [ReasonCode], [Difficulty], [EvidenceType], [AssistanceLevel],
+                             [EvidenceContext])
                         VALUES
                             ({{Guid.NewGuid()}}, {{second.StudentId}}, 2,
                              {{root.SourceKind}}, {{root.SourceId}},
-                             {{Now}}, {{Now.AddMinutes(4)}}, {{ownershipRootId}}, N'WRONG_STUDENT');
+                             {{Now}}, {{Now.AddMinutes(4)}}, {{ownershipRootId}}, N'WRONG_STUDENT',
+                             2, N'Application', N'NotObserved', N'Assessment');
                         """));
                 Assert.Equal(547, exception.Number);
             }
@@ -488,14 +663,17 @@ public sealed class EvidenceEventSqlTests
                         INSERT INTO [EvidenceEvents]
                             ([Id], [StudentId], [Kind], [SourceKind], [SourceId],
                              [OccurredAtUtc], [RecordedAtUtc], [SupersedesEvidenceEventId],
-                             [ReasonCode])
+                             [ReasonCode], [Difficulty], [EvidenceType], [AssistanceLevel],
+                             [EvidenceContext])
                         VALUES
                             ({{firstCycleId}}, {{first.StudentId}}, 2,
                              N'TEACHER_ASSESSMENT', {{sourceId}},
-                             {{Now}}, {{Now}}, {{secondCycleId}}, N'CYCLE'),
+                             {{Now}}, {{Now}}, {{secondCycleId}}, N'CYCLE',
+                             2, N'Application', N'NotObserved', N'Assessment'),
                             ({{secondCycleId}}, {{first.StudentId}}, 2,
                              N'TEACHER_ASSESSMENT', {{sourceId}},
-                             {{Now}}, {{Now}}, {{firstCycleId}}, N'CYCLE');
+                             {{Now}}, {{Now}}, {{firstCycleId}}, N'CYCLE',
+                             2, N'Application', N'NotObserved', N'Assessment');
                         """));
                 Assert.Equal(51112, exception.Number);
             }
@@ -532,6 +710,10 @@ public sealed class EvidenceEventSqlTests
                     "VERSIONED_SOURCE",
                     Guid.NewGuid(),
                     Now,
+                    5,
+                    EvidenceType.Production,
+                    AssistanceLevel.Independent,
+                    EvidenceContext.IndependentPractice,
                     [fixture.LeafId]),
                 CancellationToken.None);
 
@@ -545,6 +727,32 @@ public sealed class EvidenceEventSqlTests
 
     private static EfEvidenceEmissionService CreateService(Plus5DbContext db) =>
         new(db, new FixedClock());
+
+    private static async Task AssertObservationRejectedAsync(
+        DbContextOptions<Plus5DbContext> options,
+        Guid studentId,
+        int? difficulty,
+        string? evidenceType,
+        string? assistanceLevel,
+        string? evidenceContext,
+        string constraintName)
+    {
+        await using var db = new Plus5DbContext(options);
+        var exception = await Assert.ThrowsAsync<SqlException>(() =>
+            db.Database.ExecuteSqlInterpolatedAsync($$"""
+                INSERT INTO [EvidenceEvents]
+                    ([Id], [StudentId], [Kind], [SourceKind], [SourceId],
+                     [OccurredAtUtc], [RecordedAtUtc], [SupersedesEvidenceEventId],
+                     [ReasonCode], [Difficulty], [EvidenceType], [AssistanceLevel],
+                     [EvidenceContext])
+                VALUES
+                    ({{Guid.NewGuid()}}, {{studentId}}, 1, N'METADATA_TEST', {{Guid.NewGuid()}},
+                     {{Now}}, {{Now}}, NULL, NULL, {{difficulty}}, {{evidenceType}},
+                     {{assistanceLevel}}, {{evidenceContext}});
+                """));
+        Assert.Equal(547, exception.Number);
+        Assert.Contains(constraintName, exception.Message);
+    }
 
     private static async Task<EvidenceFixture> SeedAsync(
         Plus5DbContext db,
