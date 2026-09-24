@@ -81,11 +81,35 @@ Kopirati lokalni secret primjer i postaviti tri različite snažne lozinke:
 Copy-Item .\.env.example .\.env
 ```
 
-Zatim iz root direktorija:
+Zatim iz root direktorija pokrenuti standardizirani lokalni workflow:
 
 ```powershell
-docker compose up --build --wait
+.\scripts\plus5-docker.ps1
 ```
+
+Skripta provjerava lokalni `.env`, pokreće Docker Desktop ako je potrebno, validira Compose,
+gradi i podiže cijeli stack te potvrđuje API liveness/readiness i frontend HTTP odgovor. Ako
+Docker Desktop prijavi poznati Windows `dockerInference` ili `docker-secrets-engine` stale
+runtime-path kvar, skripta povratno preimenuje samo pogođene runtime direktorije i ponavlja
+start. Taj recovery ne briše imageove, containere, named volumene, postavke ni projektne
+podatke.
+
+Korisne varijante:
+
+```powershell
+# Brzi start bez ponovnog builda imageova
+.\scripts\plus5-docker.ps1 Start -NoBuild
+
+# Pregled svih Compose servisa, uključujući jednokratne init/migration servise
+.\scripts\plus5-docker.ps1 Status
+
+# Zaustavljanje stacka uz očuvanje SQL named volumea
+.\scripts\plus5-docker.ps1 Stop
+```
+
+Automatski Docker Desktop recovery može se dijagnostički isključiti parametrom
+`-SkipDockerDesktopRepair`. Sačuvani `.stale-<timestamp>` runtime backupi ostaju izvan
+repozitorija za ručnu provjeru i skripta ih nikada sama ne briše.
 
 - frontend: `http://localhost:8081`
 - API: `http://localhost:8080`
