@@ -11,6 +11,7 @@ public sealed record EvidenceObservationCommand(
     EvidenceType EvidenceType,
     AssistanceLevel AssistanceLevel,
     EvidenceContext EvidenceContext,
+    decimal PerformanceScore,
     IReadOnlyList<Guid> KnowledgeComponentIds);
 
 public sealed record EvidenceCorrectionCommand(
@@ -21,6 +22,7 @@ public sealed record EvidenceCorrectionCommand(
     EvidenceType EvidenceType,
     AssistanceLevel AssistanceLevel,
     EvidenceContext EvidenceContext,
+    decimal PerformanceScore,
     IReadOnlyList<Guid> KnowledgeComponentIds);
 
 public sealed record EvidenceInvalidationCommand(

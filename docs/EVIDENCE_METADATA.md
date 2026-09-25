@@ -7,8 +7,9 @@
 ## Svrha i granica
 
 Phase 5.4 proširuje append-only `EvidenceEvent` iz Phase 5.3 potpunim povijesnim metadata
-snapshotom. Metadata opisuje konkretni dokaz u trenutku emissiona; ne izračunava mastery ili
-readiness i nema numerički weighting učinak.
+snapshotom. U granicama Phase 5.4 metadata nema numerički učinak; naknadno zaključani
+`readiness-v1` weight katalog i odvojeni `PerformanceScore` definirani su isključivo u
+`MASTERY_READINESS.md`.
 
 U scopeu su četiri canonical metadata vrijednosti, EvidenceEvent snapshot, correction semantics,
 domain/DB validacija, migracija, interni emission service, testovi i dokumentacija. Izvan scopea

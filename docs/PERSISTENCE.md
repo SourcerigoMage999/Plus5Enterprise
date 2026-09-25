@@ -163,6 +163,21 @@ string vrijednosti na zaključane bounded canonical kataloge. Postojeći append-
 i metadata kolone od in-place UPDATE-a. Correction sprema potpuni zamjenski snapshot, dok stari
 event ostaje nepromijenjen. Detalji su u `EVIDENCE_METADATA.md`.
 
+## Phase 5.5 mastery/readiness projection schema
+
+Migracija `AddMasteryReadinessV1` proširuje `EvidenceEvents` nullable
+`PerformanceScore decimal(9,8)` kolonom. Conditional lifecycle CHECK zahtijeva score `0..1` na
+Observation/Correction eventu i `NULL` na Invalidationu; postojeći append-only trigger odbija
+svaki naknadni UPDATE.
+
+Migracija dodaje rebuildable derived projekcije `MasteryEstimates`,
+`KnowledgeAreaReadinessEstimates` i `CurriculumOutcomeReadinessEstimates`. Svaka koristi
+composite Student/target PK, restriktivne FK-ove, normalizirani nullable score,
+canonical confidence/readiness string codeove, distinct evidence count, effective weight, UTC
+calculation timestamp i `AlgorithmVersion`. CHECK constrainti štite score/range, canonical
+codeove, nenegativne brojače/weight, UTC i konzistentan NoData oblik. Migracija nema seed ni
+backfill; autoritativni izvor ostaje Evidence history. Detalji su u `MASTERY_READINESS.md`.
+
 ## Phase 2.2 Student profile schema
 
 Phase 2.2 dodaje dva 3NF modela bez feature endpointa:

@@ -66,9 +66,9 @@ Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prem
 | `KnowledgeArea` | Područje znanja | Široka kategorija poput Grammar, Vocabulary, Reading, Listening, Speaking ili Writing. Preširoka je da bi sama zamijenila preciznu komponentu znanja. |
 | `KnowledgeComponent` | Komponenta znanja | Kontrolirana i dovoljno precizna jedinica znanja ili vještine u hijerarhiji Knowledge Modela, npr. Grammar → Present Perfect → negative form. Samo kontrolirane komponente mogu izravno primati evidence signal. |
 | `KnowledgeModel` | Model znanja | Strukturirani model područja, komponenti i njihovih veza s kurikulumom koji omogućuje tumačenje individualnih dokaza učenika. Nije AI model i ne zahtijeva AI za osnovni rad. |
-| `MasteryEstimate` | Procjena ovladanosti | Izračunata procjena trenutačnog ovladavanja određenom komponentom ili područjem znanja na temelju više relevantnih dokaza. Nije ručno upisan postotak, readiness za ispit niti jamstvo ocjene. |
-| `ReadinessEstimate` | Procjena spremnosti | Izračunata procjena spremnosti učenika za **konkretan cilj, ispit ili skup relevantnih komponenti**. Izvodi se iz Knowledge Modela i Evidence Eventa; algoritam je i dalje blokiran do ROADMAP-a 5.5. |
-| `ConfidenceLevel` | Razina pouzdanosti | Pokazatelj koliko je procjena potkrijepljena količinom, relevantnošću i drugim definiranim svojstvima dokaza. Nije isto što i procijenjeni rezultat. |
+| `MasteryEstimate` | Procjena ovladanosti | Rebuildable `readiness-v1` procjena trenutačnog ovladavanja konkretnom KnowledgeComponent komponentom iz efektivnih Evidence chainova. Nije ručno upisan postotak, readiness za ispit niti jamstvo ocjene. |
+| `ReadinessEstimate` | Procjena spremnosti | Deterministička klasifikacija izvedena iz masteryja, confidencea i coveragea za komponentu, područje ili CurriculumOutcome. Nije službena školska ocjena ni objektivna činjenica. |
+| `ConfidenceLevel` | Razina pouzdanosti | Canonical `NoData`, `VeryLow`, `Low`, `Medium` ili `High` pokazatelj temeljen na effective evidence weightu, distinct chainovima i coverageu. Nije isto što i score. |
 
 ## Materials, tasks and evidence
 
@@ -84,6 +84,7 @@ Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prem
 | `Difficulty` | Težina zadatka | Ordinalna zahtjevnost `1..5`, od najmanje do najveće. Matematički utjecaj nije definiran prije 5.5. |
 | `AssistanceLevel` | Razina pomoći | Zaključani v1 code: Independent, MinorAssistance, SignificantAssistance ili NotObserved. NotObserved nije isto što i Independent. |
 | `EvidenceContext` | Kontekst dokaza | Zaključani v1 code nastavne situacije: Lesson, Homework, Assessment ili IndependentPractice. Nije isto što i tehnički SourceKind. |
+| `PerformanceScore` | Pedagoški rezultat dokaza | Normalizirani `0.00..1.00` rezultat konkretnog Observation/Correction eventa. Invalidation ga nema; nije weight, readiness ni školska ocjena. |
 | `Tag` | Tag / oznaka | Fleksibilna oznaka za pretraživanje, organizaciju, filtriranje i preporuku sadržaja. Tag nije Knowledge Component i sam ne utječe na procjenu znanja. |
 | `MaterialVersion` | Verzija materijala | Identificirana verzija sadržaja materijala potrebna za sigurno ponovno korištenje i tumačenje povezanih zadataka. Detaljna versioning pravila zaključavaju se u fazi materijala/editor fazi. |
 
@@ -120,9 +121,8 @@ Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prem
 - budući Student/Guardian/Admin accounti i permissions izvan Teacher-only Phase 1.6 scopea
 - kardinalnost i vremenska valjanost veze Student–Program–Group
 - model redovitog rasporeda, serije termina i iznimki
-- algoritam za MasteryEstimate, ReadinessEstimate i ConfidenceLevel
-- algoritamski utjecaj Difficulty, EvidenceType, AssistanceLevel i EvidenceContext na
-  weighting/readiness (katalozi i snapshot lifecycle zaključani su u Phase 5.4)
+- budući UI način prikaza Mastery/Readiness rezultata izvan minimalnog obaveznog konteksta
+  confidencea, broja dokaza i vremena izračuna
 - file storage politika i podržani formati
 - pravila kasnijih modula koji imaju dokumentacijski gate
 

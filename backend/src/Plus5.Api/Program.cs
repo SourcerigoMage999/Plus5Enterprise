@@ -8,6 +8,7 @@ using Plus5.Api.Identity;
 using Plus5.Api.Students;
 using Plus5.Api.Groups;
 using Plus5.Api.Scheduling;
+using Plus5.Api.Readiness;
 using Plus5.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,7 @@ builder.Services.AddHealthChecks()
         customTestQuery: async (dbContext, cancellationToken) =>
             !(await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).Any());
 builder.Services.AddHostedService<ScheduleMaterializationWorker>();
+builder.Services.AddHostedService<ReadinessRefreshWorker>();
 
 var app = builder.Build();
 

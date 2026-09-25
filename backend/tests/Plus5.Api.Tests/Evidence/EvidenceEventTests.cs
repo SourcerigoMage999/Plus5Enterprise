@@ -28,6 +28,7 @@ public sealed class EvidenceEventTests
             OccurredAtUtc,
             RecordedAtUtc,
             CreateMetadata(),
+            0.80m,
             [new EvidenceKnowledgeTarget(publishedLeaf, publishedModel, isLeaf: true)]);
 
         Assert.Equal(EvidenceEventKind.Observation, observation.Kind);
@@ -36,6 +37,7 @@ public sealed class EvidenceEventTests
         Assert.Equal(sourceId, observation.SourceId);
         Assert.Null(observation.SupersedesEvidenceEventId);
         Assert.Null(observation.ReasonCode);
+        Assert.Equal(0.80m, observation.PerformanceScore);
         Assert.Equal(2, observation.Difficulty);
         Assert.Equal(EvidenceType.Application, observation.EvidenceType);
         Assert.Equal(AssistanceLevel.NotObserved, observation.AssistanceLevel);
@@ -52,6 +54,7 @@ public sealed class EvidenceEventTests
             OccurredAtUtc,
             RecordedAtUtc,
             CreateMetadata(),
+            0.80m,
             []));
 
         var draftModel = new KnowledgeModel(Guid.NewGuid(), "CORE", "V2");
@@ -90,6 +93,7 @@ public sealed class EvidenceEventTests
             RecordedAtUtc.AddMinutes(10),
             " mapping_error ",
             correctedMetadata,
+            0.90m,
             [new EvidenceKnowledgeTarget(correctedLeaf, correctedModel, true)]);
 
         Assert.Equal(EvidenceEventKind.Correction, correction.Kind);
@@ -99,6 +103,8 @@ public sealed class EvidenceEventTests
         Assert.Equal(observation.SourceId, correction.SourceId);
         Assert.Equal(correctedOccurrence, correction.OccurredAtUtc);
         Assert.Equal("MAPPING_ERROR", correction.ReasonCode);
+        Assert.Equal(0.80m, observation.PerformanceScore);
+        Assert.Equal(0.90m, correction.PerformanceScore);
         Assert.Equal(2, observation.Difficulty);
         Assert.Equal(EvidenceType.Application, observation.EvidenceType);
         Assert.Equal(4, correction.Difficulty);
@@ -124,6 +130,7 @@ public sealed class EvidenceEventTests
         Assert.Equal(observation.Id, invalidation.SupersedesEvidenceEventId);
         Assert.Equal(observation.OccurredAtUtc, invalidation.OccurredAtUtc);
         Assert.Equal("SOURCE_VOIDED", invalidation.ReasonCode);
+        Assert.Null(invalidation.PerformanceScore);
         Assert.Null(invalidation.Difficulty);
         Assert.Null(invalidation.EvidenceType);
         Assert.Null(invalidation.AssistanceLevel);
@@ -136,6 +143,7 @@ public sealed class EvidenceEventTests
             RecordedAtUtc.AddHours(2),
             "INVALID",
             CreateMetadata(),
+            0.80m,
             [new EvidenceKnowledgeTarget(leaf, model, true)]));
     }
 
@@ -153,6 +161,7 @@ public sealed class EvidenceEventTests
             OccurredAtUtc,
             RecordedAtUtc,
             CreateMetadata(),
+            0.80m,
             [target]));
         Assert.Throws<ArgumentException>(() => EvidenceEvent.CreateObservation(
             Guid.NewGuid(),
@@ -162,6 +171,7 @@ public sealed class EvidenceEventTests
             OccurredAtUtc.ToOffset(TimeSpan.FromHours(2)),
             RecordedAtUtc,
             CreateMetadata(),
+            0.80m,
             [target]));
     }
 
@@ -193,6 +203,25 @@ public sealed class EvidenceEventTests
             EvidenceType.Application,
             AssistanceLevel.NotObserved,
             (EvidenceContext)999));
+    }
+
+    [Theory]
+    [InlineData(-0.01)]
+    [InlineData(1.01)]
+    public void ObservationRejectsPerformanceScoreOutsideNormalizedRange(decimal score)
+    {
+        var (model, _, leaf) = CreatePublishedTree("CORE", "V1");
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => EvidenceEvent.CreateObservation(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "STUDENT_ATTEMPT",
+            Guid.NewGuid(),
+            OccurredAtUtc,
+            RecordedAtUtc,
+            CreateMetadata(),
+            score,
+            [new EvidenceKnowledgeTarget(leaf, model, true)]));
     }
 
     [Fact]
@@ -246,6 +275,7 @@ public sealed class EvidenceEventTests
             OccurredAtUtc,
             RecordedAtUtc,
             CreateMetadata(),
+            0.80m,
             [new EvidenceKnowledgeTarget(leaf, model, true)]);
 
     private static EvidenceMetadata CreateMetadata() =>

@@ -388,7 +388,7 @@ u `summaries/PHASE_5.3_EVIDENCE_EVENT_MODEL_SUMMARY.md`.
 provenance, idempotency, ownership, target i append-only lifecycle ostaju nepromijenjeni. Raniji
 REVIEW READY status administrativno je usklađen bez ponovnog otvaranja faze.
 
-## 5.4 Evidence metadata: difficulty, help, evidence type — IMPLEMENTED / REVIEW READY
+## 5.4 Evidence metadata: difficulty, help, evidence type — FINAL LOCK
 
 **Zaključani scope 2026-09-24:** potpuni immutable metadata snapshot na svakom
 Observation/Correction događaju: `Difficulty 1..5`, četiri EvidenceType codea, četiri
@@ -405,11 +405,30 @@ architecture 4/4, frontend 59/59, format, EF/idempotent script, dependency audit
 rebuild/migration/health/non-root/runtime-schema gate prolaze. Završni evidence nalazi se u
 `summaries/PHASE_5.4_EVIDENCE_METADATA_SUMMARY.md`.
 
-**Acceptance 5.4: IMPLEMENTED / REVIEW READY.** Final LOCK čeka review; Phase 5.5 ostaje blokirana
-na zasebnoj odluci o readiness matematici i ne smije iz Phase 5.4 izvesti implicitni weighting.
+**Acceptance 5.4: FINAL LOCK — odobreno 2026-09-25.** Metadata input contract i SQL/runtime
+evidence ostaju nepromijenjeni; zasebna Phase 5.5 odluka sada eksplicitno definira algoritamski
+učinak bez retroaktivnog otvaranja Phase 5.4.
 
-## 5.5 Readiness calculation rules — BLOCKED
-**Gate:** matematička/poslovna pravila agregacije moraju biti eksplicitno definirana; specifikacija trenutno definira koncept, ali ne puni algoritam.
+## 5.5 Readiness calculation rules — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-25:** obavezni `PerformanceScore 0..1` na
+Observation/Correctionu, deterministički metadata weight katalog, 90-dnevni half-life s floorom
+`0.10`, latest-valid-event-per-chain resolution, leaf mastery, confidence/readiness pragovi,
+70% parent/Area/Outcome coverage, rebuildable versionirane projekcije, affected-path
+recalculation i daily decay refresh. Automatska školska ocjena, AI, UI, Teacher override,
+preporuke, Task/Attempt model i production emitters nisu u scopeu. Source of truth:
+`MASTERY_READINESS.md` i ADR-0022.
+
+**Implementirano 2026-09-25:** `readiness-v1` domain calculator, canonical statusi,
+PerformanceScore lifecycle/DB zaštita, component/Area/CurriculumOutcome projekcije,
+event-driven transactional recalculation i daily 02:00 Europe/Zagreb refresh sa SQL leaseom i
+bounded batchovima. Migracija `AddMasteryReadinessV1` nema seed ni business backfill. Domain,
+host i stvarni SQL regression pokrivaju weight/decay/threshold/coverage, distinct chaine,
+Correction/Invalidation, hierarchy/outcome agregaciju, constraints, migration upgrade i lease.
+Završni evidence: `summaries/PHASE_5.5_MASTERY_READINESS_SUMMARY.md`.
+
+**Acceptance 5.5: IMPLEMENTED / REVIEW READY.** Final LOCK čeka review; Phase 5.6 UI ostaje
+zasebna faza i ne uvodi se kroz backend model.
 
 ## 5.6 Screen 2.4 Readiness assessment — BLOCKED until 5.5
 ## 5.7 Screen 2.5 Knowledge detail overview — BLOCKED until 5.5

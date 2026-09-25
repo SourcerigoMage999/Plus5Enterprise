@@ -1,5 +1,24 @@
 # DECISION_LOG
 
+### ADR-0022 — Deterministic versioned Mastery / Readiness projections
+- **Datum:** 2026-09-25
+- **Status:** Accepted — SA/product odluka za Phase 5.5.
+- **Kontekst:** Evidence metadata opisuje kvalitetu dokaza, ali bez pedagoškog rezultata,
+  weightinga, decaya, confidencea i coverage pravila ne daje reproducibilnu procjenu znanja.
+- **Odluka:** Observation/Correction dobivaju `PerformanceScore 0..1`. `readiness-v1` koristi
+  zaključane metadata multipliere, 90-dnevni exponential half-life s floorom `0.10`, samo
+  najnoviji valjani event po chainu i weighted-average leaf mastery.
+- **Confidence/readiness:** confidence ovisi o effective weightu i distinct chainovima; formalni
+  readiness zahtijeva weight `>=2` i najmanje dva chaina. Statusi su `InsufficientData`,
+  `NeedsWork`, `Developing`, `Ready`, `Strong`; Ready/Strong zahtijevaju Medium+ confidence.
+- **Agregacija:** parent i Area koriste samo neposrednu djecu jednakom težinom i 70% coverage;
+  Outcome parent mapping širi se na deduplicirane leaf potomke. Nema hierarchy double countinga.
+- **Persistence/operacije:** Evidence ostaje authority, a component/Area/Outcome estimatei su
+  rebuildable projections s `AlgorithmVersion = readiness-v1`. Event write recalculira pogođeni
+  path; daily refresh oko 02:00 Europe/Zagreb koristi SQL lease i bounded batch processing.
+- **Granice:** nema AI-ja, school-grade mapiranja, UI-ja, Teacher overridea, preporuka, Taska,
+  production emitera ili personaliziranih weightova. Detalji: `MASTERY_READINESS.md`.
+
 ### ADR-0021 — Complete immutable Evidence metadata snapshot
 - **Datum:** 2026-09-24
 - **Status:** Accepted — SA odluka za Phase 5.4.

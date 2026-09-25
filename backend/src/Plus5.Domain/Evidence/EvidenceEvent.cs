@@ -21,6 +21,7 @@ public sealed class EvidenceEvent
         DateTimeOffset recordedAtUtc,
         Guid? supersedesEvidenceEventId,
         string? reasonCode,
+        decimal? performanceScore,
         EvidenceMetadata? metadata)
     {
         EnsureIdentifier(id, nameof(id));
@@ -38,6 +39,7 @@ public sealed class EvidenceEvent
         RecordedAtUtc = recordedAtUtc;
         SupersedesEvidenceEventId = supersedesEvidenceEventId;
         ReasonCode = reasonCode;
+        PerformanceScore = performanceScore;
         Difficulty = metadata?.Difficulty;
         EvidenceType = metadata?.EvidenceType;
         AssistanceLevel = metadata?.AssistanceLevel;
@@ -62,6 +64,8 @@ public sealed class EvidenceEvent
 
     public string? ReasonCode { get; private set; }
 
+    public decimal? PerformanceScore { get; private set; }
+
     public int? Difficulty { get; private set; }
 
     public EvidenceType? EvidenceType { get; private set; }
@@ -81,9 +85,11 @@ public sealed class EvidenceEvent
         DateTimeOffset occurredAtUtc,
         DateTimeOffset recordedAtUtc,
         EvidenceMetadata metadata,
+        decimal performanceScore,
         IReadOnlyCollection<EvidenceKnowledgeTarget> targets)
     {
         ArgumentNullException.ThrowIfNull(metadata);
+        EnsurePerformanceScore(performanceScore);
         var evidenceEvent = new EvidenceEvent(
             id,
             studentId,
@@ -94,6 +100,7 @@ public sealed class EvidenceEvent
             recordedAtUtc,
             supersedesEvidenceEventId: null,
             reasonCode: null,
+            performanceScore,
             metadata);
         evidenceEvent.SetTargets(targets);
         return evidenceEvent;
@@ -106,10 +113,12 @@ public sealed class EvidenceEvent
         DateTimeOffset recordedAtUtc,
         string reasonCode,
         EvidenceMetadata metadata,
+        decimal performanceScore,
         IReadOnlyCollection<EvidenceKnowledgeTarget> targets)
     {
         EnsureCanSupersede(id, predecessor);
         ArgumentNullException.ThrowIfNull(metadata);
+        EnsurePerformanceScore(performanceScore);
 
         var evidenceEvent = new EvidenceEvent(
             id,
@@ -121,6 +130,7 @@ public sealed class EvidenceEvent
             recordedAtUtc,
             predecessor.Id,
             NormalizeCode(reasonCode, ReasonCodeMaxLength, nameof(reasonCode)),
+            performanceScore,
             metadata);
         evidenceEvent.SetTargets(targets);
         return evidenceEvent;
@@ -144,6 +154,7 @@ public sealed class EvidenceEvent
             recordedAtUtc,
             predecessor.Id,
             NormalizeCode(reasonCode, ReasonCodeMaxLength, nameof(reasonCode)),
+            performanceScore: null,
             metadata: null);
     }
 
@@ -196,6 +207,16 @@ public sealed class EvidenceEvent
         if (value == Guid.Empty)
         {
             throw new ArgumentException("Identifier is required.", parameterName);
+        }
+    }
+
+    private static void EnsurePerformanceScore(decimal value)
+    {
+        if (value is < 0m or > 1m)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(value),
+                "Performance score must be between 0 and 1.");
         }
     }
 

@@ -21,11 +21,12 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - Teacher-owned Group, vremenska povijest članstva, one-active-group zaštita i concurrency-safe kapacitet
 - konkretni Session, verzionirane tjedne recurrence serije, Teacher-owned lokacije i eksplicitne series exceptions
 - autorizirani, pretraživi i filtrirani popis vlastitih učenika s pregledom statusa i programa
-- zaključani Curriculum/Knowledge temelj te Student-specific append-only Evidence Event model
+- zaključani Curriculum/Knowledge temelj, Student-specific append-only Evidence Event model te
+  determinističke versionirane Mastery/Readiness projekcije
 
 Phase 3 Students/Groups i Phase 4 Schedule funkcionalnosti su implementirane; Phase 5 trenutno
-sadrži Curriculum, Knowledge Component i Evidence Event model foundation bez preuranjenog UI-ja,
-production emitera ili readiness matematike.
+sadrži Curriculum, Knowledge Component, Evidence Event i `readiness-v1` model bez preuranjenog
+UI-ja ili production emitera.
 
 ## Preduvjeti
 
@@ -145,7 +146,9 @@ Curriculum, Knowledge i Evidence contracti nalaze se u
 [`docs/CURRICULUM_HIERARCHY.md`](docs/CURRICULUM_HIERARCHY.md),
 [`docs/KNOWLEDGE_COMPONENT_MODEL.md`](docs/KNOWLEDGE_COMPONENT_MODEL.md) i
 [`docs/EVIDENCE_EVENT.md`](docs/EVIDENCE_EVENT.md), a zaključani metadata snapshot i canonical
-katalozi u [`docs/EVIDENCE_METADATA.md`](docs/EVIDENCE_METADATA.md).
+katalozi u [`docs/EVIDENCE_METADATA.md`](docs/EVIDENCE_METADATA.md). Deterministički mastery,
+confidence, readiness i projection-refresh contract nalazi se u
+[`docs/MASTERY_READINESS.md`](docs/MASTERY_READINESS.md).
 
 ## Struktura
 

@@ -15,6 +15,10 @@ Phase 5.3 uvodi domenu, persistence, migraciju i interni emission service contra
 javni generic `POST Evidence` API, UI, production emitere iz Lesson/Homework/Board workflowa,
 Attempt model, katalog source kindova, evidence metadata, scoring, mastery ili readiness.
 
+Phase 5.5 zasebno proširuje Observation/Correction obaveznim `PerformanceScore 0..1` poljem i
+derived readiness projekcijama. Izvorni Phase 5.3 provenance, ownership, target i append-only
+lifecycle ostaju nepromijenjeni; puni algoritamski contract je u `MASTERY_READINESS.md`.
+
 ## Model
 
 `EvidenceEvent` sadrži:
@@ -26,6 +30,7 @@ Attempt model, katalog source kindova, evidence metadata, scoring, mastery ili r
 - `OccurredAtUtc` i `RecordedAtUtc`
 - nullable `SupersedesEvidenceEventId`
 - nullable `ReasonCode`
+- `PerformanceScore 0..1` na Observation/Correctionu od Phase 5.5; `NULL` na Invalidationu
 
 `SourceKind` i `ReasonCode` su stabilni uppercase kodovi duljine najviše 64 znaka, ograničeni
 na `A-Z`, `0-9`, `_`, `-` i `.`. `ReasonCode` postoji samo na Correction/Invalidation događaju.
@@ -128,7 +133,8 @@ Konkurentni duplikat ili pokušaj drugog successora završava conflict rezultato
 
 - difficulty, assistance level, EvidenceType i EvidenceContext — zaključani u
   `EVIDENCE_METADATA.md` kroz Phase 5.4
-- weighting, confidence, decay, thresholds, mastery i readiness — Phase 5.5
+- weighting, confidence, decay, thresholds, mastery i readiness — zaključani u
+  `MASTERY_READINESS.md` kroz Phase 5.5
 - stvarni Lesson/Homework/Board emitteri i Attempt lifecycle — njihove feature faze
 - Student progress i drugi UI prikazi — kasnije ROADMAP faze
 - manualni postotci ili AI inference — nisu dio Phase 5.3

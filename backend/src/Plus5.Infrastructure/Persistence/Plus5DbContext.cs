@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Plus5.Domain.Evidence;
 using Plus5.Domain.Groups;
 using Plus5.Domain.Identity;
+using Plus5.Domain.Readiness;
 using Plus5.Domain.Scheduling;
 using Plus5.Domain.Students;
 using Plus5.Domain.Teaching;
@@ -43,6 +44,14 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<EvidenceEventKnowledgeComponent> EvidenceEventKnowledgeComponents =>
         Set<EvidenceEventKnowledgeComponent>();
+
+    public DbSet<MasteryEstimate> MasteryEstimates => Set<MasteryEstimate>();
+
+    public DbSet<KnowledgeAreaReadinessEstimate> KnowledgeAreaReadinessEstimates =>
+        Set<KnowledgeAreaReadinessEstimate>();
+
+    public DbSet<CurriculumOutcomeReadinessEstimate> CurriculumOutcomeReadinessEstimates =>
+        Set<CurriculumOutcomeReadinessEstimate>();
 
     public DbSet<Student> Students => Set<Student>();
 

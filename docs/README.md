@@ -32,6 +32,7 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `KNOWLEDGE_COMPONENT_MODEL.md` nakon Phase 5.2 za KnowledgeModel lifecycle, Area/component tree i Curriculum mapping
    - `EVIDENCE_EVENT.md` nakon Phase 5.3 za provenance, idempotency, leaf targete i append-only Evidence lifecycle
    - `EVIDENCE_METADATA.md` nakon Phase 5.4 za immutable metadata snapshot, canonical codeove i correction semantics
+   - `MASTERY_READINESS.md` nakon Phase 5.5 za PerformanceScore, weighting, decay, confidence, agregaciju i projection refresh
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 7. `SCREEN_SPEC_STATUS.md`

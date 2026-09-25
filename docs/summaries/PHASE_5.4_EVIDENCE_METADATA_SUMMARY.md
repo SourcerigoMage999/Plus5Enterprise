@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED — REVIEW READY`
+`FINAL LOCKED`
 
 ## Datum
 
@@ -109,6 +109,6 @@ na stvarnom SQL Serveru, bez LocalDB zamjene ili skipped testova.
 
 ## Točna početna točka za sljedeću fazu
 
-Phase 5.4 je implementirana i spremna za završni review/LOCK. Phase 5.5 ne smije krenuti dok
-readiness algoritam iz `OPEN_QUESTIONS.md` ne dobije zasebnu eksplicitnu product/architecture
-odluku. Phase 5.4 metadata vrijednosti ne impliciraju nikakav weighting.
+Phase 5.4 je završno zaključana odlukom vlasnika 2026-09-25. Phase 5.5 dobila je zaseban
+eksplicitni product/architecture contract u `MASTERY_READINESS.md`; time Phase 5.4 metadata
+snapshot ostaje nepromijenjen, a njegov algoritamski učinak nije retroaktivno pripisan ovoj fazi.

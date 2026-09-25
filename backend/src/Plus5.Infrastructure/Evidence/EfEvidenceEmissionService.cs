@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Plus5.Application.Evidence;
+using Plus5.Application.Readiness;
 using Plus5.Domain.Evidence;
 using Plus5.Infrastructure.Persistence;
 
@@ -10,7 +11,8 @@ namespace Plus5.Infrastructure.Evidence;
 
 public sealed class EfEvidenceEmissionService(
     Plus5DbContext db,
-    TimeProvider clock) : IEvidenceEmissionService
+    TimeProvider clock,
+    IMasteryReadinessProjectionService readinessProjection) : IEvidenceEmissionService
 {
     public async Task<EvidenceWriteResult> RecordObservationAsync(
         Guid owner,
@@ -68,9 +70,14 @@ public sealed class EfEvidenceEmissionService(
                 command.OccurredAtUtc,
                 clock.GetUtcNow(),
                 CreateMetadata(command),
+                command.PerformanceScore,
                 targets);
             AddEvidence(evidenceEvent);
             await db.SaveChangesAsync(cancellationToken);
+            await readinessProjection.RecalculateAffectedAsync(
+                command.StudentId,
+                command.KnowledgeComponentIds,
+                cancellationToken);
             await CommitAsync(transaction, cancellationToken);
             return Success(evidenceEvent.Id);
         }
@@ -118,6 +125,10 @@ public sealed class EfEvidenceEmissionService(
                 return Failure(EvidenceWriteFailure.Conflict);
             }
 
+            var previousTargetIds = await LoadEvidenceTargetIdsAsync(
+                predecessor.Id,
+                cancellationToken);
+
             var targets = await LoadTargetsAsync(
                 command.KnowledgeComponentIds,
                 cancellationToken);
@@ -133,9 +144,14 @@ public sealed class EfEvidenceEmissionService(
                 clock.GetUtcNow(),
                 command.ReasonCode,
                 CreateMetadata(command),
+                command.PerformanceScore,
                 targets);
             AddEvidence(evidenceEvent);
             await db.SaveChangesAsync(cancellationToken);
+            await readinessProjection.RecalculateAffectedAsync(
+                predecessor.StudentId,
+                previousTargetIds.Concat(command.KnowledgeComponentIds).Distinct().ToArray(),
+                cancellationToken);
             await CommitAsync(transaction, cancellationToken);
             return Success(evidenceEvent.Id);
         }
@@ -185,6 +201,10 @@ public sealed class EfEvidenceEmissionService(
                 return Failure(EvidenceWriteFailure.Conflict);
             }
 
+            var previousTargetIds = await LoadEvidenceTargetIdsAsync(
+                predecessor.Id,
+                cancellationToken);
+
             var evidenceEvent = EvidenceEvent.CreateInvalidation(
                 Guid.NewGuid(),
                 predecessor,
@@ -192,6 +212,10 @@ public sealed class EfEvidenceEmissionService(
                 command.ReasonCode);
             AddEvidence(evidenceEvent);
             await db.SaveChangesAsync(cancellationToken);
+            await readinessProjection.RecalculateAffectedAsync(
+                predecessor.StudentId,
+                previousTargetIds,
+                cancellationToken);
             await CommitAsync(transaction, cancellationToken);
             return Success(evidenceEvent.Id);
         }
@@ -229,6 +253,14 @@ public sealed class EfEvidenceEmissionService(
         await db.EvidenceEvents.AnyAsync(
             evidence => evidence.SupersedesEvidenceEventId == evidenceEventId,
             cancellationToken);
+
+    private async Task<Guid[]> LoadEvidenceTargetIdsAsync(
+        Guid evidenceEventId,
+        CancellationToken cancellationToken) =>
+        await db.EvidenceEventKnowledgeComponents
+            .Where(mapping => mapping.EvidenceEventId == evidenceEventId)
+            .Select(mapping => mapping.KnowledgeComponentId)
+            .ToArrayAsync(cancellationToken);
 
     private async Task<IReadOnlyCollection<EvidenceKnowledgeTarget>?> LoadTargetsAsync(
         IReadOnlyList<Guid> knowledgeComponentIds,

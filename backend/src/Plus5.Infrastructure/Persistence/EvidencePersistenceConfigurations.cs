@@ -43,11 +43,16 @@ internal sealed class EvidenceEventConfiguration : IEntityTypeConfiguration<Evid
                 "AND DATEPART(TZOFFSET, [RecordedAtUtc]) = 0");
             table.HasCheckConstraint(
                 "CK_EvidenceEvents_MetadataShape",
-                "([Kind] IN (1, 2) AND [Difficulty] IS NOT NULL " +
+                "([Kind] IN (1, 2) AND [PerformanceScore] IS NOT NULL " +
+                "AND [Difficulty] IS NOT NULL " +
                 "AND [EvidenceType] IS NOT NULL AND [AssistanceLevel] IS NOT NULL " +
-                "AND [EvidenceContext] IS NOT NULL) OR ([Kind] = 3 AND [Difficulty] IS NULL " +
+                "AND [EvidenceContext] IS NOT NULL) OR ([Kind] = 3 " +
+                "AND [PerformanceScore] IS NULL AND [Difficulty] IS NULL " +
                 "AND [EvidenceType] IS NULL AND [AssistanceLevel] IS NULL " +
                 "AND [EvidenceContext] IS NULL)");
+            table.HasCheckConstraint(
+                "CK_EvidenceEvents_PerformanceScore",
+                "[PerformanceScore] IS NULL OR [PerformanceScore] BETWEEN 0 AND 1");
             table.HasCheckConstraint(
                 "CK_EvidenceEvents_Difficulty",
                 "[Difficulty] IS NULL OR [Difficulty] BETWEEN 1 AND 5");
@@ -90,6 +95,8 @@ internal sealed class EvidenceEventConfiguration : IEntityTypeConfiguration<Evid
             .IsRequired();
         builder.Property(evidence => evidence.ReasonCode)
             .HasMaxLength(EvidenceEvent.ReasonCodeMaxLength);
+        builder.Property(evidence => evidence.PerformanceScore)
+            .HasPrecision(9, 8);
         builder.Property(evidence => evidence.EvidenceType)
             .HasConversion<string>()
             .HasMaxLength(16);
