@@ -23,10 +23,12 @@ Repozitorij trenutačno sadrži cross-cutting tehnički temelj:
 - autorizirani, pretraživi i filtrirani popis vlastitih učenika s pregledom statusa i programa
 - zaključani Curriculum/Knowledge temelj, Student-specific append-only Evidence Event model te
   determinističke versionirane Mastery/Readiness projekcije
+- owner-scoped Procjena spremnosti učenika s rezultatom po području, pouzdanošću, količinom
+  dokaza, vremenom izračuna i poštenim stanjem bez podataka
 
 Phase 3 Students/Groups i Phase 4 Schedule funkcionalnosti su implementirane; Phase 5 trenutno
-sadrži Curriculum, Knowledge Component, Evidence Event i `readiness-v1` model bez preuranjenog
-UI-ja ili production emitera.
+sadrži Curriculum, Knowledge Component, Evidence Event i `readiness-v1` model te prvi read-only
+readiness UI; production emitteri i nedokumentirane predikcije nisu uvedeni.
 
 ## Preduvjeti
 

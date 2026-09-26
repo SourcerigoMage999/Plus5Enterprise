@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED — REVIEW READY`
+`FINAL LOCKED`
 
 ## Datum
 
@@ -119,7 +119,7 @@ API slike.
 
 ## Točna početna točka za sljedeću fazu
 
-Phase 5.5 je implementirana i spremna za završni review/LOCK. Phase 5.6 smije čitati projection
-rezultate tek kroz zasebno definiran owner-scoped query/UI contract. Budući UI uz score mora
-prikazati confidence, broj dokaza i vrijeme zadnjeg izračuna; ne smije prikazati readiness kao
-školsku ocjenu ili objektivnu činjenicu.
+Phase 5.5 je finalno zaključana 2026-09-26. Phase 5.6 smije čitati projection rezultate samo
+kroz zasebno definiran owner-scoped query/UI contract. Budući UI uz score mora prikazati
+confidence, broj dokaza i vrijeme zadnjeg izračuna; ne smije prikazati readiness kao školsku
+ocjenu ili objektivnu činjenicu.

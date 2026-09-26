@@ -168,6 +168,37 @@ export function getStudentDossier(studentId: string, signal?: AbortSignal) {
   return getJson<StudentDossier>(`/students/${encodeURIComponent(studentId)}`, signal)
 }
 
+export type ReadinessConfidence = 'NoData' | 'VeryLow' | 'Low' | 'Medium' | 'High'
+export type ReadinessStatus = 'InsufficientData' | 'NeedsWork' | 'Developing' | 'Ready' | 'Strong'
+
+export interface StudentReadinessArea {
+  readonly knowledgeAreaId: string
+  readonly knowledgeModelCode: string
+  readonly knowledgeModelVersion: string
+  readonly name: string
+  readonly sortOrder: number
+  readonly score: number | null
+  readonly confidence: ReadinessConfidence
+  readonly readiness: ReadinessStatus
+  readonly evidenceCount: number
+  readonly effectiveEvidenceWeight: number
+  readonly calculatedAtUtc: string
+  readonly algorithmVersion: string
+}
+
+export interface StudentReadinessSnapshot {
+  readonly studentId: string
+  readonly firstName: string
+  readonly lastName: string
+  readonly schoolGradeName: string
+  readonly schoolGradeCode: string | null
+  readonly areas: readonly StudentReadinessArea[]
+}
+
+export function getStudentReadiness(studentId: string, signal?: AbortSignal) {
+  return getJson<StudentReadinessSnapshot>(`/students/${encodeURIComponent(studentId)}/readiness`, signal)
+}
+
 export interface StudentEditGuardian {
   readonly id: string | null
   readonly firstName: string

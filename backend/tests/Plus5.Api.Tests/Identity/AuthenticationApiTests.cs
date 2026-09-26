@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Plus5.Api.Conventions;
 using Plus5.Api.Identity;
+using Plus5.Api.Readiness;
 using Plus5.Api.Students;
 using Plus5.Api.Groups;
 using Plus5.Api.Scheduling;
@@ -21,11 +22,13 @@ using Plus5.Application.Groups;
 using Plus5.Application.Scheduling;
 using Plus5.Infrastructure.Groups;
 using Plus5.Application.Identity;
+using Plus5.Application.Readiness;
 using Plus5.Application.Students;
 using Plus5.Domain.Identity;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Persistence;
+using Plus5.Infrastructure.Readiness;
 using Plus5.Infrastructure.Scheduling;
 using Plus5.Infrastructure.Students;
 
@@ -45,6 +48,7 @@ public sealed class AuthenticationApiTests
         using var anonymous = await client.GetAsync("/api/v1/auth/session", CancellationToken.None);
         using var anonymousStudents = await client.GetAsync("/api/v1/students", CancellationToken.None);
         using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
+        using var anonymousReadiness = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/readiness", CancellationToken.None);
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
@@ -60,6 +64,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousStudents.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousReadiness.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
@@ -203,6 +208,11 @@ public sealed class AuthenticationApiTests
             $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}",
             authCookie,
             csrf.Cookie);
+        using var readiness = await GetWithCookiesAsync(
+            client,
+            $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}/readiness",
+            authCookie,
+            csrf.Cookie);
         using var edit = await GetWithCookiesAsync(
             client,
             $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}/edit",
@@ -248,6 +258,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.NoContent, cancelSession.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, invalidGroupRecurrence.StatusCode);
         Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, readiness.StatusCode);
         Assert.Equal(HttpStatusCode.OK, edit.StatusCode);
         Assert.Equal(HttpStatusCode.OK, update.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
@@ -413,6 +424,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IStudentListQuery, EfStudentListQuery>();
         builder.Services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         builder.Services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
+        builder.Services.AddScoped<IStudentReadinessQuery, EfStudentReadinessQuery>();
         builder.Services.AddScoped<IStudentEditingService, EfStudentEditingService>();
         builder.Services.AddScoped<IGroupQuery, EfGroupQuery>();
         builder.Services.AddScoped<IGroupCreationQuery, EfGroupCreationQuery>();
@@ -440,6 +452,7 @@ public sealed class AuthenticationApiTests
         app.MapStudentList();
         app.MapStudentCreation();
         app.MapStudentDossier();
+        app.MapStudentReadiness();
         app.MapStudentEditing();
         app.MapGroups();
         app.MapScheduleCalendar();

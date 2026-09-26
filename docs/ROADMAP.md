@@ -409,7 +409,7 @@ rebuild/migration/health/non-root/runtime-schema gate prolaze. Završni evidence
 evidence ostaju nepromijenjeni; zasebna Phase 5.5 odluka sada eksplicitno definira algoritamski
 učinak bez retroaktivnog otvaranja Phase 5.4.
 
-## 5.5 Readiness calculation rules — IMPLEMENTED / REVIEW READY
+## 5.5 Readiness calculation rules — FINAL LOCK
 
 **Zaključani scope 2026-09-25:** obavezni `PerformanceScore 0..1` na
 Observation/Correctionu, deterministički metadata weight katalog, 90-dnevni half-life s floorom
@@ -427,10 +427,26 @@ host i stvarni SQL regression pokrivaju weight/decay/threshold/coverage, distinc
 Correction/Invalidation, hierarchy/outcome agregaciju, constraints, migration upgrade i lease.
 Završni evidence: `summaries/PHASE_5.5_MASTERY_READINESS_SUMMARY.md`.
 
-**Acceptance 5.5: IMPLEMENTED / REVIEW READY.** Final LOCK čeka review; Phase 5.6 UI ostaje
-zasebna faza i ne uvodi se kroz backend model.
+**Acceptance 5.5: FINAL LOCK — odobreno 2026-09-26.** Zaključani `readiness-v1` algoritam,
+projection model i runtime evidence ostaju nepromijenjeni; Phase 5.6 UI je zasebni read-only
+potrošač i ne uvodi novu business formulu.
 
-## 5.6 Screen 2.4 Readiness assessment — BLOCKED until 5.5
+## 5.6 Screen 2.4 Readiness assessment — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-26:** owner-scoped read-only prikaz postojećih `readiness-v1`
+KnowledgeArea projekcija za jednog učenika. Svako područje prikazuje score, canonical readiness,
+confidence, distinct evidence-chain count, effective weight, vrijeme izračuna i model/version
+kontekst. Prazan projection state prikazuje eksplicitno "nema dovoljno podataka" bez sintetičkog
+postotka. Digitalni dosje vodi na zaseban 2.4 route.
+
+Ukupna student/test readiness vrijednost, predviđena školska ocjena, recommendation engine,
+strength/focus interpretacije, PDF export i Lesson Builder handoff nisu uvedeni: Phase 5.5 nema
+takvu projekciju ni ugovor, a UI ne smije sam stvarati novu business formulu. Source of truth:
+`summaries/PHASE_5.6_READINESS_ASSESSMENT_SUMMARY.md`.
+
+**Acceptance 5.6: IMPLEMENTED / REVIEW READY.** Final LOCK čeka review. Endpoint ne otkriva
+postoji li strani/arhivirani učenik, a frontend uvijek prikazuje pouzdanost i podrijetlo procjene
+uz rezultat.
 ## 5.7 Screen 2.5 Knowledge detail overview — BLOCKED until 5.5
 ## 5.8 Grammar detail — BLOCKED until 5.5
 ## 5.9 Vocabulary detail — BLOCKED until 5.5

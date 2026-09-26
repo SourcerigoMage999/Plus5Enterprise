@@ -71,7 +71,7 @@ export function StudentDossierPage() {
           </div>
         </Card>
         <Card title="Spremnost učenika" className="dossier-readiness">
-          <BoundaryEmpty icon="◎" title="Procjena još nije dostupna">Spremnost će se prikazati nakon uvođenja pedagoških procjena i kriterija.</BoundaryEmpty>
+          <div className="dossier-readiness-entry"><span aria-hidden="true">◎</span><strong>Procjena po područjima</strong><p>Pregledajte izračunati rezultat, pouzdanost i količinu dokaza bez pretvaranja procjene u školsku ocjenu.</p><Link to={`/students/${studentId}/readiness`}>Pogledaj detalje spremnosti →</Link></div>
         </Card>
       </div>
 

@@ -31,6 +31,11 @@
 .dossier-empty > span { display: grid; width: 2.65rem; height: 2.65rem; place-items: center; margin-bottom: .65rem; border-radius: 50%; color: #6e7f95; background: #f0f4f8; font-size: 1.15rem; }
 .dossier-empty strong { color: #385b83; font-size: .75rem; }
 .dossier-empty p { max-width: 25rem; margin: .35rem 0 0; color: #8290a1; font-size: .65rem; line-height: 1.5; }
+.dossier-readiness-entry { display: grid; justify-items: center; padding: 1.2rem .5rem .5rem; text-align: center; }
+.dossier-readiness-entry > span { display: grid; width: 2.65rem; height: 2.65rem; place-items: center; margin-bottom: .65rem; border-radius: 50%; color: #075bdd; background: #eaf2ff; font-size: 1.15rem; }
+.dossier-readiness-entry strong { color: #385b83; font-size: .75rem; }
+.dossier-readiness-entry p { max-width: 25rem; margin: .35rem 0 .75rem; color: #8290a1; font-size: .65rem; line-height: 1.5; }
+.dossier-readiness-entry a { color: #075bdd; font-size: .67rem; font-weight: 650; text-decoration: none; }
 .dossier-section-label { margin: .9rem 0 .65rem; color: #7b899b; font-size: .66rem; font-weight: 500; }
 .dossier-session { display: flex; gap: .85rem; align-items: center; padding: .8rem; border-radius: .45rem; background: #f7f9fc; }
 .dossier-session__date { display: grid; width: 3.2rem; flex: 0 0 auto; place-items: center; padding: .35rem; border-radius: .4rem; color: white; background: #075bdd; font-size: .56rem; text-transform: uppercase; }

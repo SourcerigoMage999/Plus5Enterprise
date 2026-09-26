@@ -29,7 +29,8 @@ describe('student dossier', () => {
     expect(screen.getAllByText('Grupa Orion').length).toBeGreaterThan(0)
     expect(screen.getByText('Iva Anić')).toBeInTheDocument()
     expect(screen.getByText('Present Perfect')).toBeInTheDocument()
-    expect(screen.getByText('Procjena još nije dostupna')).toBeInTheDocument()
+    expect(screen.getByText('Procjena po područjima')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Pogledaj detalje spremnosti/ })).toHaveAttribute('href', '/students/student-1/readiness')
     expect(screen.queryByText(/\d+\s*%/)).not.toBeInTheDocument()
     const actions = screen.getByRole('button', { name: /Poruka roditelju/ }).parentElement
     expect(actions).not.toBeNull()

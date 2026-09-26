@@ -9,6 +9,7 @@ import { StudentListPage } from '../students/StudentListPage.tsx'
 import { StudentCreatePage } from '../students/StudentCreatePage.tsx'
 import { StudentDossierPage } from '../students/StudentDossierPage.tsx'
 import { StudentEditPage } from '../students/StudentEditPage.tsx'
+import { StudentReadinessPage } from '../students/StudentReadinessPage.tsx'
 import { GroupListPage } from '../groups/GroupListPage.tsx'
 import { GroupCreatePage } from '../groups/GroupCreatePage.tsx'
 import { GroupEditPage } from '../groups/GroupEditPage.tsx'
@@ -40,6 +41,7 @@ export function AppRoutes() {
           <Route path="students/groups/new" element={<GroupCreatePage />} />
           <Route path="students/groups/:groupId/edit" element={<GroupEditPage />} />
           <Route path="students/:studentId" element={<StudentDossierPage />} />
+          <Route path="students/:studentId/readiness" element={<StudentReadinessPage />} />
           <Route path="students/:studentId/edit" element={<StudentEditPage />} />
           <Route path="schedule" element={<ScheduleCalendarPage />} />
           <Route path="schedule/new" element={<ScheduleCreatePage />} />
