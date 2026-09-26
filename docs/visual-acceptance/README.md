@@ -259,3 +259,13 @@ pošteno zaključani budući contracti. Nema browser grešaka, document overflow
 tijekom visual gatea.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-4.4/README.md).
+
+## Phase 5.8 — Grammar detail — PASS (2026-09-26)
+
+Canonical `2.5 Grammar.png` uspoređen je sa stvarnim owner-scoped Knowledge prikazom na
+desktopu 1536×1024 i mobitelu 390×844. Potvrđeni su model-derived Area/topic odabir,
+sinkronizirani desni component panel, hijerarhijska putanja, potpuni projection explainability,
+točna Knowledge Model verzija i stvarni component no-data prikaz. Nema browser grešaka,
+business writeova ni document overflowa.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-5.8/README.md).

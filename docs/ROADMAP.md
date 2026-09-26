@@ -449,7 +449,7 @@ gate, dvije odvojene model verzije, owner-scoped API i puni regression evidence 
 Endpoint ne otkriva postoji li strani/arhivirani učenik, a frontend uvijek prikazuje
 pouzdanost i podrijetlo procjene uz rezultat.
 
-## 5.7 Screen 2.5 Knowledge detail overview — IMPLEMENTED / REVIEW READY
+## 5.7 Screen 2.5 Knowledge detail overview — FINAL LOCK
 
 **Zaključani scope 2026-09-26:** owner-scoped read-only prikaz postojećih `MasteryEstimate`
 projekcija po točnoj Knowledge Model verziji, Area i component hijerarhiji. Prikazuju se score,
@@ -461,10 +461,24 @@ Overall score, školska ocjena, probability, trend, recent activity feed, recomm
 Lesson Builder handoff i ručni override nisu uvedeni jer za njih ne postoji zaključana
 projekcija/provenance. Završni evidence: `summaries/PHASE_5.7_KNOWLEDGE_DETAIL_OVERVIEW_SUMMARY.md`.
 
-**Acceptance 5.7: IMPLEMENTED / REVIEW READY.** Puni regression i stvarni
-desktop/mobile/no-data visual acceptance protiv canonical 2.5 PNG-a prolaze; final LOCK čeka
-review.
-## 5.8 Grammar detail — BLOCKED until 5.5
+**Acceptance 5.7: FINAL LOCK — odobreno 2026-09-26.** Puni regression i stvarni
+desktop/mobile/no-data visual acceptance protiv canonical 2.5 PNG-a prolaze. Owner-scoped
+query, verzijska razdvojenost, no-data semantika i zaključane scope granice ostaju
+nepromijenjene; Phase 5.8 je zasebno presentation proširenje.
+## 5.8 Grammar detail — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-26:** postojeći owner-scoped Knowledge detail proširen je
+odabirom stvarne model-derived komponente, sinkroniziranim desnim panelom, hijerarhijskom
+putanjom/child drill-downom i punim projection explainabilityjem. No-data ostaje različit od
+`0 %`, a točan Knowledge Model code/version uvijek je vidljiv. Source of truth:
+`GRAMMAR_DETAIL.md`.
+
+Trend, activity feed, recommendations, PDF, Lesson Builder handoff i ručni score override
+nisu uvedeni jer za njih nema zaključanog backend contracta. Desktop/mobile/component-no-data
+visual evidence: `visual-acceptance/phase-5.8/`.
+
+**Acceptance 5.8: IMPLEMENTED / REVIEW READY.** Puni regression i stvarni visual gate
+prolaze; final LOCK čeka review.
 ## 5.9 Vocabulary detail — BLOCKED until 5.5
 ## 5.10 Reading detail — BLOCKED until 5.5
 ## 5.11 Listening detail — BLOCKED until 5.5

@@ -18,6 +18,7 @@ export function StudentKnowledgePage() {
   const requestedAreaId = searchParams.get('areaId')
   const [snapshot, setSnapshot] = useState<StudentKnowledgeDetailSnapshot | null>(null)
   const [selectedAreas, setSelectedAreas] = useState<Record<string, string>>({})
+  const [selectedComponents, setSelectedComponents] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<{ message: string; notFound: boolean } | null>(null)
   const [version, setVersion] = useState(0)
@@ -28,6 +29,7 @@ export function StudentKnowledgePage() {
       .then((result) => {
         setSnapshot(result)
         setSelectedAreas(createInitialSelection(result.models, requestedAreaId))
+        setSelectedComponents(createInitialComponentSelection(result.models, requestedAreaId))
       })
       .catch((requestError: unknown) => {
         if (requestError instanceof DOMException && requestError.name === 'AbortError') return
@@ -93,7 +95,13 @@ export function StudentKnowledgePage() {
           key={model.knowledgeModelId}
           model={model}
           selectedAreaId={selectedAreas[model.knowledgeModelId] ?? model.areas[0]?.knowledgeAreaId}
-          onSelectArea={(areaId) => setSelectedAreas((current) => ({ ...current, [model.knowledgeModelId]: areaId }))}
+          selectedComponentId={selectedComponents[model.knowledgeModelId]}
+          onSelectArea={(areaId) => {
+            setSelectedAreas((current) => ({ ...current, [model.knowledgeModelId]: areaId }))
+            const area = model.areas.find((candidate) => candidate.knowledgeAreaId === areaId)
+            setSelectedComponents((current) => ({ ...current, [model.knowledgeModelId]: area?.components[0]?.knowledgeComponentId ?? '' }))
+          }}
+          onSelectComponent={(componentId) => setSelectedComponents((current) => ({ ...current, [model.knowledgeModelId]: componentId }))}
         />
       ))}
 
@@ -102,10 +110,12 @@ export function StudentKnowledgePage() {
   )
 }
 
-function ModelKnowledge({ model, selectedAreaId, onSelectArea }: {
+function ModelKnowledge({ model, selectedAreaId, selectedComponentId, onSelectArea, onSelectComponent }: {
   readonly model: StudentKnowledgeModelDetail
   readonly selectedAreaId?: string
+  readonly selectedComponentId?: string
   readonly onSelectArea: (areaId: string) => void
+  readonly onSelectComponent: (componentId: string) => void
 }) {
   const selectedArea = model.areas.find((area) => area.knowledgeAreaId === selectedAreaId) ?? model.areas[0]
   return (
@@ -125,13 +135,19 @@ function ModelKnowledge({ model, selectedAreaId, onSelectArea }: {
           >{area.name}<small>{formatScore(area.score)}</small></button>
         ))}
       </div>
-      {selectedArea && <AreaDetail area={selectedArea} />}
+      {selectedArea && <AreaDetail area={selectedArea} modelLabel={`${model.code} v${model.version}`} selectedComponentId={selectedComponentId} onSelectComponent={onSelectComponent} />}
     </section>
   )
 }
 
-function AreaDetail({ area }: { readonly area: StudentKnowledgeAreaDetail }) {
+function AreaDetail({ area, modelLabel, selectedComponentId, onSelectComponent }: {
+  readonly area: StudentKnowledgeAreaDetail
+  readonly modelLabel: string
+  readonly selectedComponentId?: string
+  readonly onSelectComponent: (componentId: string) => void
+}) {
   const depths = useMemo(() => componentDepths(area.components), [area.components])
+  const selectedComponent = area.components.find((component) => component.knowledgeComponentId === selectedComponentId) ?? area.components[0]
   return (
     <div className="knowledge-analysis">
       <header>
@@ -142,13 +158,22 @@ function AreaDetail({ area }: { readonly area: StudentKnowledgeAreaDetail }) {
         </div>
       </header>
       {area.components.length === 0 ? <p className="knowledge-components-empty">Nema projekcija komponenti za ovo područje.</p> : (
-        <div className="knowledge-table-wrap">
-          <table className="knowledge-table">
-            <thead><tr><th>Komponenta znanja</th><th>Rezultat</th><th>Status</th><th>Pouzdanost</th><th>Lanci dokaza</th><th>Izračunato</th></tr></thead>
-            <tbody>{area.components.map((component) => (
-              <ComponentRow component={component} depth={depths.get(component.knowledgeComponentId) ?? 0} key={component.knowledgeComponentId} />
-            ))}</tbody>
-          </table>
+        <div className="knowledge-component-layout">
+          <div className="knowledge-table-wrap">
+            <table className="knowledge-table">
+              <thead><tr><th>Komponenta znanja</th><th>Rezultat</th><th>Status</th><th>Pouzdanost</th><th>Lanci dokaza</th><th>Izračunato</th></tr></thead>
+              <tbody>{area.components.map((component) => (
+                <ComponentRow
+                  component={component}
+                  depth={depths.get(component.knowledgeComponentId) ?? 0}
+                  isSelected={component.knowledgeComponentId === selectedComponent?.knowledgeComponentId}
+                  key={component.knowledgeComponentId}
+                  onSelect={() => onSelectComponent(component.knowledgeComponentId)}
+                />
+              ))}</tbody>
+            </table>
+          </div>
+          {selectedComponent && <ComponentDetail area={area} component={selectedComponent} modelLabel={modelLabel} onSelectComponent={onSelectComponent} />}
         </div>
       )}
       <p className="knowledge-analysis__meta">Efektivna težina područja: {formatWeight(area.effectiveEvidenceWeight)} · {area.algorithmVersion ?? 'Algoritam nije primijenjen'}{area.calculatedAtUtc ? ` · ${formatDateTime(area.calculatedAtUtc)}` : ''}</p>
@@ -156,16 +181,63 @@ function AreaDetail({ area }: { readonly area: StudentKnowledgeAreaDetail }) {
   )
 }
 
-function ComponentRow({ component, depth }: { readonly component: StudentKnowledgeComponentDetail; readonly depth: number }) {
+function ComponentRow({ component, depth, isSelected, onSelect }: {
+  readonly component: StudentKnowledgeComponentDetail
+  readonly depth: number
+  readonly isSelected: boolean
+  readonly onSelect: () => void
+}) {
   return (
-    <tr>
-      <th scope="row"><span style={{ '--knowledge-depth': depth } as CSSProperties}>{component.name}</span>{component.status === 'Deprecated' && <small>Zastarjela komponenta</small>}</th>
+    <tr className={isSelected ? 'knowledge-table__selected' : undefined}>
+      <th scope="row"><button aria-pressed={isSelected} onClick={onSelect} style={{ '--knowledge-depth': depth } as CSSProperties} type="button">{component.name}</button>{component.status === 'Deprecated' && <small>Zastarjela komponenta</small>}</th>
       <td><strong>{formatScore(component.score)}</strong>{component.score !== null && <i className="knowledge-score-bar"><b style={{ width: `${Math.round(component.score * 100)}%` }} /></i>}</td>
       <td><span className={`knowledge-readiness knowledge-readiness--${statusTone(component.readiness)}`}>{readinessLabel(component.readiness)}</span></td>
       <td>{confidenceLabel(component.confidence)}</td>
       <td>{component.evidenceCount}</td>
       <td>{formatDateTime(component.calculatedAtUtc)}</td>
     </tr>
+  )
+}
+
+function ComponentDetail({ area, component, modelLabel, onSelectComponent }: {
+  readonly area: StudentKnowledgeAreaDetail
+  readonly component: StudentKnowledgeComponentDetail
+  readonly modelLabel: string
+  readonly onSelectComponent: (componentId: string) => void
+}) {
+  const byId = new Map(area.components.map((candidate) => [candidate.knowledgeComponentId, candidate]))
+  const path = componentPath(component, byId)
+  const pathLabels = path[0]?.name === area.name ? path.map((item) => item.name) : [area.name, ...path.map((item) => item.name)]
+  const children = area.components.filter((candidate) => candidate.parentKnowledgeComponentId === component.knowledgeComponentId)
+
+  return (
+    <aside className="knowledge-component-detail" aria-labelledby={`component-${component.knowledgeComponentId}`}>
+      <p className="knowledge-component-detail__eyebrow">Odabrana komponenta</p>
+      <div className="knowledge-component-detail__title">
+        <div><h4 id={`component-${component.knowledgeComponentId}`}>{component.name}</h4><p>{pathLabels.join(' › ')}</p></div>
+        <span className={`knowledge-readiness knowledge-readiness--${statusTone(component.readiness)}`}>{readinessLabel(component.readiness)}</span>
+      </div>
+      <div className="knowledge-component-detail__score">
+        <strong>{formatScore(component.score)}</strong>
+        <span>{component.score === null ? 'Nema dovoljno podataka za rezultat' : 'Trenutačna projekcija ovladanosti'}</span>
+        {component.score !== null && <i className="knowledge-score-bar"><b style={{ width: `${Math.round(component.score * 100)}%` }} /></i>}
+      </div>
+      <dl>
+        <div><dt>Pouzdanost</dt><dd>{confidenceLabel(component.confidence)}</dd></div>
+        <div><dt>Lanci dokaza</dt><dd>{component.evidenceCount}</dd></div>
+        <div><dt>Efektivna težina</dt><dd>{formatWeight(component.effectiveEvidenceWeight)}</dd></div>
+        <div><dt>Izračunato</dt><dd>{formatDateTime(component.calculatedAtUtc)}</dd></div>
+        <div><dt>Algoritam</dt><dd>{component.algorithmVersion}</dd></div>
+        <div><dt>Model</dt><dd>{modelLabel}</dd></div>
+      </dl>
+      {children.length > 0 && (
+        <section className="knowledge-component-detail__children" aria-label="Podređene komponente">
+          <h5>Podređene komponente</h5>
+          {children.map((child) => <button key={child.knowledgeComponentId} onClick={() => onSelectComponent(child.knowledgeComponentId)} type="button"><span>{child.name}</span><strong>{formatScore(child.score)}</strong><i aria-hidden="true">→</i></button>)}
+        </section>
+      )}
+      <p className="knowledge-component-detail__notice">Pojedinačne aktivnosti i trend nisu prikazani jer postojeći Evidence contract ne nosi njihov provjerljiv prikazni kontekst.</p>
+    </aside>
   )
 }
 
@@ -178,6 +250,27 @@ function createInitialSelection(models: readonly StudentKnowledgeModelDetail[], 
     const requested = model.areas.find((area) => area.knowledgeAreaId === requestedAreaId)
     return [model.knowledgeModelId, requested?.knowledgeAreaId ?? model.areas[0]?.knowledgeAreaId ?? '']
   }))
+}
+
+function createInitialComponentSelection(models: readonly StudentKnowledgeModelDetail[], requestedAreaId: string | null) {
+  return Object.fromEntries(models.map((model) => {
+    const area = model.areas.find((candidate) => candidate.knowledgeAreaId === requestedAreaId) ?? model.areas[0]
+    return [model.knowledgeModelId, area?.components[0]?.knowledgeComponentId ?? '']
+  }))
+}
+
+function componentPath(component: StudentKnowledgeComponentDetail, byId: ReadonlyMap<string, StudentKnowledgeComponentDetail>) {
+  const path: StudentKnowledgeComponentDetail[] = [component]
+  const visited = new Set([component.knowledgeComponentId])
+  let parentId = component.parentKnowledgeComponentId
+  while (parentId && !visited.has(parentId)) {
+    const parent = byId.get(parentId)
+    if (!parent) break
+    path.unshift(parent)
+    visited.add(parentId)
+    parentId = parent.parentKnowledgeComponentId
+  }
+  return path
 }
 
 function componentDepths(components: readonly StudentKnowledgeComponentDetail[]) {

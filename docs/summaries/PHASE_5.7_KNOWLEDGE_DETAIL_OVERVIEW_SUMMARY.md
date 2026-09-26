@@ -2,7 +2,7 @@
 
 ## Status
 
-`IMPLEMENTED — REVIEW READY`
+`FINAL LOCKED — odobreno 2026-09-26`
 
 ## Datum
 
