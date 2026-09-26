@@ -431,7 +431,7 @@ Završni evidence: `summaries/PHASE_5.5_MASTERY_READINESS_SUMMARY.md`.
 projection model i runtime evidence ostaju nepromijenjeni; Phase 5.6 UI je zasebni read-only
 potrošač i ne uvodi novu business formulu.
 
-## 5.6 Screen 2.4 Readiness assessment — IMPLEMENTED / REVIEW READY
+## 5.6 Screen 2.4 Readiness assessment — FINAL LOCK
 
 **Zaključani scope 2026-09-26:** owner-scoped read-only prikaz postojećih `readiness-v1`
 KnowledgeArea projekcija za jednog učenika. Svako područje prikazuje score, canonical readiness,
@@ -444,10 +444,26 @@ strength/focus interpretacije, PDF export i Lesson Builder handoff nisu uvedeni:
 takvu projekciju ni ugovor, a UI ne smije sam stvarati novu business formulu. Source of truth:
 `summaries/PHASE_5.6_READINESS_ASSESSMENT_SUMMARY.md`.
 
-**Acceptance 5.6: IMPLEMENTED / REVIEW READY.** Final LOCK čeka review. Endpoint ne otkriva
-postoji li strani/arhivirani učenik, a frontend uvijek prikazuje pouzdanost i podrijetlo procjene
-uz rezultat.
-## 5.7 Screen 2.5 Knowledge detail overview — BLOCKED until 5.5
+**Acceptance 5.6: FINAL LOCK — odobreno 2026-09-26.** Stvarni desktop/mobile/no-data visual
+gate, dvije odvojene model verzije, owner-scoped API i puni regression evidence prolaze.
+Endpoint ne otkriva postoji li strani/arhivirani učenik, a frontend uvijek prikazuje
+pouzdanost i podrijetlo procjene uz rezultat.
+
+## 5.7 Screen 2.5 Knowledge detail overview — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-26:** owner-scoped read-only prikaz postojećih `MasteryEstimate`
+projekcija po točnoj Knowledge Model verziji, Area i component hijerarhiji. Prikazuju se score,
+readiness, confidence, Evidence-chain count, effective weight, calculated-at i algorithm
+version. Model-derived područja nisu hardkodirana, različite verzije se ne stapaju, a no-data
+nije `0 %`. Source of truth: `KNOWLEDGE_DETAIL.md`.
+
+Overall score, školska ocjena, probability, trend, recent activity feed, recommendations, PDF,
+Lesson Builder handoff i ručni override nisu uvedeni jer za njih ne postoji zaključana
+projekcija/provenance. Završni evidence: `summaries/PHASE_5.7_KNOWLEDGE_DETAIL_OVERVIEW_SUMMARY.md`.
+
+**Acceptance 5.7: IMPLEMENTED / REVIEW READY.** Puni regression i stvarni
+desktop/mobile/no-data visual acceptance protiv canonical 2.5 PNG-a prolaze; final LOCK čeka
+review.
 ## 5.8 Grammar detail — BLOCKED until 5.5
 ## 5.9 Vocabulary detail — BLOCKED until 5.5
 ## 5.10 Reading detail — BLOCKED until 5.5

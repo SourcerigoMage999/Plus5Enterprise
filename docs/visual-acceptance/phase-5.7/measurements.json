@@ -1,0 +1,46 @@
+{
+  "realApi": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "screens": [
+    {
+      "name": "knowledge-detail",
+      "size": "desktop",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1024,
+      "modelCount": 2,
+      "componentCount": 7
+    },
+    {
+      "name": "knowledge-detail-no-data",
+      "size": "desktop",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1024,
+      "modelCount": 0
+    },
+    {
+      "name": "knowledge-detail",
+      "size": "mobile",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1617,
+      "modelCount": 2,
+      "componentCount": 7
+    }
+  ],
+  "checks": [
+    "desktop: real login/API, 2.4 handoff, breadcrumb, readiness return, version separation, Area tabs, component projections, no overflow",
+    "desktop no-data: real owned Student and API empty projection state, no synthetic score, no overflow",
+    "mobile: real login/API, 2.4 handoff, breadcrumb, readiness return, version separation, Area tabs, component projections, no overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": []
+}

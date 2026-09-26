@@ -199,6 +199,59 @@ export function getStudentReadiness(studentId: string, signal?: AbortSignal) {
   return getJson<StudentReadinessSnapshot>(`/students/${encodeURIComponent(studentId)}/readiness`, signal)
 }
 
+export interface StudentKnowledgeComponentDetail {
+  readonly knowledgeComponentId: string
+  readonly parentKnowledgeComponentId: string | null
+  readonly name: string
+  readonly sortOrder: number
+  readonly status: 'Active' | 'Deprecated'
+  readonly score: number | null
+  readonly confidence: ReadinessConfidence
+  readonly readiness: ReadinessStatus
+  readonly evidenceCount: number
+  readonly effectiveEvidenceWeight: number
+  readonly calculatedAtUtc: string
+  readonly algorithmVersion: string
+}
+
+export interface StudentKnowledgeAreaDetail {
+  readonly knowledgeAreaId: string
+  readonly name: string
+  readonly sortOrder: number
+  readonly score: number | null
+  readonly confidence: ReadinessConfidence
+  readonly readiness: ReadinessStatus
+  readonly evidenceCount: number
+  readonly effectiveEvidenceWeight: number
+  readonly calculatedAtUtc: string | null
+  readonly algorithmVersion: string | null
+  readonly components: readonly StudentKnowledgeComponentDetail[]
+}
+
+export interface StudentKnowledgeModelDetail {
+  readonly knowledgeModelId: string
+  readonly code: string
+  readonly version: string
+  readonly status: 'Draft' | 'Published' | 'Retired'
+  readonly areas: readonly StudentKnowledgeAreaDetail[]
+}
+
+export interface StudentKnowledgeDetailSnapshot {
+  readonly studentId: string
+  readonly firstName: string
+  readonly lastName: string
+  readonly schoolGradeName: string
+  readonly schoolGradeCode: string | null
+  readonly schoolName: string | null
+  readonly programName: string | null
+  readonly groupName: string | null
+  readonly models: readonly StudentKnowledgeModelDetail[]
+}
+
+export function getStudentKnowledgeDetail(studentId: string, signal?: AbortSignal) {
+  return getJson<StudentKnowledgeDetailSnapshot>(`/students/${encodeURIComponent(studentId)}/knowledge`, signal)
+}
+
 export interface StudentEditGuardian {
   readonly id: string | null
   readonly firstName: string

@@ -49,6 +49,7 @@ public sealed class AuthenticationApiTests
         using var anonymousStudents = await client.GetAsync("/api/v1/students", CancellationToken.None);
         using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
         using var anonymousReadiness = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/readiness", CancellationToken.None);
+        using var anonymousKnowledge = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/knowledge", CancellationToken.None);
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
@@ -65,6 +66,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousStudents.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousReadiness.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousKnowledge.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
@@ -213,6 +215,11 @@ public sealed class AuthenticationApiTests
             $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}/readiness",
             authCookie,
             csrf.Cookie);
+        using var knowledge = await GetWithCookiesAsync(
+            client,
+            $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}/knowledge",
+            authCookie,
+            csrf.Cookie);
         using var edit = await GetWithCookiesAsync(
             client,
             $"/api/v1/students/{createdStudent.GetProperty("id").GetGuid()}/edit",
@@ -259,6 +266,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.BadRequest, invalidGroupRecurrence.StatusCode);
         Assert.Equal(HttpStatusCode.OK, dossier.StatusCode);
         Assert.Equal(HttpStatusCode.OK, readiness.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, knowledge.StatusCode);
         Assert.Equal(HttpStatusCode.OK, edit.StatusCode);
         Assert.Equal(HttpStatusCode.OK, update.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, logout.StatusCode);
@@ -425,6 +433,7 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IStudentCreationService, EfStudentCreationService>();
         builder.Services.AddScoped<IStudentDossierQuery, EfStudentDossierQuery>();
         builder.Services.AddScoped<IStudentReadinessQuery, EfStudentReadinessQuery>();
+        builder.Services.AddScoped<IStudentKnowledgeDetailQuery, EfStudentKnowledgeDetailQuery>();
         builder.Services.AddScoped<IStudentEditingService, EfStudentEditingService>();
         builder.Services.AddScoped<IGroupQuery, EfGroupQuery>();
         builder.Services.AddScoped<IGroupCreationQuery, EfGroupCreationQuery>();

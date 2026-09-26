@@ -63,7 +63,10 @@ export function StudentReadinessPage() {
           <h1 id="readiness-title">{name}</h1>
           <span>{snapshot.schoolGradeCode ?? snapshot.schoolGradeName}</span>
         </div>
-        <Link to={`/students/${studentId}`}>← Natrag na dosje</Link>
+        <div className="readiness-hero__actions">
+          <Link to={`/students/${studentId}/knowledge`}>Detalj znanja</Link>
+          <Link to={`/students/${studentId}`}>← Natrag na dosje</Link>
+        </div>
       </header>
 
       <section className="readiness-intro" aria-labelledby="readiness-summary-title">
@@ -91,7 +94,7 @@ export function StudentReadinessPage() {
             <span>Verzija {model.version}</span>
           </header>
           <div className="readiness-area-grid">
-            {model.areas.map((area) => <AreaCard key={area.knowledgeAreaId} area={area} />)}
+            {model.areas.map((area) => <AreaCard key={area.knowledgeAreaId} area={area} studentId={studentId} />)}
           </div>
         </section>
       ))}
@@ -101,7 +104,7 @@ export function StudentReadinessPage() {
   )
 }
 
-function AreaCard({ area }: { readonly area: StudentReadinessArea }) {
+function AreaCard({ area, studentId }: { readonly area: StudentReadinessArea; readonly studentId: string }) {
   const hasScore = area.score !== null
   const percentage = hasScore ? Math.round(area.score! * 100) : null
   return (
@@ -118,6 +121,7 @@ function AreaCard({ area }: { readonly area: StudentReadinessArea }) {
         <div><dt>Efektivna težina</dt><dd>{formatWeight(area.effectiveEvidenceWeight)}</dd></div>
         <div><dt>Izračunato</dt><dd>{formatDateTime(area.calculatedAtUtc)}</dd></div>
       </dl>
+      <Link className="readiness-area__link" to={`/students/${studentId}/knowledge?areaId=${encodeURIComponent(area.knowledgeAreaId)}`}>Otvori komponente →</Link>
     </article>
   )
 }

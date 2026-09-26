@@ -10,10 +10,12 @@ public static class StudentReadinessEndpoints
     {
         ArgumentNullException.ThrowIfNull(endpoints);
 
-        endpoints.MapVersionOneApi()
+        var students = endpoints.MapVersionOneApi()
             .MapGroup("/students")
-            .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy)
-            .MapGet("/{studentId:guid}/readiness", GetAsync);
+            .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
+
+        students.MapGet("/{studentId:guid}/readiness", GetAsync);
+        students.MapGet("/{studentId:guid}/knowledge", GetKnowledgeAsync);
 
         return endpoints;
     }
@@ -22,6 +24,26 @@ public static class StudentReadinessEndpoints
         Guid studentId,
         HttpContext context,
         IStudentReadinessQuery query,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherAccountId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        if (studentId == Guid.Empty)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var snapshot = await query.GetAsync(teacherAccountId, studentId, cancellationToken);
+        return snapshot is null ? TypedResults.NotFound() : TypedResults.Ok(snapshot);
+    }
+
+    private static async Task<IResult> GetKnowledgeAsync(
+        Guid studentId,
+        HttpContext context,
+        IStudentKnowledgeDetailQuery query,
         CancellationToken cancellationToken)
     {
         if (!IdentityClaims.TryRead(context.User, out var teacherAccountId, out _))

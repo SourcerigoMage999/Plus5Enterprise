@@ -114,6 +114,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IEvidenceEmissionService, EfEvidenceEmissionService>();
         services.AddScoped<IMasteryReadinessProjectionService, EfMasteryReadinessProjectionService>();
         services.AddScoped<IStudentReadinessQuery, EfStudentReadinessQuery>();
+        services.AddScoped<IStudentKnowledgeDetailQuery, EfStudentKnowledgeDetailQuery>();
         services.AddScoped<IReadinessRefreshService, EfReadinessRefreshService>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);
