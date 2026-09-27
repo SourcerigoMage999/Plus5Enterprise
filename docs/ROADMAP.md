@@ -480,7 +480,7 @@ visual evidence: `visual-acceptance/phase-5.8/`.
 **Acceptance 5.8: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
 architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
 
-## 5.9 Vocabulary detail — IMPLEMENTED / REVIEW READY
+## 5.9 Vocabulary detail — FINAL LOCKED
 
 **Zaključani scope 2026-09-27:** postojeći generički, owner-scoped Knowledge detail
 primijenjen je na model-derived Vocabulary područje bez zasebne domene, endpointa ili
@@ -493,10 +493,24 @@ samo ako konkretni verzionirani Knowledge Model te razine modelira kao komponent
 activity feed, recommendations, PDF i Lesson Builder handoff nisu uvedeni bez backend
 contracta. Stvarni desktop/mobile evidence: `visual-acceptance/phase-5.9/`.
 
-**Acceptance 5.9: IMPLEMENTED / REVIEW READY.** Regression, security/runtime i stvarni
+**Acceptance 5.9: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
+architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
+
+## 5.10 Reading detail — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-27:** postojeći generički, owner-scoped Knowledge detail
+primijenjen je na model-derived Reading područje bez zasebne domene, endpointa ili
+hardkodiranog skill kataloga. Reading ostaje skill-first: konkretni Knowledge Model
+određuje vještine i subskills, a tema teksta nije primarna struktura. Source of truth:
+`READING_DETAIL.md`.
+
+Text type/length/difficulty, trend, activity feed, recommendations, PDF i Lesson Builder
+handoff nisu uvedeni bez zaključanog Materials/Task provenance i pripadajućih backend
+contracta. Stvarni desktop/mobile evidence: `visual-acceptance/phase-5.10/`.
+
+**Acceptance 5.10: IMPLEMENTED / REVIEW READY.** Regression, security/runtime i stvarni
 visual gate prolaze; final LOCK čeka review.
 
-## 5.10 Reading detail — BLOCKED until 5.5
 ## 5.11 Listening detail — BLOCKED until 5.5
 ## 5.12 Speaking detail — BLOCKED until 5.5
 ## 5.13 Writing detail — BLOCKED until 5.5

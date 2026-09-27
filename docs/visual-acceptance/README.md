@@ -279,3 +279,13 @@ odsutnost document overflowa. Glavne su snimke viewport capturei pa sticky sideb
 stvarnu punu visinu preglednika; full-page pregled je samo dopunski dokaz.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-5.9/README.md).
+
+## Phase 5.10 — Reading detail — PASS (2026-09-27)
+
+Canonical `2.5 Reading.png` uspoređen je sa stvarnim owner-scoped Knowledge prikazom na
+desktopu 1536×1024 i mobitelu 390×844. Potvrđeni su stvarni model-derived Reading tab,
+sinkronizirani skill/detail prikaz, verzijska granica, projection explainability i
+odsutnost document overflowa. Canonical skills nisu uneseni kao lažni browser ili
+production podatci; trenutačni demo katalog prikazan je točno kakav jest.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-5.10/README.md).
