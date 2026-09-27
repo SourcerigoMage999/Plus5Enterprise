@@ -1,5 +1,13 @@
 # Visual acceptance
 
+## Phase 5.13 — Writing detail — PASS (2026-09-27)
+
+Stvarni model-derived Writing prikaz provjeren je normalnom Teacher prijavom i stvarnim
+Knowledge API-jem na 1536×1024 i 390×844, bez auth bypassa, API interceptiona, DOM
+mutationa ili business writeova. Dostavljeni Writing PNG prikazuje Speaking i binarno je
+identičan Speaking PNG-u, pa služi samo za zajednički 2.5 layout; tekstualni Writing
+source vodi semantiku. [Dokazi i mjerenja](phase-5.13/README.md).
+
 ## Phase 3.6 — Nova grupa
 
 [Finalni canonical pregled, stvarni create journey i iznimke](phase-3.6/README.md).

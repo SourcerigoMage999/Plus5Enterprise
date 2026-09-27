@@ -542,7 +542,22 @@ evidence: `visual-acceptance/phase-5.12/`.
 **Acceptance 5.12: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
 architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
 
-## 5.13 Writing detail — BLOCKED until 5.5
+## 5.13 Writing detail — FINAL LOCKED
+
+**Zaključani scope 2026-09-27:** postojeći generički, owner-scoped Knowledge detail
+primijenjen je na model-derived Writing područje bez zasebne domene, endpointa,
+hardkodiranog skill kataloga ili assessment writea. Pisani rad može hraniti više
+komponenti samo kroz eksplicitne Evidence targete. Source of truth: `WRITING_DETAIL.md`.
+
+Dostavljeni Writing PNG binarno je identičan Speaking PNG-u i prikazuje Speaking;
+koristi se samo za zajednički 2.5 layout, dok tekstualni Writing source vodi semantiku.
+Pohrana rada, strukturirana Teacher procjena, AI analiza, trend, activity feed,
+recommendations, PDF i Lesson Builder handoff nisu uvedeni bez zaključanog
+Writing Activity/Attempt, provenance, privacy i AI contracta. Stvarni desktop/mobile
+evidence: `visual-acceptance/phase-5.13/`.
+
+**Acceptance 5.13: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
+architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
 
 ---
 

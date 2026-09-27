@@ -62,6 +62,18 @@ const speakingNoData = {
   ...speakingComponent, knowledgeComponentId: 'speaking-2', parentKnowledgeComponentId: null, name: 'Samostalnost u govoru',
   score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0,
 }
+const writingComponent = {
+  ...component, knowledgeComponentId: 'writing-1', parentKnowledgeComponentId: null, name: 'Koherentnost i povezanost',
+  score: 0.54, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2,
+}
+const writingChild = {
+  ...writingComponent, knowledgeComponentId: 'writing-1-1', parentKnowledgeComponentId: 'writing-1',
+  name: 'Povezivanje ideja veznicima', score: 0.47, evidenceCount: 2, effectiveEvidenceWeight: 1.2,
+}
+const writingNoData = {
+  ...writingComponent, knowledgeComponentId: 'writing-2', parentKnowledgeComponentId: null, name: 'Ispunjavanje zadatka',
+  score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0,
+}
 const snapshot = {
   studentId: 'student-1', firstName: 'Ana', lastName: 'Anić', schoolGradeName: 'Sedmi razred',
   schoolGradeCode: '7R', schoolName: 'OŠ Plus 5', programName: 'Grammar Focus', groupName: 'Grupa 7A',
@@ -73,6 +85,7 @@ const snapshot = {
       { knowledgeAreaId: 'area-3', name: 'Reading', sortOrder: 3, score: 0.62, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2.2, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [readingComponent, readingChild, readingNoData] },
       { knowledgeAreaId: 'area-4', name: 'Listening', sortOrder: 4, score: 0.58, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [listeningComponent, listeningChild, listeningNoData] },
       { knowledgeAreaId: 'area-5', name: 'Speaking', sortOrder: 5, score: 0.52, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2.1, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [speakingComponent, speakingChild, speakingNoData] },
+      { knowledgeAreaId: 'area-6', name: 'Writing', sortOrder: 6, score: 0.54, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [writingComponent, writingChild, writingNoData] },
     ],
   }],
 }
@@ -203,6 +216,29 @@ describe('student knowledge detail', () => {
     expect(within(detail!).queryByText('0 %')).not.toBeInTheDocument()
     expect(screen.queryByText('Samopouzdanje')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Odlično|Dobro|Potrebno uvježbati|Potrebna pomoć/ })).not.toBeInTheDocument()
+  })
+
+  it('renders Writing from model components without inventing open-text assessment data', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(json(session)).mockResolvedValueOnce(json(snapshot))
+    renderKnowledge()
+
+    expect(await screen.findByRole('heading', { name: 'Detalj znanja učenika' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /Writing/ }))
+
+    expect(screen.getByRole('button', { name: 'Koherentnost i povezanost' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', { name: 'Koherentnost i povezanost' })).toBeInTheDocument()
+    expect(screen.getByText('Writing › Koherentnost i povezanost')).toBeInTheDocument()
+
+    fireEvent.click(within(screen.getByRole('region', { name: 'Podređene komponente' })).getByRole('button', { name: /Povezivanje ideja veznicima/ }))
+    expect(screen.getByText('Writing › Koherentnost i povezanost › Povezivanje ideja veznicima')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ispunjavanje zadatka' }))
+    const detail = screen.getByRole('heading', { name: 'Ispunjavanje zadatka' }).closest('aside')
+    expect(detail).not.toBeNull()
+    expect(within(detail!).getByText('Nema dovoljno podataka za rezultat')).toBeInTheDocument()
+    expect(within(detail!).queryByText('0 %')).not.toBeInTheDocument()
+    expect(screen.queryByText(/My weekend|Describe your town|Unit 6 – Writing/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Usvojeno|Dobro|Potrebno uvježbati|Potrebna pomoć/ })).not.toBeInTheDocument()
   })
 
   it('shows no-data honestly without a synthetic percentage', async () => {
