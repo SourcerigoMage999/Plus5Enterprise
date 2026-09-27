@@ -14,6 +14,18 @@ const childComponent = {
   ...component, knowledgeComponentId: 'component-1-1', parentKnowledgeComponentId: 'component-1', name: 'Irregular verbs',
   score: 0.48, confidence: 'Medium', readiness: 'Developing', evidenceCount: 2, effectiveEvidenceWeight: 1.25,
 }
+const vocabularyComponent = {
+  ...component, knowledgeComponentId: 'vocabulary-1', parentKnowledgeComponentId: null, name: 'Hobbies & Free Time',
+  score: 0.86, confidence: 'High', readiness: 'Ready', evidenceCount: 4, effectiveEvidenceWeight: 3.1,
+}
+const vocabularyChild = {
+  ...vocabularyComponent, knowledgeComponentId: 'vocabulary-1-1', parentKnowledgeComponentId: 'vocabulary-1', name: 'Equipment',
+  score: 0.72, confidence: 'Medium', readiness: 'Developing', evidenceCount: 2, effectiveEvidenceWeight: 1.6,
+}
+const vocabularyLeaf = {
+  ...vocabularyChild, knowledgeComponentId: 'vocabulary-1-1-1', parentKnowledgeComponentId: 'vocabulary-1-1', name: 'Helmet',
+  score: 0.67, confidence: 'Medium', readiness: 'Developing', evidenceCount: 2, effectiveEvidenceWeight: 1.4,
+}
 const snapshot = {
   studentId: 'student-1', firstName: 'Ana', lastName: 'Anić', schoolGradeName: 'Sedmi razred',
   schoolGradeCode: '7R', schoolName: 'OŠ Plus 5', programName: 'Grammar Focus', groupName: 'Grupa 7A',
@@ -21,7 +33,8 @@ const snapshot = {
     knowledgeModelId: 'model-1', code: 'ENGLISH-7', version: '2026.1', status: 'Published',
     areas: [
       { knowledgeAreaId: 'area-1', name: 'Grammar', sortOrder: 1, score: 0.74, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2.4, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [component, childComponent] },
-      { knowledgeAreaId: 'area-2', name: 'Listening', sortOrder: 2, score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [{ ...component, knowledgeComponentId: 'component-2', name: 'Main idea', score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0 }] },
+      { knowledgeAreaId: 'area-2', name: 'Vocabulary', sortOrder: 2, score: 0.82, confidence: 'High', readiness: 'Ready', evidenceCount: 4, effectiveEvidenceWeight: 3.1, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [vocabularyComponent, vocabularyChild, vocabularyLeaf] },
+      { knowledgeAreaId: 'area-3', name: 'Listening', sortOrder: 3, score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [{ ...component, knowledgeComponentId: 'component-2', name: 'Main idea', score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0 }] },
     ],
   }],
 }
@@ -57,6 +70,28 @@ describe('student knowledge detail', () => {
     expect(within(row!).getByText('—')).toBeInTheDocument()
     expect(within(row!).getByText('Nedovoljno podataka')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Natrag na procjenu/ })).toHaveAttribute('href', '/students/student-1/readiness')
+  })
+
+  it('uses the model hierarchy for Vocabulary topics and arbitrary-depth drill-down', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(json(session)).mockResolvedValueOnce(json(snapshot))
+    renderKnowledge()
+
+    expect(await screen.findByRole('heading', { name: 'Detalj znanja učenika' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /Vocabulary/ }))
+
+    expect(screen.getByRole('button', { name: 'Hobbies & Free Time' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', { name: 'Hobbies & Free Time' })).toBeInTheDocument()
+    expect(screen.getByText('Vocabulary › Hobbies & Free Time')).toBeInTheDocument()
+
+    const childRegion = screen.getByRole('region', { name: 'Podređene komponente' })
+    fireEvent.click(within(childRegion).getByRole('button', { name: /Equipment/ }))
+    expect(screen.getByRole('heading', { name: 'Equipment' })).toBeInTheDocument()
+    expect(screen.getByText('Vocabulary › Hobbies & Free Time › Equipment')).toBeInTheDocument()
+
+    fireEvent.click(within(screen.getByRole('region', { name: 'Podređene komponente' })).getByRole('button', { name: /Helmet/ }))
+    expect(screen.getByRole('heading', { name: 'Helmet' })).toBeInTheDocument()
+    expect(screen.getByText('Vocabulary › Hobbies & Free Time › Equipment › Helmet')).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Podređene komponente' })).not.toBeInTheDocument()
   })
 
   it('shows no-data honestly without a synthetic percentage', async () => {

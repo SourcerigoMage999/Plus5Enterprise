@@ -465,7 +465,7 @@ projekcija/provenance. Završni evidence: `summaries/PHASE_5.7_KNOWLEDGE_DETAIL_
 desktop/mobile/no-data visual acceptance protiv canonical 2.5 PNG-a prolaze. Owner-scoped
 query, verzijska razdvojenost, no-data semantika i zaključane scope granice ostaju
 nepromijenjene; Phase 5.8 je zasebno presentation proširenje.
-## 5.8 Grammar detail — IMPLEMENTED / REVIEW READY
+## 5.8 Grammar detail — FINAL LOCKED
 
 **Zaključani scope 2026-09-26:** postojeći owner-scoped Knowledge detail proširen je
 odabirom stvarne model-derived komponente, sinkroniziranim desnim panelom, hijerarhijskom
@@ -477,9 +477,25 @@ Trend, activity feed, recommendations, PDF, Lesson Builder handoff i ručni scor
 nisu uvedeni jer za njih nema zaključanog backend contracta. Desktop/mobile/component-no-data
 visual evidence: `visual-acceptance/phase-5.8/`.
 
-**Acceptance 5.8: IMPLEMENTED / REVIEW READY.** Puni regression i stvarni visual gate
-prolaze; final LOCK čeka review.
-## 5.9 Vocabulary detail — BLOCKED until 5.5
+**Acceptance 5.8: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
+architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
+
+## 5.9 Vocabulary detail — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-27:** postojeći generički, owner-scoped Knowledge detail
+primijenjen je na model-derived Vocabulary područje bez zasebne domene, endpointa ili
+hardkodiranog engleskog kataloga. Area/topic selection, sinkronizirani detaljni panel,
+arbitrary-depth hijerarhija, model version i projection explainability koriste postojeći
+Phase 5.5–5.8 contract. Source of truth: `VOCABULARY_DETAIL.md`.
+
+Recognize/understand/choose/write/use-in-context nije novo UI polje ni formula; prikazuje se
+samo ako konkretni verzionirani Knowledge Model te razine modelira kao komponente. Trend,
+activity feed, recommendations, PDF i Lesson Builder handoff nisu uvedeni bez backend
+contracta. Stvarni desktop/mobile evidence: `visual-acceptance/phase-5.9/`.
+
+**Acceptance 5.9: IMPLEMENTED / REVIEW READY.** Regression, security/runtime i stvarni
+visual gate prolaze; final LOCK čeka review.
+
 ## 5.10 Reading detail — BLOCKED until 5.5
 ## 5.11 Listening detail — BLOCKED until 5.5
 ## 5.12 Speaking detail — BLOCKED until 5.5

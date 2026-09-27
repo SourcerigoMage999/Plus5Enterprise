@@ -1,0 +1,50 @@
+{
+  "realApi": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "screens": [
+    {
+      "name": "vocabulary-detail",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1476,
+      "area": "Vokabular",
+      "selectedName": "Vokabular",
+      "model": "ENGLISH-7 v2026.1"
+    },
+    {
+      "name": "vocabulary-detail-overview",
+      "size": "desktop",
+      "capture": "full-page supplementary",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1476
+    },
+    {
+      "name": "vocabulary-detail",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2526,
+      "area": "Vokabular",
+      "selectedName": "Vokabular",
+      "model": "ENGLISH-7 v2026.1"
+    }
+  ],
+  "checks": [
+    "desktop: real login/API, Vocabulary Area selected, component/detail synchronized, exact model version, explainability, no document overflow",
+    "mobile: real login/API, Vocabulary Area selected, component/detail synchronized, exact model version, explainability, no document overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": []
+}

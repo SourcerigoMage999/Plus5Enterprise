@@ -269,3 +269,13 @@ točna Knowledge Model verzija i stvarni component no-data prikaz. Nema browser 
 business writeova ni document overflowa.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-5.8/README.md).
+
+## Phase 5.9 — Vocabulary detail — PASS (2026-09-27)
+
+Canonical `2.5 Vocabulary.png` uspoređen je sa stvarnim owner-scoped Knowledge prikazom na
+desktopu 1536×1024 i mobitelu 390×844. Potvrđeni su stvarni model-derived Vocabulary tab,
+sinkronizirani component/detail prikaz, verzijska granica, projection explainability i
+odsutnost document overflowa. Glavne su snimke viewport capturei pa sticky sidebar zadržava
+stvarnu punu visinu preglednika; full-page pregled je samo dopunski dokaz.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-5.9/README.md).
