@@ -299,3 +299,13 @@ projection explainability i odsutnost document overflowa. Canonical skills i aud
 kontekst nisu uneseni kao lažni browser ili production podatci.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-5.11/README.md).
+
+## Phase 5.12 — Speaking detail — PASS (2026-09-27)
+
+Canonical `2.5 Speaking.png` uspoređen je sa stvarnim owner-scoped Knowledge prikazom na
+desktopu 1536×1024 i mobitelu 390×844. Potvrđeni su stvarni model-derived Speaking tab,
+sinkronizirani skill/detail prikaz, verzijska granica, projection explainability i odsutnost
+document overflowa. Canonical skills, assessment kontrole, audio/transcript i AI sadržaj
+nisu uneseni kao lažni browser ili production podatci.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-5.12/README.md).
