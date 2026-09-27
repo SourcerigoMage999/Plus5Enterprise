@@ -496,7 +496,7 @@ contracta. Stvarni desktop/mobile evidence: `visual-acceptance/phase-5.9/`.
 **Acceptance 5.9: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
 architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
 
-## 5.10 Reading detail — IMPLEMENTED / REVIEW READY
+## 5.10 Reading detail — FINAL LOCKED
 
 **Zaključani scope 2026-09-27:** postojeći generički, owner-scoped Knowledge detail
 primijenjen je na model-derived Reading područje bez zasebne domene, endpointa ili
@@ -508,10 +508,24 @@ Text type/length/difficulty, trend, activity feed, recommendations, PDF i Lesson
 handoff nisu uvedeni bez zaključanog Materials/Task provenance i pripadajućih backend
 contracta. Stvarni desktop/mobile evidence: `visual-acceptance/phase-5.10/`.
 
-**Acceptance 5.10: IMPLEMENTED / REVIEW READY.** Regression, security/runtime i stvarni
+**Acceptance 5.10: FINAL LOCKED.** SA review odobrio je business/UI implementaciju,
+architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
+
+## 5.11 Listening detail — IMPLEMENTED / REVIEW READY
+
+**Zaključani scope 2026-09-27:** postojeći generički, owner-scoped Knowledge detail
+primijenjen je na model-derived Listening područje bez zasebne domene, endpointa ili
+hardkodiranog skill kataloga. Listening ostaje zaseban od Readinga; konkretni Knowledge
+Model određuje skill/subskill hijerarhiju. Source of truth: `LISTENING_DETAIL.md`.
+
+Audio duration/difficulty/speech rate/speaker/content type, broj slušanja, response time,
+trend, activity feed, recommendations, PDF i Lesson Builder handoff nisu uvedeni bez
+zaključanog Materials/Task/Attempt provenance i algoritamskog contracta. Stvarni
+desktop/mobile evidence: `visual-acceptance/phase-5.11/`.
+
+**Acceptance 5.11: IMPLEMENTED / REVIEW READY.** Regression, security/runtime i stvarni
 visual gate prolaze; final LOCK čeka review.
 
-## 5.11 Listening detail — BLOCKED until 5.5
 ## 5.12 Speaking detail — BLOCKED until 5.5
 ## 5.13 Writing detail — BLOCKED until 5.5
 

@@ -289,3 +289,13 @@ odsutnost document overflowa. Canonical skills nisu uneseni kao lažni browser i
 production podatci; trenutačni demo katalog prikazan je točno kakav jest.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-5.10/README.md).
+
+## Phase 5.11 — Listening detail — PASS (2026-09-27)
+
+Canonical `2.5 Listening.png` uspoređen je sa stvarnim owner-scoped Knowledge prikazom na
+desktopu 1536×1024 i mobitelu 390×844. Potvrđeni su stvarni model-derived Listening tab,
+sinkronizirani skill/detail prikaz, odvojenost od Reading područja, verzijska granica,
+projection explainability i odsutnost document overflowa. Canonical skills i audio/replay
+kontekst nisu uneseni kao lažni browser ili production podatci.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-5.11/README.md).

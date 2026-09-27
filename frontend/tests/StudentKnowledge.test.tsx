@@ -38,6 +38,18 @@ const readingNoData = {
   ...readingComponent, knowledgeComponentId: 'reading-2', parentKnowledgeComponentId: null, name: 'Inference',
   score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0,
 }
+const listeningComponent = {
+  ...component, knowledgeComponentId: 'listening-1', parentKnowledgeComponentId: null, name: 'Main Idea',
+  score: 0.58, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2,
+}
+const listeningChild = {
+  ...listeningComponent, knowledgeComponentId: 'listening-1-1', parentKnowledgeComponentId: 'listening-1',
+  name: 'Glavna ideja u duljem audiozapisu', score: 0.49, evidenceCount: 2, effectiveEvidenceWeight: 1.2,
+}
+const listeningNoData = {
+  ...listeningComponent, knowledgeComponentId: 'listening-2', parentKnowledgeComponentId: null, name: 'Listening Inference',
+  score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0,
+}
 const snapshot = {
   studentId: 'student-1', firstName: 'Ana', lastName: 'Anić', schoolGradeName: 'Sedmi razred',
   schoolGradeCode: '7R', schoolName: 'OŠ Plus 5', programName: 'Grammar Focus', groupName: 'Grupa 7A',
@@ -47,7 +59,7 @@ const snapshot = {
       { knowledgeAreaId: 'area-1', name: 'Grammar', sortOrder: 1, score: 0.74, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2.4, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [component, childComponent] },
       { knowledgeAreaId: 'area-2', name: 'Vocabulary', sortOrder: 2, score: 0.82, confidence: 'High', readiness: 'Ready', evidenceCount: 4, effectiveEvidenceWeight: 3.1, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [vocabularyComponent, vocabularyChild, vocabularyLeaf] },
       { knowledgeAreaId: 'area-3', name: 'Reading', sortOrder: 3, score: 0.62, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2.2, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [readingComponent, readingChild, readingNoData] },
-      { knowledgeAreaId: 'area-4', name: 'Listening', sortOrder: 4, score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [{ ...component, knowledgeComponentId: 'component-2', name: 'Main idea', score: null, confidence: 'NoData', readiness: 'InsufficientData', evidenceCount: 0, effectiveEvidenceWeight: 0 }] },
+      { knowledgeAreaId: 'area-4', name: 'Listening', sortOrder: 4, score: 0.58, confidence: 'Medium', readiness: 'Developing', evidenceCount: 3, effectiveEvidenceWeight: 2, calculatedAtUtc: '2026-09-26T10:00:00Z', algorithmVersion: 'readiness-v1', components: [listeningComponent, listeningChild, listeningNoData] },
     ],
   }],
 }
@@ -78,7 +90,7 @@ describe('student knowledge detail', () => {
     expect(screen.getByText(/Pojedinačne aktivnosti i trend nisu prikazani/)).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('tab', { name: /Listening/ }))
-    const row = screen.getByRole('button', { name: 'Main idea' }).closest('tr')
+    const row = screen.getByRole('button', { name: 'Listening Inference' }).closest('tr')
     expect(row).not.toBeNull()
     expect(within(row!).getByText('—')).toBeInTheDocument()
     expect(within(row!).getByText('Nedovoljno podataka')).toBeInTheDocument()
@@ -132,6 +144,29 @@ describe('student knowledge detail', () => {
     expect(detail).not.toBeNull()
     expect(within(detail!).getByText('Nema dovoljno podataka za rezultat')).toBeInTheDocument()
     expect(within(detail!).queryByText('0 %')).not.toBeInTheDocument()
+  })
+
+  it('keeps Listening skills distinct and does not invent audio context metadata', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(json(session)).mockResolvedValueOnce(json(snapshot))
+    renderKnowledge()
+
+    expect(await screen.findByRole('heading', { name: 'Detalj znanja učenika' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('tab', { name: /Listening/ }))
+
+    expect(screen.getByRole('button', { name: 'Main Idea' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('heading', { name: 'Main Idea' })).toBeInTheDocument()
+    expect(screen.getByText('Listening › Main Idea')).toBeInTheDocument()
+
+    fireEvent.click(within(screen.getByRole('region', { name: 'Podređene komponente' })).getByRole('button', { name: /Glavna ideja u duljem audiozapisu/ }))
+    expect(screen.getByText('Listening › Main Idea › Glavna ideja u duljem audiozapisu')).toBeInTheDocument()
+
+    const inferenceButton = screen.getByRole('button', { name: 'Listening Inference' })
+    fireEvent.click(inferenceButton)
+    const detail = screen.getByRole('heading', { name: 'Listening Inference' }).closest('aside')
+    expect(detail).not.toBeNull()
+    expect(within(detail!).getByText('Nema dovoljno podataka za rezultat')).toBeInTheDocument()
+    expect(within(detail!).queryByText('0 %')).not.toBeInTheDocument()
+    expect(screen.queryByText(/broj slušanja|brzina govora|broj govornika/i)).not.toBeInTheDocument()
   })
 
   it('shows no-data honestly without a synthetic percentage', async () => {
