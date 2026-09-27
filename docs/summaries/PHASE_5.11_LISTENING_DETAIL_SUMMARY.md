@@ -2,7 +2,8 @@
 
 ## Status
 
-**IMPLEMENTED / REVIEW READY — 2026-09-27.** Faza nije FINAL LOCKED; čeka SA review.
+**FINAL LOCKED — 2026-09-27.** SA review odobrio je business/UI implementaciju,
+architecture/security i visual acceptance bez dodatnih promjena koda ili contracta.
 
 ## Implementirano
 
@@ -81,5 +82,4 @@ activity feeda, recommendations, PDF-a, Lesson Builder handoffa ni ručnog overr
 
 ## Blockeri
 
-Nema otvorenog business ili tehničkog blockera unutar Phase 5.11. Final LOCK je zaseban
-SA review korak.
+Nema otvorenog business, tehničkog ni review blockera. Phase 5.11 je FINAL LOCKED.
