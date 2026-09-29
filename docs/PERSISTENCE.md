@@ -205,3 +205,17 @@ Phase 2.4 dodaje tri Teacher-owned modela bez feature endpointa:
 - `Sessions` — konkretan UTC termin s točno jednim Group/Student kontekstom, eksplicitnim statusom, opcionalnim series occurrence identitetom i oznakom iznimke
 
 Composite FK-ovi fizički odbijaju Group, Student, Location ili Series drugog Teachera. CHECK constrainti štite context XOR, enum vrijednosti, vremenske intervale, cancellation audit, upareni series occurrence i zabranu istodobne fizičke/online lokacije. `rowversion` štiti izmjene Sessiona i Seriesa, a filtered unique `(RecurringSessionSeriesId, SeriesOccurrenceDate)` indeks čini materijalizaciju idempotentnom. Teacher-first indeksi podržavaju kalendar i buduće serializable overlap provjere. Migracija nema seed, backfill ni automatsko generiranje Session redaka. Detaljni contract je u `SCHEDULING_FOUNDATION.md`.
+
+## Phase 6.1 material foundation schema
+
+Migracija `AddMaterialStorageFoundation` dodaje `Materials`, `MaterialVersions`,
+`MaterialFiles` i `MaterialShares` bez seeda, backfilla ili binary kolone. SQL čuva samo
+owner/version/file-location/checksum/lifecycle metadata; content ostaje u private object storageu.
+
+Composite owner/version FK-ovi, restrictive deleteovi, unique version/current-object/share
+indeksi, filtered one-active-version indeks, format/size/status CHECK constrainti i SQL triggeri
+štite ownership, current/active/clean konzistentnost, immutable Active/Superseded snapshot/file,
+dozvoljene file prijelaze i self-share zabranu. Aktiviranje Clean verzije sinkronizira
+`Material.CurrentVersionId`, a superseding ga uklanja prije replacement activationa.
+`Materials.RowVersion` je optimistic-concurrency granica mutable aggregate roota. Detalji su u
+`MATERIAL_FOUNDATION.md`.

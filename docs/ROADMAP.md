@@ -563,18 +563,36 @@ architecture/security i visual acceptance bez dodatnih promjena koda ili contrac
 
 # PHASE 6 — Materials Foundation
 
-## 6.1 Material domain model & storage strategy — TODO
+## 6.1 Material domain model & storage strategy — FINAL LOCKED
+
+**Zaključani scope 2026-09-29:** uvedeni su Teacher-owned `Material`, immutable
+`MaterialVersion`, version-bound `MaterialFile` i eksplicitni `MaterialShare` View/Use grantovi.
+Private S3-compatible object storage s početnim Cloudflare R2 providerom ostaje iza
+`IMaterialObjectStorage`; binary se ne sprema u SQL ni na persistentni API disk. Format/size,
+opaque key, SHA-256, validation, quarantine, fail-closed malware scan i Clean-only activation
+contract zaključani su u `MATERIAL_FOUNDATION.md` i ADR-0023.
+
+Phase 6.1 implementira domain/application/persistence foundation i stvarni SQL integrity gate.
+Ne implementira 6.2 mapping, upload API/UI iz 6.6, production R2/ClamAV deployment, Task domenu,
+AI provider/UI, preview conversion ni Lesson Builder.
+
+**Acceptance 6.1: FINAL LOCKED.** SA review odobrio je domain/persistence implementaciju,
+storage/security contract i stvarni SQL migration/lifecycle evidence bez dodatnih promjena.
+
 ## 6.2 Material metadata ↔ curriculum/knowledge mapping — TODO
 ## 6.3 Screen 4.1 Material library — TODO
 ## 6.4 Screen 4.2 Material detail — TODO
 ## 6.5 Evidence-capable task metadata within material — TODO
 ## 6.6 Screen 4.4 Import own material — TODO
 ## 6.7 Screen 4.5 Edit material and version history — TODO
-## 6.8 Material sharing, visibility and permissions contract — BLOCKED
+## 6.8 Material sharing, visibility and permissions contract — TODO (contract locked in 6.1)
 
 **Source status:** detaljni source sada postoji za 4.1 i 4.4–4.5. Stari 0 B blocker za 4.1 više nije aktivan.
 
-**Gate:** prije implementacije zaključati storage adapter, dopuštene formate i veličine, upload validation/scanning, ownership/sharing permissions, `MaterialVersion`/`TaskVersion` povijesnu konzistentnost te AI analysis confirmation/privacy boundary. AI metadata ostaje prijedlog dok ga Teacher ne potvrdi.
+**Gate status:** Phase 6.1 SA/Product odluka zatvorila je storage, format/size,
+validation/scanning, ownership/share, version-history i Materials AI confirmation/privacy
+contract. AI metadata ostaje prijedlog dok ga Teacher ne potvrdi. Kasnije faze implementiraju
+samo svoj eksplicitni scope nad tim contractom.
 
 ---
 

@@ -1,5 +1,26 @@
 # DECISION_LOG
 
+### ADR-0023 — Private version-bound Material storage and fail-closed content lifecycle
+- **Datum:** 2026-09-29
+- **Status:** Accepted — SA/Product odluka za Phase 6.1.
+- **Kontekst:** Material source opisuje library/import/version flow, ali ne zaključava binary
+  storage, format/size, malware, sharing, history ni AI privacy sigurnosne granice.
+- **Storage:** SQL čuva metadata; binary je u private S3-compatible object storageu iza
+  `IMaterialObjectStorage`, s Cloudflare R2 kao početnim production providerom. API disk nije
+  persistent storage, klijent ne bira object key, a signed read access traje najviše pet minuta.
+- **Security:** v1 dopušta PDF 50 MB, DOCX 25 MB, PPTX 100 MB, MP4 250 MB i restricted ZIP
+  100 MB/500 MB expanded. Extension, MIME, signature/structure i ZIP zaštita moraju se slagati;
+  malware scan je obavezan i fail-closed prije bilo kakve uporabe.
+- **Lifecycle/history:** `Material` ima jednog Teacher ownera i `rowversion`; immutable
+  `MaterialVersion` ide Draft → Active → Superseded, exact file nosi SHA-256, a restore stvara
+  novu verziju. Povijesni Lesson i budući Task moraju referencirati exact verziju.
+- **Sharing/AI:** visibility je Private/Shared, grantovi su samo View/Use bez edit/re-share ili
+  implicitnog Student/Group/Evidence pristupa. AI radi samo nad Clean sadržajem kao optional
+  suggestion; Teacher Accept/Edit/Reject je obavezan, provider/privacy prethodno odobren, a AI
+  failure ne blokira ručni workflow.
+- **Granice:** nema upload/UI-ja, Task aggregatea, production AI-ja, preview conversiona,
+  quota/billinga ili hard-delete retentiona u 6.1. Detalji: `MATERIAL_FOUNDATION.md`.
+
 ### ADR-0022 — Deterministic versioned Mastery / Readiness projections
 - **Datum:** 2026-09-25
 - **Status:** Accepted — SA/product odluka za Phase 5.5.

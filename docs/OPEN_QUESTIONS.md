@@ -13,8 +13,16 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
    pragovi, 70% hierarchy coverage, rebuildable projections i daily refresh zaključani su u
    `MASTERY_READINESS.md` i ADR-0022. Automatsko mapiranje u školsku ocjenu odbijeno je.
 5. ~~Kako se modeliraju redoviti termini grupe naspram konkretnih instanci termina i promjena serije?~~ **RIJEŠENO 2026-08-28:** versioned weekly `RecurringSessionSeries`, materialized `Session`, one-occurrence exception i successor-series contract zaključani su u `SCHEDULING_FOUNDATION.md` i ADR-0013.
-6. Koja je politika pohrane datoteka/materijala, maksimalne veličine i podržani formati?
-7. Koja je granica AI funkcionalnosti u prezentacijama/lesson builderu i mora li učitelj potvrditi svaki AI prijedlog prije objave/korištenja?
+6. ~~Koja je politika pohrane datoteka/materijala, maksimalne veličine i podržani formati?~~
+   **RIJEŠENO 2026-09-29 — Phase 6.1, ADR-0023:** private S3-compatible object storage s
+   početnim Cloudflare R2 providerom, bez binaryja u SQL/API disku; PDF/DOCX/PPTX/MP4/ZIP
+   limiti, signature/structure validation, ZIP zaštita, quarantine i obavezni fail-closed scan
+   zaključani su u `MATERIAL_FOUNDATION.md`.
+7. **DJELOMIČNO RIJEŠENO 2026-09-29 — Materials, ADR-0023:** analiza Materiala dopuštena je
+   samo nakon `Clean` scana; AI je opcionalan, provider/privacy mora biti odobren, svaki output
+   ostaje suggestion dok ga Teacher ne prihvati/uredi/odbije, a AI failure ne blokira ručni
+   workflow. Presentation Editor i Lesson Builder provider/prompt/model-improvement contracti
+   ostaju otvoreni za Phase 7.9/9.2.
 8. **DJELOMIČNO RIJEŠENO 2026-09-24 — Phase 5.2/5.3, ADR-0019/0020:** `KnowledgeModel` i
    `KnowledgeComponent` lifecycle, version boundary, Area/tree struktura, lineage i
    CurriculumOutcome M:N zaključani su u `KNOWLEDGE_COMPONENT_MODEL.md`. Student-specific
@@ -58,7 +66,10 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
   `Curriculum.Code` uz različit `Version`, a budući Knowledge odnos je eksplicitni M:N mapping.
   Phase 5.1 nema production katalog/import. Detalji: `CURRICULUM_HIERARCHY.md`.
 
-- Materials: storage, format/size/upload security, ownership/sharing, versioning i AI-confirmation contract
+- **RIJEŠENO 2026-09-29 — Phase 6.1, ADR-0023:** Materials storage, format/size/upload
+  security, ownership/sharing, versioning i AI-confirmation contract. Upload orchestration/UI,
+  mapping i operational provider deployment ostaju scope svojih kasnijih faza, ne otvorene
+  business odluke.
 - Lesson Builder: formalni Lesson Plan, Activity Template i Lesson Activity domain contract
 - PLUS 5 Ploča: Lesson Session persistence, autosave/recovery i Evidence emission/invalidation contract
 - Povijest sati: immutable historical Task/Material version references i void/audit semantics
