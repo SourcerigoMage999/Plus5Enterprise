@@ -54,6 +54,14 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<MaterialShare> MaterialShares => Set<MaterialShare>();
 
+    public DbSet<MaterialVersionCurriculumOutcome> MaterialVersionCurriculumOutcomes =>
+        Set<MaterialVersionCurriculumOutcome>();
+
+    public DbSet<MaterialVersionKnowledgeComponent> MaterialVersionKnowledgeComponents =>
+        Set<MaterialVersionKnowledgeComponent>();
+
+    public DbSet<MaterialVersionTag> MaterialVersionTags => Set<MaterialVersionTag>();
+
     public DbSet<MasteryEstimate> MasteryEstimates => Set<MasteryEstimate>();
 
     public DbSet<KnowledgeAreaReadinessEstimate> KnowledgeAreaReadinessEstimates =>

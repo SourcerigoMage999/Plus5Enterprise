@@ -219,3 +219,17 @@ dozvoljene file prijelaze i self-share zabranu. Aktiviranje Clean verzije sinkro
 `Material.CurrentVersionId`, a superseding ga uklanja prije replacement activationa.
 `Materials.RowVersion` je optimistic-concurrency granica mutable aggregate roota. Detalji su u
 `MATERIAL_FOUNDATION.md`.
+
+## Phase 6.2 material metadata mapping schema
+
+Migracija `AddMaterialMetadataMapping` aditivno proširuje `MaterialVersions` nullable
+`ProgramId`, `SchoolGradeId`, `ProficiencyLevelId` i `LearningGoal` kolonama te dodaje
+`MaterialVersionTags`, `MaterialVersionCurriculumOutcomes` i
+`MaterialVersionKnowledgeComponents`. Nema seeda ni backfilla; postojeći 6.1 retci ostaju
+valjani s praznim metapodacima.
+
+Composite same-Teacher Program FK, restrictive deleteovi, composite junction PK-ovi, lookup
+indeksi i SQL triggeri štite owner scope, duplikate, canonical tag vrijednosti i immutable
+Active/Superseded snapshot. Knowledge mapping prema Draft modelu odbija se, dok exact
+Published/Retired reference ostaje stabilna za povijest. Detalji su u
+`MATERIAL_METADATA_MAPPING.md`.

@@ -579,7 +579,17 @@ AI provider/UI, preview conversion ni Lesson Builder.
 **Acceptance 6.1: FINAL LOCKED.** SA review odobrio je domain/persistence implementaciju,
 storage/security contract i stvarni SQL migration/lifecycle evidence bez dodatnih promjena.
 
-## 6.2 Material metadata ↔ curriculum/knowledge mapping — TODO
+## 6.2 Material metadata ↔ curriculum/knowledge mapping — FINAL LOCKED
+
+**Implementirano 2026-09-29:** konkretna `MaterialVersion` sada nosi opcionalni same-Teacher
+Program, SchoolGrade, ProficiencyLevel/CEFR i LearningGoal snapshot te version-bound tag,
+CurriculumOutcome i KnowledgeComponent veze. Tag ostaje organizacijska oznaka, outcome i
+component junctioni su čisti M:N bez algoritamskih polja, a Draft KnowledgeModel nije valjan
+canonical Material target. SQL FK/PK/trigger sloj štiti ownership, duplikate i immutable
+Active/Superseded povijest. Detalji: `MATERIAL_METADATA_MAPPING.md` i ADR-0024.
+
+**Acceptance 6.2: FINAL LOCKED.** SA review odobrio je domain/EF/migration implementaciju,
+stvarni SQL upgrade/lifecycle evidence i zaključane scope granice bez dodatnih promjena.
 ## 6.3 Screen 4.1 Material library — TODO
 ## 6.4 Screen 4.2 Material detail — TODO
 ## 6.5 Evidence-capable task metadata within material — TODO

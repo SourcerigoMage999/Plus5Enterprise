@@ -1,3 +1,6 @@
+using Plus5.Domain.Teaching;
+using TeachingProgram = Plus5.Domain.Teaching.Program;
+
 namespace Plus5.Domain.Materials;
 
 public sealed class MaterialVersion
@@ -7,6 +10,7 @@ public sealed class MaterialVersion
     public const int MaterialTypeCodeMaxLength = 64;
     public const int SubjectMaxLength = 160;
     public const int LanguageCodeMaxLength = 32;
+    public const int LearningGoalMaxLength = 2000;
 
     private MaterialVersion()
     {
@@ -21,7 +25,11 @@ public sealed class MaterialVersion
         DateTimeOffset createdAtUtc,
         string? description = null,
         string? subject = null,
-        string? languageCode = null)
+        string? languageCode = null,
+        TeachingProgram? program = null,
+        SchoolGrade? schoolGrade = null,
+        ProficiencyLevel? proficiencyLevel = null,
+        string? learningGoal = null)
     {
         ArgumentNullException.ThrowIfNull(material);
         MaterialGuard.Identifier(id, nameof(id));
@@ -38,6 +46,8 @@ public sealed class MaterialVersion
             throw new InvalidOperationException(
                 "A draft version cannot be created for an archived material.");
         }
+
+        EnsureOwnedProgram(material.OwnerTeacherId, program);
 
         Id = id;
         MaterialId = material.Id;
@@ -57,6 +67,13 @@ public sealed class MaterialVersion
             languageCode,
             LanguageCodeMaxLength,
             nameof(languageCode));
+        ProgramId = program?.Id;
+        SchoolGradeId = schoolGrade?.Id;
+        ProficiencyLevelId = proficiencyLevel?.Id;
+        LearningGoal = MaterialGuard.OptionalText(
+            learningGoal,
+            LearningGoalMaxLength,
+            nameof(learningGoal));
         Status = MaterialVersionStatus.Draft;
         CreatedAtUtc = createdAtUtc;
     }
@@ -79,6 +96,14 @@ public sealed class MaterialVersion
 
     public string? LanguageCode { get; private set; }
 
+    public Guid? ProgramId { get; private set; }
+
+    public Guid? SchoolGradeId { get; private set; }
+
+    public Guid? ProficiencyLevelId { get; private set; }
+
+    public string? LearningGoal { get; private set; }
+
     public MaterialVersionStatus Status { get; private set; }
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
@@ -92,9 +117,14 @@ public sealed class MaterialVersion
         string materialTypeCode,
         string? description = null,
         string? subject = null,
-        string? languageCode = null)
+        string? languageCode = null,
+        TeachingProgram? program = null,
+        SchoolGrade? schoolGrade = null,
+        ProficiencyLevel? proficiencyLevel = null,
+        string? learningGoal = null)
     {
         EnsureDraft();
+        EnsureOwnedProgram(CreatedByTeacherId, program);
         Title = MaterialGuard.RequiredText(title, TitleMaxLength, nameof(title));
         Description = MaterialGuard.OptionalText(
             description,
@@ -109,6 +139,13 @@ public sealed class MaterialVersion
             languageCode,
             LanguageCodeMaxLength,
             nameof(languageCode));
+        ProgramId = program?.Id;
+        SchoolGradeId = schoolGrade?.Id;
+        ProficiencyLevelId = proficiencyLevel?.Id;
+        LearningGoal = MaterialGuard.OptionalText(
+            learningGoal,
+            LearningGoalMaxLength,
+            nameof(learningGoal));
     }
 
     public void Activate(MaterialFile file, DateTimeOffset activatedAtUtc)
@@ -173,7 +210,7 @@ public sealed class MaterialVersion
                 "A restore creates a new, later version number.");
         }
 
-        return new MaterialVersion(
+        var restored = new MaterialVersion(
             newVersionId,
             material,
             newVersionNumber,
@@ -183,14 +220,29 @@ public sealed class MaterialVersion
             Description,
             Subject,
             LanguageCode);
+        restored.ProficiencyLevelId = ProficiencyLevelId;
+        restored.ProgramId = ProgramId;
+        restored.SchoolGradeId = SchoolGradeId;
+        restored.LearningGoal = LearningGoal;
+        return restored;
     }
 
-    private void EnsureDraft()
+    internal void EnsureDraft()
     {
         if (Status != MaterialVersionStatus.Draft)
         {
             throw new InvalidOperationException(
                 "An active or superseded material version is immutable.");
+        }
+    }
+
+    private static void EnsureOwnedProgram(Guid teacherId, TeachingProgram? program)
+    {
+        if (program is not null && program.TeacherAccountId != teacherId)
+        {
+            throw new ArgumentException(
+                "Material metadata can reference only a program owned by the material owner.",
+                nameof(program));
         }
     }
 }

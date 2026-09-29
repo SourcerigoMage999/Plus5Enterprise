@@ -133,3 +133,10 @@ Nisu implementirani metadata mapping 6.2, Library/detail UI, upload API/wizard, 
 deployment adapteri, Task/TaskVersion aggregate, AI suggestion persistence/UI, preview conversion,
 thumbnail/transcoding, quotas/billing, hard delete/retention, shared-with-me ekran ni Lesson
 Builder integracija.
+
+## Phase 6.2 proširenje
+
+`MATERIAL_METADATA_MAPPING.md` uvodi version-bound Program, SchoolGrade, ProficiencyLevel,
+LearningGoal, tag, CurriculumOutcome i KnowledgeComponent metadata. Active/Superseded veze su
+immutable, Program ostaje u istom Teacher scopeu, a Knowledge mapping koristi samo Published ili
+Retired model verziju. To proširenje ne mijenja 6.1 storage/file/share contract.

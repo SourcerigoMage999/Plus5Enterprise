@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Plus5.Domain.Identity;
 using Plus5.Domain.Materials;
+using Plus5.Domain.Teaching;
 
 namespace Plus5.Infrastructure.Persistence;
 
@@ -98,6 +99,8 @@ internal sealed class MaterialVersionConfiguration : IEntityTypeConfiguration<Ma
             .HasMaxLength(MaterialVersion.SubjectMaxLength);
         builder.Property(version => version.LanguageCode)
             .HasMaxLength(MaterialVersion.LanguageCodeMaxLength);
+        builder.Property(version => version.LearningGoal)
+            .HasMaxLength(MaterialVersion.LearningGoalMaxLength);
         builder.Property(version => version.Status).HasConversion<int>().IsRequired();
         builder.Property(version => version.CreatedAtUtc).HasPrecision(7).IsRequired();
         builder.Property(version => version.ActivatedAtUtc).HasPrecision(7);
@@ -120,6 +123,27 @@ internal sealed class MaterialVersionConfiguration : IEntityTypeConfiguration<Ma
             .WithMany()
             .HasForeignKey(version => version.CreatedByTeacherId)
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<Plus5.Domain.Teaching.Program>()
+            .WithMany()
+            .HasForeignKey(version => new
+            {
+                version.CreatedByTeacherId,
+                version.ProgramId,
+            })
+            .HasPrincipalKey(program => new
+            {
+                program.TeacherAccountId,
+                program.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<SchoolGrade>()
+            .WithMany()
+            .HasForeignKey(version => version.SchoolGradeId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<ProficiencyLevel>()
+            .WithMany()
+            .HasForeignKey(version => version.ProficiencyLevelId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(version => new
         {
@@ -134,6 +158,97 @@ internal sealed class MaterialVersionConfiguration : IEntityTypeConfiguration<Ma
             .HasDatabaseName("UX_MaterialVersions_Material_Active");
         builder.HasIndex(version => version.CreatedByTeacherId)
             .HasDatabaseName("IX_MaterialVersions_CreatedByTeacherId");
+        builder.HasIndex(version => new
+        {
+            version.CreatedByTeacherId,
+            version.ProgramId,
+        })
+            .HasDatabaseName("IX_MaterialVersions_Teacher_ProgramId");
+        builder.HasIndex(version => version.SchoolGradeId)
+            .HasDatabaseName("IX_MaterialVersions_SchoolGradeId");
+        builder.HasIndex(version => version.ProficiencyLevelId)
+            .HasDatabaseName("IX_MaterialVersions_ProficiencyLevelId");
+    }
+}
+
+internal sealed class MaterialVersionTagConfiguration
+    : IEntityTypeConfiguration<MaterialVersionTag>
+{
+    public void Configure(EntityTypeBuilder<MaterialVersionTag> builder)
+    {
+        builder.ToTable("MaterialVersionTags", table =>
+            table.HasTrigger("TR_MaterialVersionTags_ProtectSnapshot"));
+        builder.HasKey(tag => new
+        {
+            tag.MaterialVersionId,
+            tag.NormalizedName,
+        });
+        builder.Property(tag => tag.Name)
+            .HasMaxLength(MaterialVersionTag.NameMaxLength)
+            .IsRequired();
+        builder.Property(tag => tag.NormalizedName)
+            .HasMaxLength(MaterialVersionTag.NameMaxLength)
+            .IsRequired();
+        builder.HasOne<MaterialVersion>()
+            .WithMany()
+            .HasForeignKey(tag => tag.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(tag => new
+        {
+            tag.NormalizedName,
+            tag.MaterialVersionId,
+        })
+            .HasDatabaseName("IX_MaterialVersionTags_NormalizedName_VersionId");
+    }
+}
+
+internal sealed class MaterialVersionCurriculumOutcomeConfiguration
+    : IEntityTypeConfiguration<MaterialVersionCurriculumOutcome>
+{
+    public void Configure(EntityTypeBuilder<MaterialVersionCurriculumOutcome> builder)
+    {
+        builder.ToTable("MaterialVersionCurriculumOutcomes", table =>
+            table.HasTrigger("TR_MaterialVersionCurriculumOutcomes_ProtectSnapshot"));
+        builder.HasKey(mapping => new
+        {
+            mapping.MaterialVersionId,
+            mapping.CurriculumOutcomeId,
+        });
+        builder.HasOne<MaterialVersion>()
+            .WithMany()
+            .HasForeignKey(mapping => mapping.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<CurriculumOutcome>()
+            .WithMany()
+            .HasForeignKey(mapping => mapping.CurriculumOutcomeId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(mapping => mapping.CurriculumOutcomeId)
+            .HasDatabaseName("IX_MaterialVersionCurriculumOutcomes_OutcomeId");
+    }
+}
+
+internal sealed class MaterialVersionKnowledgeComponentConfiguration
+    : IEntityTypeConfiguration<MaterialVersionKnowledgeComponent>
+{
+    public void Configure(EntityTypeBuilder<MaterialVersionKnowledgeComponent> builder)
+    {
+        builder.ToTable("MaterialVersionKnowledgeComponents", table =>
+            table.HasTrigger("TR_MaterialVersionKnowledgeComponents_ProtectSnapshot"));
+        builder.HasKey(mapping => new
+        {
+            mapping.MaterialVersionId,
+            mapping.KnowledgeComponentId,
+        });
+        builder.HasOne<MaterialVersion>()
+            .WithMany()
+            .HasForeignKey(mapping => mapping.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<KnowledgeComponent>()
+            .WithMany()
+            .HasForeignKey(mapping => mapping.KnowledgeComponentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(mapping => mapping.KnowledgeComponentId)
+            .HasDatabaseName("IX_MaterialVersionKnowledgeComponents_ComponentId");
     }
 }
 

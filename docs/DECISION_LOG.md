@@ -1,5 +1,21 @@
 # DECISION_LOG
 
+### ADR-0024 — Version-bound Material pedagogical metadata
+- **Datum:** 2026-09-29
+- **Status:** Accepted — Phase 6.2 FINAL LOCKED 2026-09-29.
+- **Kontekst:** Material source zahtijeva Program, razred, CEFR, cilj, tagove, kurikularne
+  ishode i Knowledge Components, dok 6.1 zaključava da povijesni snapshot pripada konkretnoj
+  `MaterialVersion`.
+- **Odluka:** Program/SchoolGrade/ProficiencyLevel/LearningGoal su nullable direct snapshot
+  metadata; tags, CurriculumOutcome i KnowledgeComponent su version-bound skupovi. Program je
+  ograničen na Material ownera, CEFR koristi generički ProficiencyLevel framework, a tag ostaje
+  strogo odvojen od Knowledge Componenta.
+- **Lifecycle:** mapping se mijenja samo na Draft verziji. Active/Superseded metadata je
+  immutable. Material smije referencirati samo Published/Retired KnowledgeModel; Retired ostaje
+  valjan za history/restore. Instructional mapping nije Evidence i zato nije leaf-only.
+- **Granice:** nema API/UI-ja, seeda, AI automappinga, algoritamskih weightova, Task metadata ni
+  Evidence emisije. Detalji: `MATERIAL_METADATA_MAPPING.md`.
+
 ### ADR-0023 — Private version-bound Material storage and fail-closed content lifecycle
 - **Datum:** 2026-09-29
 - **Status:** Accepted — SA/Product odluka za Phase 6.1.
