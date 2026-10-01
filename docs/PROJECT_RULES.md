@@ -39,6 +39,9 @@ Ovi dokumenti su obavezni engineering constraints. Ako business/source specifika
 
 ## 4. Implementacijski postupak
 
+Za zahtjeve `idemo dalje`, `nastavi`, `može dalje`, `sljedeća faza` ili ekvivalentan nastavak
+ROADMAP-a obavezno prvo primijeniti `PLUS 5 — Efficient Development Prompt.md`.
+
 Za svaku podfazu AI mora:
 
 1. pročitati obavezne dokumente i relevantne source specove

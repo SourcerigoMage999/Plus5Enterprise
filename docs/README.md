@@ -2,14 +2,28 @@
 
 Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitekta/programera** koji PLUS 5 razvija fazu po fazu.
 
-## Obavezni redoslijed čitanja prije svake implementacije
+## Obavezni gate prije svake implementacije
 
 1. `PROJECT_RULES.md`
-2. `AI_DEVELOPER_SYSTEM_PROMPT.md`
-3. `PRODUCT_SCOPE.md`
-4. `DOMAIN_GLOSSARY.md`
-5. `ARCHITECTURE_BASELINE.md`
-6. relevantni tehnički standardi:
+2. `PLUS 5 — Efficient Development Prompt.md`
+3. `ROADMAP.md`
+4. utvrditi prvu nezavršenu fazu i zatim čitati samo njezine relevantne contracte,
+   direct dependencyje, source specove, ADR-ove, summaryje i canonical vizuale
+
+Ovaj gate obavezno se ponovno primjenjuje kada korisnik kaže `idemo dalje`, `nastavi`,
+`može dalje`, `sljedeća faza` ili zatraži nastavak ROADMAP-a. FINAL LOCKED faze ne otvaraju
+se ponovno bez izravne potrebe trenutne faze.
+
+## Katalog dokumenata za ciljano čitanje
+
+Ne čita se cijeli katalog pri svakoj fazi. Nakon obaveznog gatea odabiru se samo dokumenti
+koje trenutni scope i njegove direktne dependency granice stvarno zahtijevaju:
+
+- `AI_DEVELOPER_SYSTEM_PROMPT.md`
+- `PRODUCT_SCOPE.md`
+- `DOMAIN_GLOSSARY.md`
+- `ARCHITECTURE_BASELINE.md`
+- relevantni tehnički standardi:
    - `DATABASE_DESIGN_STANDARD.md`
    - `BACKEND_ENGINEERING_STANDARD.md`
    - `API_CONVENTIONS.md` nakon Phase 1.3 za svaki API endpoint
@@ -35,12 +49,11 @@ Ovaj direktorij je pripremljen kao **izvršna dokumentacija za senior AI arhitek
    - `MASTERY_READINESS.md` nakon Phase 5.5 za PerformanceScore, weighting, decay, confidence, agregaciju i projection refresh
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
-7. `SCREEN_SPEC_STATUS.md`
-8. `ROADMAP.md`
-9. relevantne datoteke iz `source_specs/`
-10. `DECISION_LOG.md`
-11. zadnji dovršeni phase summary iz `summaries/`
-12. prije completiona `ENGINEERING_CHECKLIST.md`
+- `SCREEN_SPEC_STATUS.md`
+- relevantne datoteke iz `source_specs/`
+- relevantne odluke iz `DECISION_LOG.md`
+- zadnji direktno povezani phase summary iz `summaries/`
+- prije completiona relevantni dio `ENGINEERING_CHECKLIST.md`
 
 ## Najvažnije pravilo
 
