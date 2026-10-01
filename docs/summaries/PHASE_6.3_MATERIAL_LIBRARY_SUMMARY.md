@@ -2,9 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED — REVIEW READY (2026-10-01).**
-
-Faza nije FINAL LOCKED. Čeka SA review i izričito odobrenje prije commita/pusha.
+**FINAL LOCKED — odobreno 2026-10-01.**
 
 ## Cilj faze
 
@@ -119,10 +117,10 @@ ownership, versioning i metadata granice.
 
 ## Otvorena pitanja
 
-Nema otvorenog pitanja koje blokira Phase 6.3 REVIEW READY scope.
+Nema otvorenog pitanja koje blokira zaključani Phase 6.3 scope.
 
 ## Točna početna točka za sljedeću fazu
 
-Nakon SA FINAL LOCK-a, Phase 6.4 može dodati owner/share autorizirani Material detail nad
+Phase 6.4 može dodati owner/share autorizirani Material detail nad
 istim current-version read contractom, uz zaseban signed-download/preview security gate i bez
 preskakanja storage ili share permission pravila.
