@@ -41,7 +41,7 @@ URL slugovi koriste canonical engleske tehničke nazive; korisničke oznake osta
 | `/` | Radni stol | foundation placeholder |
 | `/students` | Učenici | foundation placeholder |
 | `/schedule` | Raspored | foundation placeholder |
-| `/materials` | Materijali | foundation placeholder |
+| `/materials` | Materijali | Phase 6.3 Material library |
 | `/lesson-plans` | Priprema sata | foundation placeholder |
 | `/board` | PLUS 5 Ploča | foundation placeholder |
 | `/homework` | Domaće zadaće | foundation placeholder |
@@ -72,6 +72,11 @@ za create i duplicate-prefill aktivirane su u Phase 4.3 kroz `/schedule/new`; us
 novi detalj, a dirty obrazac koristi postojeći navigation guard. Edit/cancel ostaju
 aktivirani su u Phase 4.4 kroz `/schedule/:sessionId/edit`; update i cancel vraćaju se na
 odredišni detalj. Reminders/notifications i dalje čekaju kasnije domain gateove.
+
+Phase 6.3 zamjenjuje `/materials` foundation stvarnom Screen 4.1 bibliotekom. Search,
+owner/share tab, sort, filtri, view i page ostaju URL navigation state, dok backend jedini
+određuje owner/share authorization, Clean file i Active/current version scope. Create,
+detail i ostale write akcije ostaju disabled do svojih faza.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

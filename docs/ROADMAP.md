@@ -590,7 +590,23 @@ Active/Superseded povijest. Detalji: `MATERIAL_METADATA_MAPPING.md` i ADR-0024.
 
 **Acceptance 6.2: FINAL LOCKED.** SA review odobrio je domain/EF/migration implementaciju,
 stvarni SQL upgrade/lifecycle evidence i zaključane scope granice bez dodatnih promjena.
-## 6.3 Screen 4.1 Material library — TODO
+## 6.3 Screen 4.1 Material library — IMPLEMENTED / REVIEW READY
+
+**Implementirano 2026-10-01:** Teacher-only `/materials` sada prikazuje isključivo
+Clean/Active/current materijale iz server-side owner ili eksplicitnog share scopea. Uvedeni
+su paginirani read API, overview/facets API, search, Program/Grade/Subject/Type/Tag filtri,
+sort, Mine/shared tabovi, grid/list prikaz, responsive stanja i stvarni canonical
+desktop/mobile visual evidence. Storage detalji i tuđi retci ne izlaze iz autoriziranog SQL
+skupa. Contract: `MATERIAL_LIBRARY.md`.
+
+Create/import, detail, edit, duplicate, add-to-lesson, share mutation, archive/delete i
+thumbnail/preview conversion nisu preuranjeno implementirani; njihove su kontrole pošteno
+disabled do Phase 6.4 i 6.6–6.8.
+
+**Acceptance 6.3: IMPLEMENTED / REVIEW READY.** Release/regression, architecture,
+frontend, stvarni SQL query, Docker/health/non-root i canonical desktop/mobile visual gateovi
+prolaze; čeka SA review i eksplicitni FINAL LOCK.
+
 ## 6.4 Screen 4.2 Material detail — TODO
 ## 6.5 Evidence-capable task metadata within material — TODO
 ## 6.6 Screen 4.4 Import own material — TODO

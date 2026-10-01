@@ -317,3 +317,13 @@ document overflowa. Canonical skills, assessment kontrole, audio/transcript i AI
 nisu uneseni kao lažni browser ili production podatci.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-5.12/README.md).
+
+## Phase 6.3 — Material library — PASS (2026-10-01)
+
+Canonical Screen 4.1 uspoređen je sa stvarnom Teacher-only Material bibliotekom na desktopu
+1536×1024 i mobitelu 390×844. Potvrđeni su owner/shared scopeovi, search/filter/sort,
+grid/list, type/recent summary, empty/no-results stanja, disabled buduće akcije i odsutnost
+document overflowa. Korišteni su stvarni login, SQL podaci i API; nema browser grešaka,
+API/DOM manipulacije ni business writeova tijekom capturea.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-6.3/README.md).

@@ -9,6 +9,7 @@ using Plus5.Api.Students;
 using Plus5.Api.Groups;
 using Plus5.Api.Scheduling;
 using Plus5.Api.Readiness;
+using Plus5.Api.Materials;
 using Plus5.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +72,7 @@ app.MapStudentReadiness();
 app.MapStudentEditing();
 app.MapGroups();
 app.MapScheduleCalendar();
+app.MapMaterialLibrary();
 
 app.Run();
 

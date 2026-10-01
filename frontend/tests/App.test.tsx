@@ -26,12 +26,12 @@ describe('application shell', () => {
     )
   })
 
-  it('marks the current route and renders its neutral foundation state', async () => {
+  it('marks the current route and renders the material library feature', async () => {
     renderRoute('/materials')
 
     expect(await screen.findByRole('link', { name: /Materijali/ })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('heading', { level: 1, name: 'Materijali' })).toBeInTheDocument()
-    expect(screen.getByText(/Bez lažnih podataka/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: '4.1 Biblioteka materijala' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Novi materijal' })).toBeDisabled()
   })
 
   it('provides a skip link and a named main navigation landmark', async () => {

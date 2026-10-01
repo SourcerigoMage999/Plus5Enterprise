@@ -50,6 +50,7 @@ public sealed class AuthenticationApiTests
         using var anonymousDossier = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}", CancellationToken.None);
         using var anonymousReadiness = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/readiness", CancellationToken.None);
         using var anonymousKnowledge = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/knowledge", CancellationToken.None);
+        using var anonymousMaterials = await client.GetAsync("/api/v1/materials", CancellationToken.None);
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
@@ -67,6 +68,7 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousDossier.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousReadiness.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousKnowledge.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousMaterials.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
