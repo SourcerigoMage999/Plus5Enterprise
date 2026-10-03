@@ -45,6 +45,16 @@ const overview = {
   recentlyAdded: [{ id: 'material-1', title: 'Present Perfect worksheet', addedAtUtc: '2026-09-30T08:00:00Z' }],
 }
 
+const detail = {
+  ...material,
+  versionNumber: 1,
+  languageCode: 'hr-HR',
+  learningGoal: 'Učenik razlikuje i pravilno primjenjuje Present Perfect.',
+  file: { format: 'pdf', originalFileName: 'present-perfect.pdf', mediaType: 'application/pdf', sizeBytes: 2048 },
+  knowledgeComponents: [{ id: 'component-1', name: 'Present Perfect', knowledgeAreaName: 'Grammar', knowledgeModelCode: 'PLUS5-EN', knowledgeModelVersion: '2026', knowledgeModelStatus: 'published' }],
+  curriculumOutcomes: [{ id: 'outcome-1', officialCode: 'ENG.8.1', title: 'Primjenjuje Present Perfect u kontekstu.', curriculumCode: 'ENG-8', curriculumName: 'Nacionalni kurikulum', curriculumVersion: '2026' }],
+}
+
 function json(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), {
     status,
@@ -124,5 +134,43 @@ describe('material library', () => {
 
     expect(await screen.findByRole('heading', { name: 'Biblioteka nije dostupna' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Pokušaj ponovno' })).toBeInTheDocument()
+  })
+})
+
+describe('material detail', () => {
+  it('renders the authorized current-version metadata and mapping snapshot', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(json(session)).mockResolvedValueOnce(json(detail))
+
+    renderMaterials('/materials/material-1')
+
+    expect(await screen.findByRole('heading', { level: 1, name: '4.2 Pregled materijala' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: material.title })).toBeInTheDocument()
+    expect(screen.getByText(detail.learningGoal)).toBeInTheDocument()
+    expect(screen.getByText('Present Perfect')).toBeInTheDocument()
+    expect(screen.getByText('ENG.8.1')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Otvori' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Preuzmi' })).toBeDisabled()
+    expect(screen.getByText(/Sam materijal nije automatski dokaz znanja/)).toBeInTheDocument()
+  })
+
+  it('shows the same safe message for missing or inaccessible material', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(json(session)).mockResolvedValueOnce(json({}, 404))
+
+    renderMaterials('/materials/foreign-material')
+
+    expect(await screen.findByText('Materijal nije pronađen ili mu nemate pristup.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Povratak na materijale' })).toHaveAttribute('href', '/materials')
+  })
+
+  it('keeps the detail error recoverable', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json({}, 503))
+      .mockResolvedValueOnce(json(detail))
+
+    renderMaterials('/materials/material-1')
+    fireEvent.click(await screen.findByRole('button', { name: 'Pokušaj ponovno' }))
+
+    expect(await screen.findByRole('heading', { name: material.title })).toBeInTheDocument()
   })
 })

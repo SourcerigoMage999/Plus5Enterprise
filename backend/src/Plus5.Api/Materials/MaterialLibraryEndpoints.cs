@@ -21,8 +21,35 @@ public static class MaterialLibraryEndpoints
 
         group.MapGet("/", GetMaterialsAsync);
         group.MapGet("/overview", GetOverviewAsync);
+        group.MapGet("/{materialId:guid}", GetMaterialAsync);
 
         return endpoints;
+    }
+
+    private static async Task<IResult> GetMaterialAsync(
+        Guid materialId,
+        HttpContext context,
+        IMaterialDetailQuery query,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherAccountId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        if (materialId == Guid.Empty)
+        {
+            return TypedResults.NotFound();
+        }
+
+        var material = await query.GetAsync(
+            teacherAccountId,
+            materialId,
+            cancellationToken);
+
+        return material is null
+            ? TypedResults.NotFound()
+            : TypedResults.Ok(MapDetail(material));
     }
 
     private static async Task<IResult> GetMaterialsAsync(
@@ -142,6 +169,68 @@ public static class MaterialLibraryEndpoints
     private static MaterialLibraryFilterOptionResponse MapOption(
         MaterialLibraryFilterOption item) => new(item.Id, item.Name, item.Code);
 
+    private static MaterialDetailResponse MapDetail(MaterialDetail item) => new(
+        item.Id,
+        item.VersionId,
+        item.VersionNumber,
+        item.Title,
+        item.Description,
+        item.MaterialTypeCode,
+        item.Subject,
+        item.LanguageCode,
+        item.Program is null ? null : new MaterialLibraryFilterOptionResponse(
+            item.Program.Id,
+            item.Program.Name,
+            item.Program.Code),
+        item.SchoolGrade is null ? null : new MaterialLibraryFilterOptionResponse(
+            item.SchoolGrade.Id,
+            item.SchoolGrade.Name,
+            item.SchoolGrade.Code),
+        item.ProficiencyLevel is null ? null : new MaterialLibraryFilterOptionResponse(
+            item.ProficiencyLevel.Id,
+            item.ProficiencyLevel.Name,
+            item.ProficiencyLevel.Code),
+        item.LearningGoal,
+        new MaterialDetailFileResponse(
+            MapFileFormat(item.File.Format),
+            item.File.OriginalFileName,
+            item.File.MediaType,
+            item.File.SizeBytes),
+        item.AddedAtUtc,
+        item.IsOwner,
+        item.ShareAccess switch
+        {
+            MaterialLibraryShareAccess.View => "view",
+            MaterialLibraryShareAccess.Use => "use",
+            null => null,
+            _ => throw new InvalidOperationException("Unsupported material share access."),
+        },
+        item.Tags,
+        item.KnowledgeComponents.Select(component => new MaterialDetailKnowledgeComponentResponse(
+            component.Id,
+            component.Name,
+            component.KnowledgeAreaName,
+            component.KnowledgeModelCode,
+            component.KnowledgeModelVersion,
+            component.KnowledgeModelStatus.ToString().ToLowerInvariant())).ToList(),
+        item.CurriculumOutcomes.Select(outcome => new MaterialDetailCurriculumOutcomeResponse(
+            outcome.Id,
+            outcome.OfficialCode,
+            outcome.Title,
+            outcome.CurriculumCode,
+            outcome.CurriculumName,
+            outcome.CurriculumVersion)).ToList());
+
+    private static string MapFileFormat(MaterialLibraryFileFormat format) => format switch
+    {
+        MaterialLibraryFileFormat.Pdf => "pdf",
+        MaterialLibraryFileFormat.Docx => "docx",
+        MaterialLibraryFileFormat.Pptx => "pptx",
+        MaterialLibraryFileFormat.Mp4 => "mp4",
+        MaterialLibraryFileFormat.Zip => "zip",
+        _ => throw new InvalidOperationException("Unsupported material file format."),
+    };
+
     public sealed record MaterialLibraryRequest : IValidatableObject
     {
         [Range(1, int.MaxValue)]
@@ -232,4 +321,47 @@ public static class MaterialLibraryEndpoints
         IReadOnlyList<string> Tags,
         IReadOnlyList<MaterialLibraryTypeCountResponse> MaterialTypeCounts,
         IReadOnlyList<MaterialLibraryRecentItemResponse> RecentlyAdded);
+
+    public sealed record MaterialDetailFileResponse(
+        string Format,
+        string OriginalFileName,
+        string MediaType,
+        long SizeBytes);
+
+    public sealed record MaterialDetailKnowledgeComponentResponse(
+        Guid Id,
+        string Name,
+        string KnowledgeAreaName,
+        string KnowledgeModelCode,
+        string KnowledgeModelVersion,
+        string KnowledgeModelStatus);
+
+    public sealed record MaterialDetailCurriculumOutcomeResponse(
+        Guid Id,
+        string? OfficialCode,
+        string Title,
+        string CurriculumCode,
+        string CurriculumName,
+        string CurriculumVersion);
+
+    public sealed record MaterialDetailResponse(
+        Guid Id,
+        Guid VersionId,
+        int VersionNumber,
+        string Title,
+        string? Description,
+        string MaterialTypeCode,
+        string? Subject,
+        string? LanguageCode,
+        MaterialLibraryFilterOptionResponse? Program,
+        MaterialLibraryFilterOptionResponse? SchoolGrade,
+        MaterialLibraryFilterOptionResponse? ProficiencyLevel,
+        string? LearningGoal,
+        MaterialDetailFileResponse File,
+        DateTimeOffset AddedAtUtc,
+        bool IsOwner,
+        string? ShareAccess,
+        IReadOnlyList<string> Tags,
+        IReadOnlyList<MaterialDetailKnowledgeComponentResponse> KnowledgeComponents,
+        IReadOnlyList<MaterialDetailCurriculumOutcomeResponse> CurriculumOutcomes);
 }

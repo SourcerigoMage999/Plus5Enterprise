@@ -69,6 +69,53 @@ export interface MaterialLibraryFilters {
   readonly tag: string
 }
 
+export interface MaterialDetailFile {
+  readonly format: MaterialFileFormat
+  readonly originalFileName: string
+  readonly mediaType: string
+  readonly sizeBytes: number
+}
+
+export interface MaterialDetailKnowledgeComponent {
+  readonly id: string
+  readonly name: string
+  readonly knowledgeAreaName: string
+  readonly knowledgeModelCode: string
+  readonly knowledgeModelVersion: string
+  readonly knowledgeModelStatus: 'published' | 'retired'
+}
+
+export interface MaterialDetailCurriculumOutcome {
+  readonly id: string
+  readonly officialCode: string | null
+  readonly title: string
+  readonly curriculumCode: string
+  readonly curriculumName: string
+  readonly curriculumVersion: string
+}
+
+export interface MaterialDetail {
+  readonly id: string
+  readonly versionId: string
+  readonly versionNumber: number
+  readonly title: string
+  readonly description: string | null
+  readonly materialTypeCode: string
+  readonly subject: string | null
+  readonly languageCode: string | null
+  readonly program: MaterialReference | null
+  readonly schoolGrade: MaterialReference | null
+  readonly proficiencyLevel: MaterialReference | null
+  readonly learningGoal: string | null
+  readonly file: MaterialDetailFile
+  readonly addedAtUtc: string
+  readonly isOwner: boolean
+  readonly shareAccess: 'view' | 'use' | null
+  readonly tags: readonly string[]
+  readonly knowledgeComponents: readonly MaterialDetailKnowledgeComponent[]
+  readonly curriculumOutcomes: readonly MaterialDetailCurriculumOutcome[]
+}
+
 export function getMaterials(filters: MaterialLibraryFilters, signal?: AbortSignal) {
   const query = new URLSearchParams({
     page: String(filters.page),
@@ -90,4 +137,8 @@ export function getMaterials(filters: MaterialLibraryFilters, signal?: AbortSign
 export function getMaterialOverview(ownership: MaterialOwnership, signal?: AbortSignal) {
   const ownershipValue = ownership === 'mine' ? 1 : 2
   return getJson<MaterialLibraryOverview>(`/materials/overview?ownership=${ownershipValue}`, signal)
+}
+
+export function getMaterial(materialId: string, signal?: AbortSignal) {
+  return getJson<MaterialDetail>(`/materials/${encodeURIComponent(materialId)}`, signal)
 }

@@ -92,6 +92,19 @@ public sealed class MaterialLibrarySqlTests
                 recipient.Id,
                 MaterialLibraryOwnership.SharedWithMe,
                 CancellationToken.None);
+            var detailQuery = new EfMaterialDetailQuery(db);
+            var ownerDetail = await detailQuery.GetAsync(
+                owner.Id,
+                material.Id,
+                CancellationToken.None);
+            var sharedDetail = await detailQuery.GetAsync(
+                recipient.Id,
+                material.Id,
+                CancellationToken.None);
+            var unrelatedDetail = await detailQuery.GetAsync(
+                Guid.NewGuid(),
+                material.Id,
+                CancellationToken.None);
 
             Assert.Equal(material.Id, Assert.Single(mine.Items).Id);
             var sharedItem = Assert.Single(shared.Items);
@@ -102,6 +115,11 @@ public sealed class MaterialLibrarySqlTests
             Assert.Equal(["Grammar"], overview.Subjects);
             Assert.Equal("WORKSHEET", Assert.Single(overview.MaterialTypes));
             Assert.Equal("present perfect", Assert.Single(overview.Tags));
+            Assert.NotNull(ownerDetail);
+            Assert.True(ownerDetail.IsOwner);
+            Assert.NotNull(sharedDetail);
+            Assert.Equal(MaterialLibraryShareAccess.View, sharedDetail.ShareAccess);
+            Assert.Null(unrelatedDetail);
         }
         finally
         {

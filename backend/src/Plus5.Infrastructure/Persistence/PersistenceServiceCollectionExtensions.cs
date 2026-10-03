@@ -118,6 +118,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IStudentReadinessQuery, EfStudentReadinessQuery>();
         services.AddScoped<IStudentKnowledgeDetailQuery, EfStudentKnowledgeDetailQuery>();
         services.AddScoped<IMaterialLibraryQuery, EfMaterialLibraryQuery>();
+        services.AddScoped<IMaterialDetailQuery, EfMaterialDetailQuery>();
         services.AddScoped<IReadinessRefreshService, EfReadinessRefreshService>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);

@@ -42,6 +42,7 @@ URL slugovi koriste canonical engleske tehničke nazive; korisničke oznake osta
 | `/students` | Učenici | foundation placeholder |
 | `/schedule` | Raspored | foundation placeholder |
 | `/materials` | Materijali | Phase 6.3 Material library |
+| `/materials/:materialId` | Pregled materijala | Phase 6.4 Material detail |
 | `/lesson-plans` | Priprema sata | foundation placeholder |
 | `/board` | PLUS 5 Ploča | foundation placeholder |
 | `/homework` | Domaće zadaće | foundation placeholder |
@@ -77,6 +78,10 @@ Phase 6.3 zamjenjuje `/materials` foundation stvarnom Screen 4.1 bibliotekom. Se
 owner/share tab, sort, filtri, view i page ostaju URL navigation state, dok backend jedini
 određuje owner/share authorization, Clean file i Active/current version scope. Create,
 detail i ostale write akcije ostaju disabled do svojih faza.
+
+Phase 6.4 dodaje `/materials/:materialId` kao deep-linkable owner/share autorizirani Screen 4.2
+read detail. Frontend ne računa learning/readiness semantiku i ne dobiva storage ključeve;
+binary akcije ostaju disabled do production storage-read adaptera.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

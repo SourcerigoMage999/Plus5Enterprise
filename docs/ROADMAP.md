@@ -607,13 +607,27 @@ disabled do Phase 6.4 i 6.6–6.8.
 frontend, stvarni SQL query, Docker/health/non-root i canonical desktop/mobile visual gateovi
 odobreni su bez dodatnih promjena business/UI contracta.
 
-## 6.4 Screen 4.2 Material detail — TODO
+## 6.4 Screen 4.2 Material detail — FINAL LOCKED
+
+**Implementirano 2026-10-03:** Teacher-only `/materials/:materialId` i
+`GET /api/v1/materials/{materialId}` prikazuju isključivo autorizirani Active/current/Clean
+snapshot. Owner ili eksplicitni Shared recipient dobiva osnovni metadata, file display podatke,
+learning goal, tagove te version-bound Knowledge/Curriculum mapping; missing, foreign, private,
+archived i non-clean ostaju indistinguishable `404`. Contract: `MATERIAL_DETAIL.md`.
+
+Canonical desktop/mobile evidence nalazi se u `visual-acceptance/phase-6.4/`. Binary open,
+download i present ostaju disabled bez 6.6 storage adaptera; Task/Evidence semantika čeka 6.5,
+edit/version history 6.7, permissions 6.8, a Lesson/usage/readiness veze svoje kasnije faze.
+
+**Acceptance 6.4: FINAL LOCKED — odobreno 2026-10-03.** Release, regression, architecture,
+stvarni SQL, Docker/health i canonical visual gateovi odobreni su bez dodatnih promjena
+business/UI contracta.
 ## 6.5 Evidence-capable task metadata within material — TODO
 ## 6.6 Screen 4.4 Import own material — TODO
 ## 6.7 Screen 4.5 Edit material and version history — TODO
 ## 6.8 Material sharing, visibility and permissions contract — TODO (contract locked in 6.1)
 
-**Source status:** detaljni source sada postoji za 4.1 i 4.4–4.5. Stari 0 B blocker za 4.1 više nije aktivan.
+**Source status:** detaljni source sada postoji za 4.1, 4.2 i 4.4–4.5. Stari 0 B blocker za 4.1 više nije aktivan.
 
 **Gate status:** Phase 6.1 SA/Product odluka zatvorila je storage, format/size,
 validation/scanning, ownership/share, version-history i Materials AI confirmation/privacy

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { ApiError } from '../api/apiClient.ts'
 import {
   getMaterialOverview,
@@ -211,7 +211,7 @@ export function MaterialLibraryPage() {
 
           <p className="material-library__guidance">
             <span aria-hidden="true">ⓘ</span>
-            Otvaranje, uređivanje, dupliciranje, dijeljenje i dodavanje u pripremu aktiviraju se u sljedećim Material fazama.
+            Otvorite naziv materijala za detalj. Uređivanje, dupliciranje, dijeljenje i dodavanje u pripremu aktiviraju se u sljedećim Material fazama.
           </p>
         </div>
 
@@ -249,7 +249,7 @@ function MaterialCard({ item }: { readonly item: MaterialLibraryItem }) {
       </div>
       <div className="material-card__body">
         <span className="material-card__type">{materialTypeLabel(item.materialTypeCode)}</span>
-        <h2>{item.title}</h2>
+        <h2><Link to={`/materials/${item.id}`}>{item.title}</Link></h2>
         <p>{[item.program?.name ?? item.subject, item.schoolGrade?.code ?? item.schoolGrade?.name].filter(Boolean).join(' · ') || 'Bez dodatnih oznaka'}</p>
         {item.tags.length > 0 && <p className="material-card__tags">{item.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}</p>}
         <footer>
@@ -268,7 +268,7 @@ function MaterialList({ items }: { readonly items: readonly MaterialLibraryItem[
         <article className="material-list__item" key={item.id} role="listitem">
           <span className={`material-list__mark material-list__mark--${item.fileFormat}`} aria-hidden="true">{formatMark(item.fileFormat)}</span>
           <div>
-            <h2>{item.title}</h2>
+            <h2><Link to={`/materials/${item.id}`}>{item.title}</Link></h2>
             <p>{materialTypeLabel(item.materialTypeCode)} · {item.subject ?? 'Bez predmeta'}</p>
           </div>
           <span>{item.program?.name ?? 'Bez programa'}</span>
