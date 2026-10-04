@@ -622,7 +622,24 @@ edit/version history 6.7, permissions 6.8, a Lesson/usage/readiness veze svoje k
 **Acceptance 6.4: FINAL LOCKED — odobreno 2026-10-03.** Release, regression, architecture,
 stvarni SQL, Docker/health i canonical visual gateovi odobreni su bez dodatnih promjena
 business/UI contracta.
-## 6.5 Evidence-capable task metadata within material — TODO
+## 6.5 Evidence-capable task metadata within material — FINAL LOCKED
+
+**Implementirano 2026-10-04:** uvedeni su stable `AssessableTask`, version-bound
+`AssessableTaskVersion` i leaf-only `AssessableTaskVersionKnowledgeComponent` mapping. Snapshot
+nosi prompt, otvoreni canonical task type code, Difficulty 1..5, zaključani EvidenceType,
+correct answer/evaluation criterion i pozitivan max score. Composite FK-ovi, CHECK constrainti i
+SQL triggeri štite same-Material vezu, Draft-only mutacije, Published/Retired leaf targete,
+minimalno jedan target pri aktivaciji te immutable Active/Superseded povijest. Contract:
+`ASSESSABLE_TASK_METADATA.md`; ADR-0025.
+
+Screen 4.2 read model i UI sada prikazuju stvarne task snapshotove i pošteno prazno stanje.
+Task metadata nije Attempt niti EvidenceEvent; nema automatskog gradinga, emissiona ili promjene
+mastery/readinessa. Write authoring, options/response runtime i Lesson/Homework/Board integracije
+nisu dio 6.5.
+
+**Acceptance 6.5: FINAL LOCKED — odobreno 2026-10-04.** Release/regression, architecture,
+fokusirani stvarni SQL migration/integrity, Docker runtime/health i canonical desktop/mobile
+visual gateovi odobreni su bez dodatnih promjena business/UI contracta.
 ## 6.6 Screen 4.4 Import own material — TODO
 ## 6.7 Screen 4.5 Edit material and version history — TODO
 ## 6.8 Material sharing, visibility and permissions contract — TODO (contract locked in 6.1)

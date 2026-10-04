@@ -92,11 +92,20 @@ function MaterialDetailContent({ material }: { readonly material: MaterialDetail
           <h2>Standardi i kurikulum</h2>
           {material.curriculumOutcomes.length ? <ul className="material-detail__outcomes">{material.curriculumOutcomes.map(outcome => <li key={outcome.id}><span>{outcome.officialCode ?? outcome.curriculumCode}</span><div><strong>{outcome.title}</strong><small>{outcome.curriculumName} · {outcome.curriculumVersion}</small></div></li>)}</ul> : <EmptyCopy title="Nema povezanih ishoda" text="Ova verzija materijala nema snapshot povezanosti s kurikulumskim ishodima." />}
         </section>
+        <section className="material-detail__card material-detail__tasks" aria-labelledby="material-tasks-title">
+          <header><div><h2 id="material-tasks-title">◇ Zadaci i procjena</h2><p>Svaki procjenjivi zadatak ima vlastiti verzionirani metadata snapshot. Sam materijal nije automatski dokaz znanja.</p></div><span>{material.tasks.length} {material.tasks.length === 1 ? 'zadatak' : 'zadataka'}</span></header>
+          {material.tasks.length ? <ol>{material.tasks.map((task, index) => <li key={task.versionId}>
+            <div className="material-detail__task-heading"><span>Zadatak {index + 1}</span><div><strong>{taskTypeLabel(task.taskTypeCode)}</strong><small>Task v{task.versionNumber}</small></div></div>
+            <p>{task.prompt}</p>
+            <div className="material-detail__task-badges"><span>Težina {task.difficulty}/5</span><span>{evidenceTypeLabel(task.evidenceType)}</span><span>{formatPoints(task.maxPoints)}</span></div>
+            <div className="material-detail__task-components">{task.knowledgeComponents.map(component => <span key={component.id}>{component.knowledgeAreaName} → {component.name}<small>{component.knowledgeModelCode} · {component.knowledgeModelVersion}</small></span>)}</div>
+            <dl><Fact label="Točan odgovor" value={task.correctAnswer ?? 'Nije primjenjivo'} /><Fact label="Kriterij vrednovanja" value={task.evaluationCriterion ?? 'Nije primjenjivo'} /></dl>
+          </li>)}</ol> : <EmptyCopy title="Nema procjenjivih zadataka" text="Ova verzija materijala ne sadrži strukturirani Task metadata i samo korištenje materijala ne stvara Evidence Event." />}
+        </section>
       </main>
       <aside className="material-detail__aside" aria-label="Povezanost s učenjem i korištenje">
         <section className="material-detail__card material-detail__goal"><h2>◎ Cilj učenja</h2><p>{material.learningGoal ?? 'Cilj učenja nije unesen za ovu verziju materijala.'}</p></section>
         <section className="material-detail__card"><h2>⌘ Knowledge Components</h2>{material.knowledgeComponents.length ? <ul className="material-detail__components">{material.knowledgeComponents.map(component => <li key={component.id}><span>{component.knowledgeAreaName}</span><strong>{component.name}</strong><small>{component.knowledgeModelCode} · {component.knowledgeModelVersion} · {component.knowledgeModelStatus === 'retired' ? 'povijesni model' : 'objavljen model'}</small></li>)}</ul> : <EmptyCopy title="Nema povezanih komponenti" text="Ova verzija materijala nema Knowledge Component mapping." />}</section>
-        <section className="material-detail__card material-detail__future"><h2>◇ Zadaci i procjena</h2><p>Task metadata, bodovanje i Evidence eligibility definiraju se u Phase 6.5. Sam materijal nije automatski dokaz znanja.</p></section>
         <section className="material-detail__card material-detail__future"><h2>↗ Korištenje</h2><p>Broj korištenja, povezanost sa satovima i readiness utjecaj nisu dostupni bez zaključanog Lesson/usage contracta.</p></section>
       </aside>
     </div>
@@ -111,3 +120,6 @@ function formatMark(format: MaterialFileFormat) { if (format === 'pptx') return 
 function materialTypeLabel(code: string) { const labels: Record<string, string> = { PRESENTATION: 'Prezentacija', WORKSHEET: 'Radni list', CONVERSATION_CARDS: 'Kartice za razgovor', INTERACTIVE_EXERCISE: 'Interaktivna vježba', VIDEO: 'Video', AUDIO: 'Audio', QUIZ: 'Kviz', IMAGE: 'Slika', POSTER: 'Plakat', MAP: 'Mapa' }; return labels[code] ?? code.toLocaleLowerCase('hr').replaceAll('_', ' ') }
 function formatBytes(value: number) { if (value < 1024) return `${value} B`; if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`; return `${(value / (1024 * 1024)).toFixed(1)} MB` }
 function formatDate(value: string) { return new Intl.DateTimeFormat('hr-HR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(value)) }
+function taskTypeLabel(code: string) { return code.toLocaleLowerCase('hr').replaceAll('_', ' ') }
+function evidenceTypeLabel(value: MaterialDetail['tasks'][number]['evidenceType']) { const labels = { recognition: 'Prepoznavanje', understanding: 'Razumijevanje', application: 'Primjena', production: 'Produkcija' }; return labels[value] }
+function formatPoints(value: number) { return `${new Intl.NumberFormat('hr-HR', { maximumFractionDigits: 4 }).format(value)} ${value === 1 ? 'bod' : 'bodova'}` }

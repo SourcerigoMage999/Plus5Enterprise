@@ -1,5 +1,25 @@
 # DECISION_LOG
 
+### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
+- **Datum:** 2026-10-04
+- **Status:** Accepted — Phase 6.5 FINAL LOCKED.
+- **Kontekst:** Screen 4.2 i Materials source zahtijevaju atomski procjenjivi zadatak s
+  Difficultyjem, EvidenceTypeom, scoringom i preciznim Knowledge targetima, dok Material
+  usage samo po sebi ne smije postati dokaz znanja.
+- **Odluka:** `AssessableTask` je stabilni identitet unutar Materiala, a
+  `AssessableTaskVersion` je snapshot točne Draft/Active/Superseded MaterialVersion granice.
+  Snapshot nosi prompt, otvoreni canonical task type code, Difficulty 1..5, zaključani v1
+  EvidenceType, pozitivan max score te correct-answer/evaluation-criterion podatke.
+- **Mapping:** svaki Task prije aktivacije mora imati barem jedan M:N target, isključivo leaf
+  KnowledgeComponent iz Published/Retired modela. SQL štiti Draft-only mutacije, leaf/model
+  valjanost i minimalnu kardinalnost pri aktivaciji MaterialVersion.
+- **Evidence granica:** Task je samo versioned source metadata. Attempt, pomoć, kontekst,
+  grading i eksplicitni Evidence emission nisu uvedeni; sam prikaz ili korištenje materijala
+  ne mijenja mastery/readiness.
+- **Granice:** nema write API/UI-ja, response/options runtimea, seeda task typeova,
+  Lesson/Homework/Board integracije ni automatskog Evidencea. Detalji:
+  `ASSESSABLE_TASK_METADATA.md`.
+
 ### ADR-0024 — Version-bound Material pedagogical metadata
 - **Datum:** 2026-09-29
 - **Status:** Accepted — Phase 6.2 FINAL LOCKED 2026-09-29.

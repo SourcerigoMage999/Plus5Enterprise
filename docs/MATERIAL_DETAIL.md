@@ -6,7 +6,8 @@
 
 Ovaj dokument je source of truth za Screen 4.2 read-only detalj aktivne Material verzije.
 Primjenjuje zaključane `MATERIAL_FOUNDATION.md` i `MATERIAL_METADATA_MAPPING.md` contracte bez
-uvođenja Task/Evidence, upload, edit, share-mutation ili Lesson workflowa.
+uvođenja upload, edit, share-mutation ili Lesson workflowa. Phase 6.5 read-only proširenje
+prikazuje version-bound procjenjive Task metapodatke prema `ASSESSABLE_TASK_METADATA.md`.
 
 ## Route i API
 
@@ -55,8 +56,13 @@ preview. Edit/version history dolazi u 6.7, Add-to-Lesson u Phase 9.
 
 ## Task / Evidence granica
 
-Screen prikazuje eksplicitnu granicu da sam instructional Material nije dokaz znanja. Task
-metadata, difficulty, scoring, EvidenceType i per-task Knowledge mapping pripadaju Phase 6.5.
+Screen prikazuje eksplicitnu granicu da sam instructional Material nije dokaz znanja. Od Phase
+6.5 detail response i `Zadaci i procjena` zona prikazuju stvarni Task/TaskVersion ID/version,
+prompt, tip, difficulty, scoring, EvidenceType, answer/criterion i leaf-only per-task Knowledge
+mapping. Prazan Task skup nije `0 %` ni dokaz neuspjeha.
+
+Task prikaz je read-only i ne stvara Attempt ili EvidenceEvent. Assistance i EvidenceContext
+određuje tek konkretni budući runtime pokušaj, a ne authoring metadata.
 Readiness, activity count, usage history, recommendations i Lesson veze ne izračunavaju se niti
 simuliraju bez svojih zaključanih domena. Različite KnowledgeModel verzije ostaju označene, ne
 spajaju se u jednu prividnu semantiku.
@@ -73,6 +79,6 @@ spajaju se u jednu prividnu semantiku.
 
 ## Izvan Phase 6.4
 
-Nema schema/migracije, write endpointa, binary access endpointa, storage adaptera, PDF/PPTX
-renderera, Task/TaskVersion modela, Attempt/Evidence emissiona, upload/importa, edita/version
+Nema write endpointa, binary access endpointa, storage adaptera, PDF/PPTX
+renderera, Attempt/Evidence emissiona, upload/importa, edita/version
 historyja, share managementa, arhiviranja, dupliciranja ni Lesson Builder integracije.

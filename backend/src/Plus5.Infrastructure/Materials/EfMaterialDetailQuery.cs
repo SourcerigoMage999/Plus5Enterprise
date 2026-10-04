@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Plus5.Application.Materials;
+using Plus5.Domain.Evidence;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Persistence;
@@ -124,6 +125,91 @@ public sealed class EfMaterialDetailQuery(Plus5DbContext dbContext) : IMaterialD
                 curriculum.Version))
             .ToListAsync(cancellationToken);
 
+        var taskRows = await (
+            from taskVersion in dbContext.AssessableTaskVersions.AsNoTracking()
+            join task in dbContext.AssessableTasks.AsNoTracking()
+                on taskVersion.AssessableTaskId equals task.Id
+            where taskVersion.MaterialVersionId == candidate.version.Id
+                && task.MaterialId == candidate.material.Id
+            orderby taskVersion.SortOrder, taskVersion.Id
+            select new
+            {
+                TaskId = task.Id,
+                TaskVersionId = taskVersion.Id,
+                taskVersion.VersionNumber,
+                taskVersion.SortOrder,
+                taskVersion.Prompt,
+                taskVersion.TaskTypeCode,
+                taskVersion.Difficulty,
+                taskVersion.EvidenceType,
+                taskVersion.CorrectAnswer,
+                taskVersion.EvaluationCriterion,
+                taskVersion.MaxPoints,
+            })
+            .ToListAsync(cancellationToken);
+
+        var taskVersionIds = taskRows.Select(task => task.TaskVersionId).ToList();
+        var taskKnowledgeRows = taskVersionIds.Count == 0
+            ? []
+            : await (
+                from mapping in dbContext.AssessableTaskVersionKnowledgeComponents.AsNoTracking()
+                join component in dbContext.KnowledgeComponents.AsNoTracking()
+                    on mapping.KnowledgeComponentId equals component.Id
+                join area in dbContext.KnowledgeAreas.AsNoTracking()
+                    on component.KnowledgeAreaId equals area.Id
+                join model in dbContext.KnowledgeModels.AsNoTracking()
+                    on component.KnowledgeModelId equals model.Id
+                where taskVersionIds.Contains(mapping.AssessableTaskVersionId)
+                orderby model.Code, model.Version, area.SortOrder, component.SortOrder, component.Name
+                select new
+                {
+                    mapping.AssessableTaskVersionId,
+                    component.Id,
+                    component.Name,
+                    KnowledgeAreaName = area.Name,
+                    model.Code,
+                    model.Version,
+                    model.Status,
+                })
+                .ToListAsync(cancellationToken);
+
+        var tasks = taskRows.Select(task => new MaterialDetailTask(
+            task.TaskId,
+            task.TaskVersionId,
+            task.VersionNumber,
+            task.SortOrder,
+            task.Prompt,
+            task.TaskTypeCode,
+            task.Difficulty,
+            task.EvidenceType switch
+            {
+                EvidenceType.Recognition => MaterialDetailEvidenceType.Recognition,
+                EvidenceType.Understanding => MaterialDetailEvidenceType.Understanding,
+                EvidenceType.Application => MaterialDetailEvidenceType.Application,
+                EvidenceType.Production => MaterialDetailEvidenceType.Production,
+                _ => throw new InvalidOperationException("Unknown task evidence type."),
+            },
+            task.CorrectAnswer,
+            task.EvaluationCriterion,
+            task.MaxPoints,
+            taskKnowledgeRows
+                .Where(mapping => mapping.AssessableTaskVersionId == task.TaskVersionId)
+                .Select(mapping => new MaterialDetailKnowledgeComponent(
+                    mapping.Id,
+                    mapping.Name,
+                    mapping.KnowledgeAreaName,
+                    mapping.Code,
+                    mapping.Version,
+                    mapping.Status switch
+                    {
+                        KnowledgeModelStatus.Published => MaterialDetailKnowledgeModelStatus.Published,
+                        KnowledgeModelStatus.Retired => MaterialDetailKnowledgeModelStatus.Retired,
+                        _ => throw new InvalidOperationException(
+                            "Material detail cannot expose a draft knowledge model."),
+                    }))
+                .ToList()))
+            .ToList();
+
         return new MaterialDetail(
             candidate.material.Id,
             candidate.version.Id,
@@ -171,6 +257,7 @@ public sealed class EfMaterialDetailQuery(Plus5DbContext dbContext) : IMaterialD
                     _ => throw new InvalidOperationException(
                         "Material detail cannot expose a draft knowledge model."),
                 })).ToList(),
-            curriculumOutcomes);
+            curriculumOutcomes,
+            tasks);
     }
 }

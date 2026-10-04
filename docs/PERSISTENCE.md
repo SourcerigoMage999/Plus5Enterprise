@@ -233,3 +233,16 @@ indeksi i SQL triggeri štite owner scope, duplikate, canonical tag vrijednosti 
 Active/Superseded snapshot. Knowledge mapping prema Draft modelu odbija se, dok exact
 Published/Retired reference ostaje stabilna za povijest. Detalji su u
 `MATERIAL_METADATA_MAPPING.md`.
+
+## Phase 6.5 assessable task metadata schema
+
+Migracija `AddAssessableTaskMetadata` dodaje `AssessableTasks`, `AssessableTaskVersions` i
+`AssessableTaskVersionKnowledgeComponents` bez seeda ili backfilla. Existing Material retci
+ostaju nepromijenjeni i valjani; Task metadata je opcionalan na razini Materiala.
+
+Composite FK-ovi fizički jamče da Task i TaskVersion pripadaju istom Materialu i točnoj
+MaterialVersion. Unique i CHECK constrainti štite verzije, redoslijed, Difficulty, EvidenceType,
+pozitivan score i answer/criterion shape. SQL triggeri dopuštaju TaskVersion i mapping mutacije
+samo na Draft MaterialVersionu, prihvaćaju isključivo Published/Retired leaf Knowledge
+targete te blokiraju aktivaciju ako procjenjivi Task nema barem jedan target. Active i
+Superseded snapshotovi ostaju immutable. Detalji su u `ASSESSABLE_TASK_METADATA.md`.

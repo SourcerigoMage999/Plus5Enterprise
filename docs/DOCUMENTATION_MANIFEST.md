@@ -2,7 +2,7 @@
 
 ## Status
 
-**MERGED PROJECT MANIFEST — ažurirano 2026-09-25**
+**MERGED PROJECT MANIFEST — ažurirano 2026-10-04**
 
 Ovaj manifest opisuje authoritative projektni `docs` paket nakon selektivnih teacher i
 full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za projektne dokumente.
@@ -14,7 +14,7 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - security/auth: `SECURITY_ENGINEERING_STANDARD.md`, `AUTHENTICATION_REQUIREMENTS.md`, `AUTHENTICATION_ARCHITECTURE.md`
 - engineering standardi: `DATABASE_DESIGN_STANDARD.md`, `BACKEND_ENGINEERING_STANDARD.md`, `FRONTEND_ENGINEERING_STANDARD.md`, `DOCKER_DEPLOYMENT_STANDARD.md`, `TESTING_QUALITY_STANDARD.md`, `ENGINEERING_CHECKLIST.md`
 - application foundation: `CONFIGURATION.md`, `PERSISTENCE.md`, `API_CONVENTIONS.md`, `OBSERVABILITY.md`, `FRONTEND_FOUNDATION.md`
-- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `KNOWLEDGE_COMPONENT_MODEL.md`, `EVIDENCE_EVENT.md`, `EVIDENCE_METADATA.md`, `MASTERY_READINESS.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`
+- domain/feature contracti: `CORE_TEACHING_FOUNDATION.md`, `CURRICULUM_HIERARCHY.md`, `KNOWLEDGE_COMPONENT_MODEL.md`, `EVIDENCE_EVENT.md`, `EVIDENCE_METADATA.md`, `MASTERY_READINESS.md`, `STUDENT_FOUNDATION.md`, `GROUP_FOUNDATION.md`, `SCHEDULING_FOUNDATION.md`, `RECURRENCE_MATERIALIZATION.md`, `STUDENT_LIST.md`, `GROUP_LIST.md`, `GROUP_CREATION.md`, `GROUP_EDITING.md`, `SCHEDULE_CALENDAR.md`, `SESSION_DETAIL.md`, `SESSION_CREATION.md`, `SESSION_EDITING.md`, `MATERIAL_FOUNDATION.md`, `MATERIAL_METADATA_MAPPING.md`, `MATERIAL_LIBRARY.md`, `MATERIAL_DETAIL.md`, `ASSESSABLE_TASK_METADATA.md`
 
 ## Source snapshotovi
 
@@ -71,6 +71,9 @@ full-platform source mergeova. Vanjski snapshot nije samostalna zamjena za proje
 - [PHASE_5.5_MASTERY_READINESS_SUMMARY.md](summaries/PHASE_5.5_MASTERY_READINESS_SUMMARY.md)
   sadrži `readiness-v1` matematiku, PerformanceScore, confidence/coverage agregaciju,
   rebuildable projekcije, daily SQL-lease refresh i puni stvarni SQL/Docker regression audit.
+- [PHASE_6.5_ASSESSABLE_TASK_METADATA_SUMMARY.md](summaries/PHASE_6.5_ASSESSABLE_TASK_METADATA_SUMMARY.md)
+  i [phase-6.5 visual acceptance](visual-acceptance/phase-6.5/README.md) sadrže version-bound
+  procjenjivi Task metadata, SQL lifecycle/leaf-target gate i stvarni desktop/mobile prikaz.
 
 - `summaries/` sadrži dovršene phase handoff zapise i ne smije se zamijeniti starijim statusima iz vanjskih paketa.
 - `visual-acceptance/` sadrži canonical visual-acceptance dokaze za dovršene business UI faze.

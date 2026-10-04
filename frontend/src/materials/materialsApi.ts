@@ -94,6 +94,21 @@ export interface MaterialDetailCurriculumOutcome {
   readonly curriculumVersion: string
 }
 
+export interface MaterialDetailTask {
+  readonly id: string
+  readonly versionId: string
+  readonly versionNumber: number
+  readonly sortOrder: number
+  readonly prompt: string
+  readonly taskTypeCode: string
+  readonly difficulty: number
+  readonly evidenceType: 'recognition' | 'understanding' | 'application' | 'production'
+  readonly correctAnswer: string | null
+  readonly evaluationCriterion: string | null
+  readonly maxPoints: number
+  readonly knowledgeComponents: readonly MaterialDetailKnowledgeComponent[]
+}
+
 export interface MaterialDetail {
   readonly id: string
   readonly versionId: string
@@ -114,6 +129,7 @@ export interface MaterialDetail {
   readonly tags: readonly string[]
   readonly knowledgeComponents: readonly MaterialDetailKnowledgeComponent[]
   readonly curriculumOutcomes: readonly MaterialDetailCurriculumOutcome[]
+  readonly tasks: readonly MaterialDetailTask[]
 }
 
 export function getMaterials(filters: MaterialLibraryFilters, signal?: AbortSignal) {

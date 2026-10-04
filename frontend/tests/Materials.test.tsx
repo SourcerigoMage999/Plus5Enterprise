@@ -53,6 +53,7 @@ const detail = {
   file: { format: 'pdf', originalFileName: 'present-perfect.pdf', mediaType: 'application/pdf', sizeBytes: 2048 },
   knowledgeComponents: [{ id: 'component-1', name: 'Present Perfect', knowledgeAreaName: 'Grammar', knowledgeModelCode: 'PLUS5-EN', knowledgeModelVersion: '2026', knowledgeModelStatus: 'published' }],
   curriculumOutcomes: [{ id: 'outcome-1', officialCode: 'ENG.8.1', title: 'Primjenjuje Present Perfect u kontekstu.', curriculumCode: 'ENG-8', curriculumName: 'Nacionalni kurikulum', curriculumVersion: '2026' }],
+  tasks: [{ id: 'task-1', versionId: 'task-version-1', versionNumber: 1, sortOrder: 0, prompt: 'I ____ London twice.', taskTypeCode: 'SINGLE_CHOICE', difficulty: 1, evidenceType: 'recognition', correctAnswer: 'B – have visited', evaluationCriterion: null, maxPoints: 1, knowledgeComponents: [{ id: 'component-1', name: 'Present Perfect', knowledgeAreaName: 'Grammar', knowledgeModelCode: 'PLUS5-EN', knowledgeModelVersion: '2026', knowledgeModelStatus: 'published' }] }],
 }
 
 function json(value: unknown, status = 200) {
@@ -151,6 +152,10 @@ describe('material detail', () => {
     expect(screen.getByRole('button', { name: 'Otvori' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Preuzmi' })).toBeDisabled()
     expect(screen.getByText(/Sam materijal nije automatski dokaz znanja/)).toBeInTheDocument()
+    expect(screen.getByText('I ____ London twice.')).toBeInTheDocument()
+    expect(screen.getByText('Težina 1/5')).toBeInTheDocument()
+    expect(screen.getByText('Prepoznavanje')).toBeInTheDocument()
+    expect(screen.getByText('B – have visited')).toBeInTheDocument()
   })
 
   it('shows the same safe message for missing or inaccessible material', async () => {

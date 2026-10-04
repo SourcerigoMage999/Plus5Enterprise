@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Plus5.Domain.Identity;
+using Plus5.Domain.Evidence;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Teaching;
 
@@ -361,5 +362,155 @@ internal sealed class MaterialShareConfiguration : IEntityTypeConfiguration<Mate
             share.MaterialId,
         })
             .HasDatabaseName("IX_MaterialShares_Recipient_Permission_Material");
+    }
+}
+
+internal sealed class AssessableTaskConfiguration : IEntityTypeConfiguration<AssessableTask>
+{
+    public void Configure(EntityTypeBuilder<AssessableTask> builder)
+    {
+        builder.ToTable("AssessableTasks");
+        builder.HasKey(task => task.Id);
+        builder.HasAlternateKey(task => new
+        {
+            task.MaterialId,
+            task.Id,
+        })
+            .HasName("AK_AssessableTasks_Material_Id");
+        builder.Property(task => task.CreatedAtUtc).HasPrecision(7).IsRequired();
+        builder.HasOne<Material>()
+            .WithMany()
+            .HasForeignKey(task => task.MaterialId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(task => task.MaterialId)
+            .HasDatabaseName("IX_AssessableTasks_MaterialId");
+    }
+}
+
+internal sealed class AssessableTaskVersionConfiguration
+    : IEntityTypeConfiguration<AssessableTaskVersion>
+{
+    public void Configure(EntityTypeBuilder<AssessableTaskVersion> builder)
+    {
+        builder.ToTable("AssessableTaskVersions", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_VersionNumber",
+                "[VersionNumber] > 0");
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_SortOrder",
+                "[SortOrder] >= 0");
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_Difficulty",
+                $"[Difficulty] >= {EvidenceMetadata.MinimumDifficulty} AND [Difficulty] <= {EvidenceMetadata.MaximumDifficulty}");
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_EvidenceType",
+                "[EvidenceType] IN (1, 2, 3, 4)");
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_MaxPoints",
+                "[MaxPoints] > 0");
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_Evaluation",
+                "[CorrectAnswer] IS NOT NULL OR [EvaluationCriterion] IS NOT NULL");
+            table.HasTrigger("TR_AssessableTaskVersions_ProtectSnapshot");
+        });
+
+        builder.HasKey(version => version.Id);
+        builder.HasAlternateKey(version => new
+        {
+            version.MaterialVersionId,
+            version.Id,
+        })
+            .HasName("AK_AssessableTaskVersions_MaterialVersion_Id");
+        builder.Property(version => version.Prompt)
+            .HasMaxLength(AssessableTaskVersion.PromptMaxLength)
+            .IsRequired();
+        builder.Property(version => version.TaskTypeCode)
+            .HasMaxLength(AssessableTaskVersion.TaskTypeCodeMaxLength)
+            .IsRequired();
+        builder.Property(version => version.EvidenceType).HasConversion<int>().IsRequired();
+        builder.Property(version => version.CorrectAnswer)
+            .HasMaxLength(AssessableTaskVersion.AnswerMaxLength);
+        builder.Property(version => version.EvaluationCriterion)
+            .HasMaxLength(AssessableTaskVersion.EvaluationCriterionMaxLength);
+        builder.Property(version => version.MaxPoints)
+            .HasPrecision(18, 4)
+            .IsRequired();
+        builder.Property(version => version.CreatedAtUtc).HasPrecision(7).IsRequired();
+
+        builder.HasOne<AssessableTask>()
+            .WithMany()
+            .HasForeignKey(version => new
+            {
+                version.MaterialId,
+                version.AssessableTaskId,
+            })
+            .HasPrincipalKey(task => new
+            {
+                task.MaterialId,
+                task.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<MaterialVersion>()
+            .WithMany()
+            .HasForeignKey(version => new
+            {
+                version.MaterialId,
+                version.MaterialVersionId,
+            })
+            .HasPrincipalKey(version => new
+            {
+                version.MaterialId,
+                version.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(version => new
+        {
+            version.AssessableTaskId,
+            version.VersionNumber,
+        })
+            .IsUnique()
+            .HasDatabaseName("UX_AssessableTaskVersions_Task_VersionNumber");
+        builder.HasIndex(version => new
+        {
+            version.AssessableTaskId,
+            version.MaterialVersionId,
+        })
+            .IsUnique()
+            .HasDatabaseName("UX_AssessableTaskVersions_Task_MaterialVersion");
+        builder.HasIndex(version => new
+        {
+            version.MaterialVersionId,
+            version.SortOrder,
+            version.Id,
+        })
+            .HasDatabaseName("IX_AssessableTaskVersions_MaterialVersion_Order");
+    }
+}
+
+internal sealed class AssessableTaskVersionKnowledgeComponentConfiguration
+    : IEntityTypeConfiguration<AssessableTaskVersionKnowledgeComponent>
+{
+    public void Configure(
+        EntityTypeBuilder<AssessableTaskVersionKnowledgeComponent> builder)
+    {
+        builder.ToTable("AssessableTaskVersionKnowledgeComponents", table =>
+            table.HasTrigger("TR_AssessableTaskVersionKnowledgeComponents_ProtectSnapshot"));
+        builder.HasKey(mapping => new
+        {
+            mapping.AssessableTaskVersionId,
+            mapping.KnowledgeComponentId,
+        });
+        builder.HasOne<AssessableTaskVersion>()
+            .WithMany()
+            .HasForeignKey(mapping => mapping.AssessableTaskVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<KnowledgeComponent>()
+            .WithMany()
+            .HasForeignKey(mapping => mapping.KnowledgeComponentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(mapping => mapping.KnowledgeComponentId)
+            .HasDatabaseName("IX_AssessableTaskVersionKnowledgeComponents_ComponentId");
     }
 }

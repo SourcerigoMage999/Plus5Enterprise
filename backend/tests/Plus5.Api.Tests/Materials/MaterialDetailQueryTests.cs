@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Plus5.Application.Materials;
+using Plus5.Domain.Evidence;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Materials;
@@ -42,6 +43,12 @@ public sealed class MaterialDetailQueryTests
         Assert.Equal("ENG.8.1", outcome.OfficialCode);
         Assert.Equal("Nacionalni kurikulum", outcome.CurriculumName);
         Assert.Equal("present-perfect.pdf", detail.File.OriginalFileName);
+        var task = Assert.Single(detail.Tasks);
+        Assert.Equal("I ____ London twice.", task.Prompt);
+        Assert.Equal(MaterialDetailEvidenceType.Recognition, task.EvidenceType);
+        Assert.Equal(1, task.Difficulty);
+        Assert.Equal("B – have visited", task.CorrectAnswer);
+        Assert.Equal("Present Perfect", Assert.Single(task.KnowledgeComponents).Name);
     }
 
     [Fact]
@@ -143,6 +150,28 @@ public sealed class MaterialDetailQueryTests
             new MaterialVersionKnowledgeComponent(version, component, model));
         db.MaterialVersionCurriculumOutcomes.Add(
             new MaterialVersionCurriculumOutcome(version, outcome));
+        var task = new AssessableTask(Guid.NewGuid(), material, CreatedAt);
+        var taskVersion = new AssessableTaskVersion(
+            Guid.NewGuid(),
+            task,
+            version,
+            1,
+            0,
+            "I ____ London twice.",
+            "SINGLE_CHOICE",
+            1,
+            EvidenceType.Recognition,
+            1,
+            CreatedAt,
+            "B – have visited");
+        db.AddRange(task, taskVersion);
+        db.AssessableTaskVersionKnowledgeComponents.Add(
+            new AssessableTaskVersionKnowledgeComponent(
+                taskVersion,
+                version,
+                component,
+                model,
+                isLeaf: true));
         file.MarkUploaded(2048, new string('A', 64), CreatedAt.AddMinutes(1));
         file.StartScanning(CreatedAt.AddMinutes(2));
         file.MarkClean(CreatedAt.AddMinutes(3));

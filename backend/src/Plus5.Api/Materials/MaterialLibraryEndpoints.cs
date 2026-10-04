@@ -169,7 +169,7 @@ public static class MaterialLibraryEndpoints
     private static MaterialLibraryFilterOptionResponse MapOption(
         MaterialLibraryFilterOption item) => new(item.Id, item.Name, item.Code);
 
-    private static MaterialDetailResponse MapDetail(MaterialDetail item) => new(
+    internal static MaterialDetailResponse MapDetail(MaterialDetail item) => new(
         item.Id,
         item.VersionId,
         item.VersionNumber,
@@ -219,7 +219,26 @@ public static class MaterialLibraryEndpoints
             outcome.Title,
             outcome.CurriculumCode,
             outcome.CurriculumName,
-            outcome.CurriculumVersion)).ToList());
+            outcome.CurriculumVersion)).ToList(),
+        item.Tasks.Select(task => new MaterialDetailTaskResponse(
+            task.Id,
+            task.VersionId,
+            task.VersionNumber,
+            task.SortOrder,
+            task.Prompt,
+            task.TaskTypeCode,
+            task.Difficulty,
+            task.EvidenceType.ToString().ToLowerInvariant(),
+            task.CorrectAnswer,
+            task.EvaluationCriterion,
+            task.MaxPoints,
+            task.KnowledgeComponents.Select(component => new MaterialDetailKnowledgeComponentResponse(
+                component.Id,
+                component.Name,
+                component.KnowledgeAreaName,
+                component.KnowledgeModelCode,
+                component.KnowledgeModelVersion,
+                component.KnowledgeModelStatus.ToString().ToLowerInvariant())).ToList())).ToList());
 
     private static string MapFileFormat(MaterialLibraryFileFormat format) => format switch
     {
@@ -344,6 +363,20 @@ public static class MaterialLibraryEndpoints
         string CurriculumName,
         string CurriculumVersion);
 
+    public sealed record MaterialDetailTaskResponse(
+        Guid Id,
+        Guid VersionId,
+        int VersionNumber,
+        int SortOrder,
+        string Prompt,
+        string TaskTypeCode,
+        int Difficulty,
+        string EvidenceType,
+        string? CorrectAnswer,
+        string? EvaluationCriterion,
+        decimal MaxPoints,
+        IReadOnlyList<MaterialDetailKnowledgeComponentResponse> KnowledgeComponents);
+
     public sealed record MaterialDetailResponse(
         Guid Id,
         Guid VersionId,
@@ -363,5 +396,6 @@ public static class MaterialLibraryEndpoints
         string? ShareAccess,
         IReadOnlyList<string> Tags,
         IReadOnlyList<MaterialDetailKnowledgeComponentResponse> KnowledgeComponents,
-        IReadOnlyList<MaterialDetailCurriculumOutcomeResponse> CurriculumOutcomes);
+        IReadOnlyList<MaterialDetailCurriculumOutcomeResponse> CurriculumOutcomes,
+        IReadOnlyList<MaterialDetailTaskResponse> Tasks);
 }

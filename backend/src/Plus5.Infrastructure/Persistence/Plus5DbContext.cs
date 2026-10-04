@@ -62,6 +62,14 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<MaterialVersionTag> MaterialVersionTags => Set<MaterialVersionTag>();
 
+    public DbSet<AssessableTask> AssessableTasks => Set<AssessableTask>();
+
+    public DbSet<AssessableTaskVersion> AssessableTaskVersions => Set<AssessableTaskVersion>();
+
+    public DbSet<AssessableTaskVersionKnowledgeComponent>
+        AssessableTaskVersionKnowledgeComponents =>
+            Set<AssessableTaskVersionKnowledgeComponent>();
+
     public DbSet<MasteryEstimate> MasteryEstimates => Set<MasteryEstimate>();
 
     public DbSet<KnowledgeAreaReadinessEstimate> KnowledgeAreaReadinessEstimates =>

@@ -1,0 +1,34 @@
+{
+  "realApi": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "screens": [
+    {
+      "name": "material-tasks",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1898
+    },
+    {
+      "name": "material-tasks",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 3300
+    }
+  ],
+  "checks": [
+    "desktop: real login/API, two versioned assessable tasks, evidence metadata, leaf mappings and no document overflow",
+    "mobile: real login/API, two versioned assessable tasks, evidence metadata, leaf mappings and no document overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": []
+}

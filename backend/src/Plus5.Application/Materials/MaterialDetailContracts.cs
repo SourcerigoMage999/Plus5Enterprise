@@ -6,6 +6,14 @@ public enum MaterialDetailKnowledgeModelStatus
     Retired = 2,
 }
 
+public enum MaterialDetailEvidenceType
+{
+    Recognition = 1,
+    Understanding = 2,
+    Application = 3,
+    Production = 4,
+}
+
 public sealed record MaterialDetailReference(Guid Id, string Name, string? Code);
 
 public sealed record MaterialDetailFile(
@@ -30,6 +38,20 @@ public sealed record MaterialDetailCurriculumOutcome(
     string CurriculumName,
     string CurriculumVersion);
 
+public sealed record MaterialDetailTask(
+    Guid Id,
+    Guid VersionId,
+    int VersionNumber,
+    int SortOrder,
+    string Prompt,
+    string TaskTypeCode,
+    int Difficulty,
+    MaterialDetailEvidenceType EvidenceType,
+    string? CorrectAnswer,
+    string? EvaluationCriterion,
+    decimal MaxPoints,
+    IReadOnlyList<MaterialDetailKnowledgeComponent> KnowledgeComponents);
+
 public sealed record MaterialDetail(
     Guid Id,
     Guid VersionId,
@@ -49,7 +71,8 @@ public sealed record MaterialDetail(
     MaterialLibraryShareAccess? ShareAccess,
     IReadOnlyList<string> Tags,
     IReadOnlyList<MaterialDetailKnowledgeComponent> KnowledgeComponents,
-    IReadOnlyList<MaterialDetailCurriculumOutcome> CurriculumOutcomes);
+    IReadOnlyList<MaterialDetailCurriculumOutcome> CurriculumOutcomes,
+    IReadOnlyList<MaterialDetailTask> Tasks);
 
 public interface IMaterialDetailQuery
 {

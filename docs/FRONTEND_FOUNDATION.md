@@ -42,7 +42,7 @@ URL slugovi koriste canonical engleske tehničke nazive; korisničke oznake osta
 | `/students` | Učenici | foundation placeholder |
 | `/schedule` | Raspored | foundation placeholder |
 | `/materials` | Materijali | Phase 6.3 Material library |
-| `/materials/:materialId` | Pregled materijala | Phase 6.4 Material detail |
+| `/materials/:materialId` | Pregled materijala i procjenjivi Task metadata | Phase 6.4–6.5 Material detail |
 | `/lesson-plans` | Priprema sata | foundation placeholder |
 | `/board` | PLUS 5 Ploča | foundation placeholder |
 | `/homework` | Domaće zadaće | foundation placeholder |
