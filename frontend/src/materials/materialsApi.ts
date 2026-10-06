@@ -1,4 +1,4 @@
-import { getJson } from '../api/apiClient.ts'
+import { getJson, postFormData } from '../api/apiClient.ts'
 
 export type MaterialOwnership = 'mine' | 'shared'
 export type MaterialSort = 'newest' | 'oldest' | 'title'
@@ -157,4 +157,57 @@ export function getMaterialOverview(ownership: MaterialOwnership, signal?: Abort
 
 export function getMaterial(materialId: string, signal?: AbortSignal) {
   return getJson<MaterialDetail>(`/materials/${encodeURIComponent(materialId)}`, signal)
+}
+
+export interface MaterialImportKnowledgeComponent {
+  readonly id: string
+  readonly name: string
+  readonly knowledgeAreaName: string
+  readonly knowledgeModelCode: string
+  readonly knowledgeModelVersion: string
+}
+
+export interface MaterialImportCurriculumOutcome {
+  readonly id: string
+  readonly title: string
+  readonly officialCode: string | null
+  readonly curriculumCode: string
+  readonly curriculumVersion: string
+}
+
+export interface MaterialImportOptions {
+  readonly programs: readonly MaterialReference[]
+  readonly schoolGrades: readonly MaterialReference[]
+  readonly proficiencyLevels: readonly MaterialReference[]
+  readonly knowledgeComponents: readonly MaterialImportKnowledgeComponent[]
+  readonly curriculumOutcomes: readonly MaterialImportCurriculumOutcome[]
+  readonly materialTypeCodes: readonly string[]
+  readonly languageCodes: readonly string[]
+}
+
+export interface MaterialImportMetadata {
+  readonly title: string
+  readonly materialTypeCode: string
+  readonly description: string | null
+  readonly subject: string | null
+  readonly languageCode: string | null
+  readonly visibility: 1 | 2
+  readonly programId: string | null
+  readonly schoolGradeId: string | null
+  readonly proficiencyLevelId: string | null
+  readonly learningGoal: string | null
+  readonly tags: readonly string[]
+  readonly knowledgeComponentIds: readonly string[]
+  readonly curriculumOutcomeIds: readonly string[]
+}
+
+export function getMaterialImportOptions(signal?: AbortSignal) {
+  return getJson<MaterialImportOptions>('/materials/import/options', signal)
+}
+
+export function importMaterial(file: File, metadata: MaterialImportMetadata) {
+  const form = new FormData()
+  form.append('file', file, file.name)
+  form.append('metadata', JSON.stringify(metadata))
+  return postFormData<{ readonly materialId: string }>('/materials/import', form)
 }

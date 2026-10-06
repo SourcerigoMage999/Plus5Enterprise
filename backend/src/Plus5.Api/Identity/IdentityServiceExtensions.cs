@@ -13,6 +13,7 @@ public static class IdentityServiceExtensions
     public const string CookieScheme = "Plus5TeacherCookie";
     public const string TeacherPolicy = "Teacher";
     public const string AuthRateLimitPolicy = "AuthSensitive";
+    public const string MaterialUploadRateLimitPolicy = "MaterialUpload";
     public const string CsrfHeaderName = "X-CSRF-TOKEN";
 
     public static IServiceCollection AddTeacherIdentity(
@@ -90,6 +91,18 @@ public static class IdentityServiceExtensions
                         PermitLimit = 10,
                         QueueLimit = 0,
                         Window = TimeSpan.FromMinutes(1),
+                        AutoReplenishment = true,
+                    }));
+            options.AddPolicy(MaterialUploadRateLimitPolicy, context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? context.Connection.RemoteIpAddress?.ToString()
+                        ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 5,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(10),
                         AutoReplenishment = true,
                     }));
         });

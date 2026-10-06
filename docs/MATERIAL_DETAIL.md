@@ -79,6 +79,7 @@ spajaju se u jednu prividnu semantiku.
 
 ## Izvan Phase 6.4
 
-Nema write endpointa, binary access endpointa, storage adaptera, PDF/PPTX
-renderera, Attempt/Evidence emissiona, upload/importa, edita/version
-historyja, share managementa, arhiviranja, dupliciranja ni Lesson Builder integracije.
+Phase 6.4 nije uvela write endpoint, binary access endpoint ni storage adapter. Phase 6.6 sada
+koristi private storage adapter za import, ali signed read endpoint i PDF/PPTX rendereri i dalje
+nisu implementirani. Nema Attempt/Evidence emissiona, edita/version historyja, share managementa,
+arhiviranja, dupliciranja ni Lesson Builder integracije.

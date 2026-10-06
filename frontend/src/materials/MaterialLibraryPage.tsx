@@ -100,14 +100,9 @@ export function MaterialLibraryPage() {
           </label>
           <button type="submit">Pretraži</button>
         </form>
-        <button
-          className="material-library__new"
-          disabled
-          title="Dodavanje materijala dolazi u Phase 6.6"
-          type="button"
-        >
+        <Link className="material-library__new" to="/materials/import">
           <span aria-hidden="true">＋</span> Novi materijal
-        </button>
+        </Link>
       </header>
 
       <div className="material-library__layout">
@@ -177,7 +172,7 @@ export function MaterialLibraryPage() {
               message={hasFilters
                 ? 'Promijenite ili poništite filtre kako biste proširili rezultate.'
                 : filters.ownership === 'mine'
-                  ? 'Novi materijal moći ćete dodati nakon završetka sigurnog import workflowa.'
+                  ? 'Dodajte prvi materijal sigurnim import workflowom.'
                   : 'Kada vam drugi učitelj podijeli materijal, pojavit će se ovdje.'}
             />
           )}

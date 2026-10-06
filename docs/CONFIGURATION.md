@@ -37,6 +37,17 @@ ASP.NET Core defaultni redoslijed izvora ostaje canonical: bazni `appsettings.js
 | `Email:Password` | `Email__Password` | prema provideru | **da** | mora biti zadan zajedno s usernameom |
 | `DataProtection:CertificatePath` | `DataProtection__CertificatePath` | Staging/Production | ne | apsolutni path do montiranog PKCS#12 certifikata; zajedno s passwordom |
 | `DataProtection:CertificatePassword` | `DataProtection__CertificatePassword` | Staging/Production | **da** | password certifikata; isključivo secrets sloj |
+| `MaterialStorage:ServiceUrl` | `MaterialStorage__ServiceUrl` | da | ne | apsolutni S3-compatible endpoint; HTTPS izvan Developmenta |
+| `MaterialStorage:Region` | `MaterialStorage__Region` | da | ne | provider region (`auto` za Cloudflare R2) |
+| `MaterialStorage:AccessKeyId` | `MaterialStorage__AccessKeyId` | da | **da** | server-side object-storage credential |
+| `MaterialStorage:SecretAccessKey` | `MaterialStorage__SecretAccessKey` | da | **da** | server-side object-storage credential |
+| `MaterialStorage:QuarantineBucket` | `MaterialStorage__QuarantineBucket` | da | ne | private bucket, različit od clean bucketa |
+| `MaterialStorage:CleanBucket` | `MaterialStorage__CleanBucket` | da | ne | private bucket, različit od quarantine bucketa |
+| `MaterialStorage:ProviderCode` | `MaterialStorage__ProviderCode` | da | ne | canonical metadata code, početno `S3` |
+| `MaterialStorage:ForcePathStyle` | `MaterialStorage__ForcePathStyle` | prema provideru | ne | `true` samo kada endpoint to zahtijeva, npr. lokalni S3Mock |
+| `MalwareScanner:Host` | `MalwareScanner__Host` | da | ne | ClamAV-compatible scanner host |
+| `MalwareScanner:Port` | `MalwareScanner__Port` | da | ne | port 1–65535, default 3310 |
+| `MalwareScanner:TimeoutSeconds` | `MalwareScanner__TimeoutSeconds` | da | ne | 10–300 sekundi; timeout je fail-closed |
 | `ASPNETCORE_ENVIRONMENT` | isto | da | ne | `Development`, `Staging` ili `Production` |
 | ASP.NET Core hosting URL/port | `ASPNETCORE_URLS` / `ASPNETCORE_HTTP_PORTS` | prema hostu | ne | runtime/deployment vrijednost, ne hardcodirati production URL u source |
 
@@ -45,6 +56,13 @@ ASP.NET Core defaultni redoslijed izvora ostaje canonical: bazni `appsettings.js
 Observability options su tipizirani i validiraju se prije pokretanja listenera. OTLP exporter nije registriran dok endpoint nije postavljen; repo ne sadrži observability credentials niti preuranjeni collector. Puni logging/telemetry contract nalazi se u `OBSERVABILITY.md`.
 
 SMTP options su tipizirani i validiraju se pri startupu. Development očekuje lokalni SMTP capture server na host portu `1025`; Compose ne uvodi nedokumentirani produkcijski mail servis. Staging/Production moraju dostaviti TLS SMTP konfiguraciju, a credentials isključivo kroz environment/secrets sloj. Verifikacijski i recovery token nikada se ne logiraju.
+
+Material storage i malware-scanner options također su tipizirani i validiraju se pri startupu.
+Lokalni Compose koristi loopback-only Adobe S3Mock s izoliranim testnim credentialima te
+odvojene persistentne quarantine/clean buckete i ClamAV container. Production koristi private
+Cloudflare R2/S3-compatible endpoint i deployment secrets; credentiali, object keyevi i scan
+detalji ne smiju završiti u browseru, logu, appsettings datoteci ili Gitu. Scanner timeout,
+nedostupnost ili neprepoznat rezultat ne smiju aktivirati materijal.
 
 ASP.NET Core Data Protection key ring dijeli se kroz bazu kako bi auth i CSRF cookieji ostali valjani nakon restarta i između više API instanci. Development smije spremiti nezaštićeni key XML u lokalnu bazu. Staging/Production moraju montirati PKCS#12 certifikat i dostaviti njegov password kroz secrets sloj; startup se prekida ako certifikat nedostaje, nije dostupan ili se ne može učitati. Certifikat i password nikada se ne spremaju u image, Git ili appsettings datoteke.
 

@@ -119,6 +119,11 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IStudentKnowledgeDetailQuery, EfStudentKnowledgeDetailQuery>();
         services.AddScoped<IMaterialLibraryQuery, EfMaterialLibraryQuery>();
         services.AddScoped<IMaterialDetailQuery, EfMaterialDetailQuery>();
+        services.AddScoped<IMaterialImportQuery, EfMaterialImportQuery>();
+        services.AddScoped<IMaterialImportService, EfMaterialImportService>();
+        services.AddSingleton<IMaterialFileValidator, MaterialFileValidator>();
+        services.AddSingleton<IMaterialObjectStorage, S3MaterialObjectStorage>();
+        services.AddSingleton<IMalwareScanner, ClamAvMalwareScanner>();
         services.AddScoped<IReadinessRefreshService, EfReadinessRefreshService>();
         services.AddScoped<IAccountEmailSender, SmtpAccountEmailSender>();
         services.AddSingleton(TimeProvider.System);

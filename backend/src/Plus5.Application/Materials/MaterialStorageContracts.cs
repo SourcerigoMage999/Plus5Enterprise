@@ -17,6 +17,10 @@ public interface IMaterialObjectStorage
         MaterialObjectReference reference,
         CancellationToken cancellationToken);
 
+    Task DeleteAsync(
+        MaterialObjectReference reference,
+        CancellationToken cancellationToken);
+
     Task<Uri> CreateReadAccessAsync(
         MaterialObjectReference reference,
         TimeSpan lifetime,

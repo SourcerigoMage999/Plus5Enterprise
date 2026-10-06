@@ -1,0 +1,66 @@
+{
+  "realApi": true,
+  "realObjectStorage": true,
+  "objectStorageProvider": "Adobe S3Mock 5.1.0",
+  "objectStorageRestartPersistence": true,
+  "realMalwareScanner": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "screens": [
+    {
+      "name": "file",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1057
+    },
+    {
+      "name": "review",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1217
+    },
+    {
+      "name": "review",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1872
+    },
+    {
+      "name": "review-actions",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1872
+    }
+  ],
+  "checks": [
+    "desktop: real login/options API, four-step flow, local file/metadata/mapping review and no document overflow",
+    "mobile: real login/options API, four-step flow, local file/metadata/mapping review and no document overflow",
+    "runtime: one intentional safe PDF import passed validation, quarantine scan, clean promotion, atomic activation and detail read-back"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": [],
+  "runtimeImport": {
+    "status": 201,
+    "materialId": "3d372af1-29fb-447d-a261-153bb867aee7",
+    "detailStatus": 200,
+    "fileFormat": "pdf",
+    "expectedBusinessWrites": 1
+  }
+}

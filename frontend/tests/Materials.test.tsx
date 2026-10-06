@@ -1,8 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { AppRoutes } from '../src/app/AppRoutes.tsx'
 import { AuthProvider } from '../src/auth/AuthContext.tsx'
+
+Object.defineProperties(HTMLDialogElement.prototype, {
+  showModal: { configurable: true, value() { this.setAttribute('open', '') } },
+  close: { configurable: true, value() { this.removeAttribute('open') } },
+})
 
 const session = {
   email: 'teacher@example.test',
@@ -64,11 +69,10 @@ function json(value: unknown, status = 200) {
 }
 
 function renderMaterials(initialEntry = '/materials') {
-  return render(
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <AuthProvider><AppRoutes /></AuthProvider>
-    </MemoryRouter>,
-  )
+  const router = createMemoryRouter([
+    { path: '*', element: <AuthProvider><AppRoutes /></AuthProvider> },
+  ], { initialEntries: [initialEntry] })
+  return render(<RouterProvider router={router} />)
 }
 
 describe('material library', () => {
@@ -85,7 +89,7 @@ describe('material library', () => {
     expect(screen.getByText('English 8 · 8R')).toBeInTheDocument()
     expect(screen.getAllByText('present perfect')).toHaveLength(2)
     expect(within(screen.getByRole('complementary', { name: 'Filtri i pregled materijala' })).getAllByText('Radni list')).toHaveLength(2)
-    expect(screen.getByRole('button', { name: 'Novi materijal' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Novi materijal' })).toHaveAttribute('href', '/materials/import')
     expect(screen.getByRole('button', { name: `Akcije za ${material.title}` })).toBeDisabled()
   })
 
@@ -177,5 +181,54 @@ describe('material detail', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Pokušaj ponovno' }))
 
     expect(await screen.findByRole('heading', { name: material.title })).toBeInTheDocument()
+  })
+})
+
+describe('material import', () => {
+  it('guides the teacher through file, metadata, mapping and review without AI dependency', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json({
+        programs: overview.programs,
+        schoolGrades: overview.schoolGrades,
+        proficiencyLevels: [{ id: 'level-1', name: 'B1', code: 'B1' }],
+        knowledgeComponents: detail.knowledgeComponents.map((item) => ({
+          id: item.id,
+          name: item.name,
+          knowledgeAreaName: item.knowledgeAreaName,
+          knowledgeModelCode: item.knowledgeModelCode,
+          knowledgeModelVersion: item.knowledgeModelVersion,
+        })),
+        curriculumOutcomes: detail.curriculumOutcomes.map((item) => ({
+          id: item.id,
+          title: item.title,
+          officialCode: item.officialCode,
+          curriculumCode: item.curriculumCode,
+          curriculumVersion: item.curriculumVersion,
+        })),
+        materialTypeCodes: ['WORKSHEET'],
+        languageCodes: ['EN'],
+      }))
+
+    renderMaterials('/materials/import')
+
+    expect(await screen.findByRole('heading', { level: 1, name: '4.4 Uvoz vlastitog materijala' })).toBeInTheDocument()
+    const input = screen.getByLabelText(/Povucite datoteku ovdje/)
+    fireEvent.change(input, { target: { files: [new File(['%PDF-1.7\n'], 'lesson.pdf', { type: 'application/pdf' })] } })
+    fireEvent.click(screen.getByRole('button', { name: /Nastavi/ }))
+
+    await screen.findByRole('heading', { name: 'Osnovni podaci' })
+    fireEvent.change(screen.getByLabelText(/Vrsta materijala/), { target: { value: 'WORKSHEET' } })
+    fireEvent.click(screen.getByRole('button', { name: /Nastavi/ }))
+
+    expect(await screen.findByRole('heading', { name: 'Cilj i pedagoško mapiranje' })).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('checkbox', { name: /Present Perfect/ })[0])
+    fireEvent.click(screen.getByRole('button', { name: /Nastavi/ }))
+
+    expect(await screen.findByRole('heading', { name: 'Pregled prije uvoza' })).toBeInTheDocument()
+    expect(screen.getByText('lesson.pdf · 1 KB')).toBeInTheDocument()
+    expect(screen.getByText('Present Perfect')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Potvrdi i uvezi/ })).toBeEnabled()
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2)
   })
 })

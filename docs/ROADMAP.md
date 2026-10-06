@@ -615,9 +615,11 @@ snapshot. Owner ili eksplicitni Shared recipient dobiva osnovni metadata, file d
 learning goal, tagove te version-bound Knowledge/Curriculum mapping; missing, foreign, private,
 archived i non-clean ostaju indistinguishable `404`. Contract: `MATERIAL_DETAIL.md`.
 
-Canonical desktop/mobile evidence nalazi se u `visual-acceptance/phase-6.4/`. Binary open,
-download i present ostaju disabled bez 6.6 storage adaptera; Task/Evidence semantika čeka 6.5,
-edit/version history 6.7, permissions 6.8, a Lesson/usage/readiness veze svoje kasnije faze.
+Canonical desktop/mobile evidence nalazi se u `visual-acceptance/phase-6.4/`. Phase 6.6 dodala je
+private storage adapter za import, ali binary open, signed download i present ostaju disabled dok
+zaseban read-access endpoint i preview contract ne budu implementirani; Task/Evidence semantika
+čeka 6.5, edit/version history 6.7, permissions 6.8, a Lesson/usage/readiness veze svoje kasnije
+faze.
 
 **Acceptance 6.4: FINAL LOCKED — odobreno 2026-10-03.** Release, regression, architecture,
 stvarni SQL, Docker/health i canonical visual gateovi odobreni su bez dodatnih promjena
@@ -640,7 +642,24 @@ nisu dio 6.5.
 **Acceptance 6.5: FINAL LOCKED — odobreno 2026-10-04.** Release/regression, architecture,
 fokusirani stvarni SQL migration/integrity, Docker runtime/health i canonical desktop/mobile
 visual gateovi odobreni su bez dodatnih promjena business/UI contracta.
-## 6.6 Screen 4.4 Import own material — TODO
+## 6.6 Screen 4.4 Import own material — FINAL LOCKED
+
+**Implementirano 2026-10-06:** Teacher-only `/materials/import` vodi kroz datoteku, osnovne
+podatke, cilj/mapiranje i eksplicitni review. `GET /api/v1/materials/import/options` vraća
+owner-scoped i verzionirane reference, a CSRF/rate-limit zaštićeni multipart write provodi
+format-specifične size/MIME/signature/structure/ZIP provjere i SHA-256. Binary prolazi private
+S3-compatible quarantine, stvarni ClamAV fail-closed scan i clean promociju prije atomske SQL
+Draft→Active aktivacije. Contract: `MATERIAL_IMPORT.md`.
+
+Persistent S3Mock/ClamAV Compose deployment, stvarni HTTP 201 import/detail read-back te canonical
+desktop/mobile evidence nalaze se u `visual-acceptance/phase-6.6/`. AI/OCR, Task extraction,
+edit/version history, share mutation, preview conversion, Lesson/Evidence i public URL nisu
+uvedeni.
+
+**Acceptance 6.6: FINAL LOCKED — odobreno 2026-10-06.** Release build, ciljani import/security testovi,
+215-testni backend i 78-testni frontend regression, architecture 4/4, dependency auditi,
+Docker storage/scanner/restart-persistence/runtime/health i canonical visual gateovi odobreni
+su bez dodatnih promjena business/UI contracta.
 ## 6.7 Screen 4.5 Edit material and version history — TODO
 ## 6.8 Material sharing, visibility and permissions contract — TODO (contract locked in 6.1)
 

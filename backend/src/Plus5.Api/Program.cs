@@ -11,6 +11,7 @@ using Plus5.Api.Scheduling;
 using Plus5.Api.Readiness;
 using Plus5.Api.Materials;
 using Plus5.Infrastructure.Persistence;
+using Plus5.Infrastructure.Materials;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,26 @@ builder.Services.AddApiConventions();
 builder.Services.AddTeacherIdentity(
     builder.Environment.IsDevelopment(),
     builder.Configuration["Frontend:PublicOrigin"]!);
+builder.Services.AddOptions<MaterialStorageOptions>()
+    .Bind(builder.Configuration.GetSection(MaterialStorageOptions.SectionName))
+    .Validate(options => Uri.TryCreate(options.ServiceUrl, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttps
+                || (builder.Environment.IsDevelopment() && uri.Scheme == Uri.UriSchemeHttp)),
+        "MaterialStorage:ServiceUrl must be an absolute HTTPS URL (HTTP is allowed only in Development).")
+    .Validate(options => !string.IsNullOrWhiteSpace(options.AccessKeyId)
+            && !string.IsNullOrWhiteSpace(options.SecretAccessKey)
+            && !string.IsNullOrWhiteSpace(options.QuarantineBucket)
+            && !string.IsNullOrWhiteSpace(options.CleanBucket)
+            && !string.Equals(options.QuarantineBucket, options.CleanBucket, StringComparison.Ordinal),
+        "MaterialStorage credentials and distinct quarantine/clean buckets are required.")
+    .ValidateOnStart();
+builder.Services.AddOptions<MalwareScannerOptions>()
+    .Bind(builder.Configuration.GetSection(MalwareScannerOptions.SectionName))
+    .Validate(options => !string.IsNullOrWhiteSpace(options.Host)
+            && options.Port is > 0 and <= 65535
+            && options.TimeoutSeconds is >= 10 and <= 300,
+        "MalwareScanner host, port and timeout are invalid.")
+    .ValidateOnStart();
 
 builder.Services.AddPersistence(
     builder.Configuration.GetConnectionString("Plus5"),
@@ -73,6 +94,7 @@ app.MapStudentEditing();
 app.MapGroups();
 app.MapScheduleCalendar();
 app.MapMaterialLibrary();
+app.MapMaterialImport();
 
 app.Run();
 

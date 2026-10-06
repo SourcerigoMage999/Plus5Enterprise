@@ -1,4 +1,33 @@
 services:
+  object-storage:
+    image: adobe/s3mock:5.1.0@sha256:65cf60155a2e235fe7d5bf6c633747d6fc7ed93f9f5a6727d86470026b83c2a2
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_ROOT: /s3mockroot
+      COM_ADOBE_TESTING_S3MOCK_STORE_REGION: us-east-1
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: plus5-material-quarantine,plus5-material-clean
+      COM_ADOBE_TESTING_S3MOCK_STORE_RETAIN_FILES_ON_EXIT: "true"
+    ports:
+      - "127.0.0.1:4566:9090"
+    volumes:
+      - plus5-material-storage-data:/s3mockroot
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:9090/"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  malware-scanner:
+    image: clamav/clamav:1.4.3@sha256:d39ad368e587cc204f71675c3982adbc6717b8c4cb309a7ee9a3213f7e684c50
+    volumes:
+      - plus5-clamav-data:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "clamdscan --ping 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+
   database:
     image: mcr.microsoft.com/mssql/server:2025-latest@sha256:86cc6144ef39bb0fbed2329e1ad79b13ee82e7b2e4739213a0db0800e668a74a
     environment:
@@ -61,6 +90,10 @@ services:
     depends_on:
       migrations:
         condition: service_completed_successfully
+      object-storage:
+        condition: service_healthy
+      malware-scanner:
+        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
@@ -74,6 +107,17 @@ services:
       Email__Port: 1025
       Email__UseSsl: "false"
       Email__FromAddress: no-reply@plus5.local
+      MaterialStorage__ServiceUrl: http://object-storage:9090
+      MaterialStorage__Region: us-east-1
+      MaterialStorage__AccessKeyId: test
+      MaterialStorage__SecretAccessKey: test
+      MaterialStorage__QuarantineBucket: plus5-material-quarantine
+      MaterialStorage__CleanBucket: plus5-material-clean
+      MaterialStorage__ProviderCode: S3
+      MaterialStorage__ForcePathStyle: "true"
+      MalwareScanner__Host: malware-scanner
+      MalwareScanner__Port: 3310
+      MalwareScanner__TimeoutSeconds: 120
     ports:
       - "8080:8080"
     healthcheck:
@@ -95,3 +139,5 @@ services:
 
 volumes:
   plus5-sql-data:
+  plus5-material-storage-data:
+  plus5-clamav-data:

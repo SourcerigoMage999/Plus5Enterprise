@@ -12,14 +12,18 @@
     "dev": "vite",
     "typecheck": "tsc -b",
     "build": "npm run typecheck && vite build",
-    "lint": "oxlint",
+    "lint": "oxlint src tests",
     "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "lucide-react": "^1.52.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router": "8.3.0"
+    "react-hook-form": "^7.89.0",
+    "react-router": "8.3.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@testing-library/dom": "10.4.1",

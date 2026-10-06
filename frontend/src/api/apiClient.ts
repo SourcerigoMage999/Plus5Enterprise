@@ -88,6 +88,17 @@ export async function putJson<T>(path: string, body: object): Promise<T> {
   return (await response.json()) as T
 }
 
+export async function postFormData<T>(path: string, body: FormData): Promise<T> {
+  const csrfResponse = await apiRequest('/auth/csrf')
+  const csrf = (await csrfResponse.json()) as CsrfResponse
+  const response = await apiRequest(path, {
+    method: 'POST',
+    headers: { 'X-CSRF-TOKEN': csrf.token },
+    body,
+  })
+  return (await response.json()) as T
+}
+
 export async function ensureSuccess(response: Response, notify = true): Promise<void> {
   if (response.ok) return
 
@@ -155,6 +166,18 @@ function friendlyMessage(code?: string): string {
       return 'Kontakti skrbnika promijenjeni su u međuvremenu. Osvježite stranicu.'
     case 'multiple_primary_guardians':
       return 'Samo jedan roditelj ili skrbnik može biti primarni kontakt.'
+    case 'material_import_unsupported_format':
+      return 'Odaberite PDF, DOCX, PPTX, MP4 ili ZIP datoteku.'
+    case 'material_import_file_rejected':
+      return 'Datoteka nije prošla sigurnosnu provjeru formata i strukture.'
+    case 'material_import_reference_not_found':
+      return 'Odabrani program ili pedagoško mapiranje više nije dostupno. Osvježite podatke.'
+    case 'material_import_malware_detected':
+      return 'Datoteka je izdvojena u karantenu i nije dodana u biblioteku.'
+    case 'material_import_scanner_unavailable':
+      return 'Sigurnosno skeniranje trenutačno nije dostupno. Datoteka nije aktivirana.'
+    case 'material_import_invalid_request':
+      return 'Provjerite datoteku i obavezne podatke materijala.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

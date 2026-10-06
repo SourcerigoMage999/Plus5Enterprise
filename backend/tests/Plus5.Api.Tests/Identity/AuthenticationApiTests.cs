@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Plus5.Api.Conventions;
 using Plus5.Api.Identity;
+using Plus5.Api.Materials;
 using Plus5.Api.Readiness;
 using Plus5.Api.Students;
 using Plus5.Api.Groups;
@@ -22,6 +23,7 @@ using Plus5.Application.Groups;
 using Plus5.Application.Scheduling;
 using Plus5.Infrastructure.Groups;
 using Plus5.Application.Identity;
+using Plus5.Application.Materials;
 using Plus5.Application.Readiness;
 using Plus5.Application.Students;
 using Plus5.Domain.Identity;
@@ -52,6 +54,10 @@ public sealed class AuthenticationApiTests
         using var anonymousKnowledge = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/knowledge", CancellationToken.None);
         using var anonymousMaterials = await client.GetAsync("/api/v1/materials", CancellationToken.None);
         using var anonymousMaterialDetail = await client.GetAsync($"/api/v1/materials/{Guid.NewGuid()}", CancellationToken.None);
+        using var anonymousMaterialImportOptions = await client.GetAsync(
+            "/api/v1/materials/import/options", CancellationToken.None);
+        using var anonymousMaterialImport = await client.PostAsync(
+            "/api/v1/materials/import", new MultipartFormDataContent(), CancellationToken.None);
         using var anonymousEdit = await client.GetAsync($"/api/v1/students/{Guid.NewGuid()}/edit", CancellationToken.None);
         using var anonymousGroups = await client.GetAsync("/api/v1/groups", CancellationToken.None);
         using var anonymousGroupEdit = await client.GetAsync($"/api/v1/groups/{Guid.NewGuid()}/edit", CancellationToken.None);
@@ -71,6 +77,8 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousKnowledge.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousMaterials.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousMaterialDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousMaterialImportOptions.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousMaterialImport.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousEdit.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroups.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, anonymousGroupEdit.StatusCode);
@@ -144,6 +152,15 @@ public sealed class AuthenticationApiTests
             }),
             Headers = { { "Cookie", authCookie } },
         });
+        using var importOptions = await GetWithCookiesAsync(
+            client, "/api/v1/materials/import/options", authCookie, csrf.Cookie);
+        using var importWithoutCsrfRequest = new HttpRequestMessage(
+            HttpMethod.Post, "/api/v1/materials/import")
+        {
+            Content = new MultipartFormDataContent(),
+            Headers = { { "Cookie", authCookie } },
+        };
+        using var importWithoutCsrf = await client.SendAsync(importWithoutCsrfRequest);
         using var createStudent = await PostAsync(client, "/api/v1/students", new
         {
             firstName = "Ana",
@@ -257,6 +274,8 @@ public sealed class AuthenticationApiTests
         Assert.Equal(HttpStatusCode.NotFound, missingSessionDetail.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, createSessionWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, createWithoutCsrf.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, importOptions.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, importWithoutCsrf.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createStudent.StatusCode);
         Assert.Equal(HttpStatusCode.Created, createSession.StatusCode);
         Assert.Equal(HttpStatusCode.OK, createdSessionDetail.StatusCode);
@@ -450,6 +469,8 @@ public sealed class AuthenticationApiTests
         builder.Services.AddScoped<IScheduleCreationService, EfScheduleCreationService>();
         builder.Services.AddScoped<IScheduleEditingQuery, EfScheduleEditingQuery>();
         builder.Services.AddScoped<IScheduleEditingService, EfScheduleEditingService>();
+        builder.Services.AddSingleton<IMaterialImportQuery, StubMaterialImportQuery>();
+        builder.Services.AddSingleton<IMaterialImportService, StubMaterialImportService>();
         builder.Services.AddSingleton<CapturingEmailSender>();
         builder.Services.AddSingleton<IAccountEmailSender>(provider =>
             provider.GetRequiredService<CapturingEmailSender>());
@@ -469,6 +490,7 @@ public sealed class AuthenticationApiTests
         app.MapStudentEditing();
         app.MapGroups();
         app.MapScheduleCalendar();
+        app.MapMaterialImport();
         await app.StartAsync(CancellationToken.None);
         return app;
     }
@@ -554,5 +576,22 @@ public sealed class AuthenticationApiTests
 
         public Task SendPasswordResetAsync(string email, string token, CancellationToken cancellationToken) =>
             Task.CompletedTask;
+    }
+
+    private sealed class StubMaterialImportQuery : IMaterialImportQuery
+    {
+        public Task<MaterialImportOptions> GetOptionsAsync(
+            Guid teacherAccountId,
+            CancellationToken cancellationToken) => Task.FromResult(new MaterialImportOptions(
+                [], [], [], [], [], [], []));
+    }
+
+    private sealed class StubMaterialImportService : IMaterialImportService
+    {
+        public Task<MaterialImportResult> ImportAsync(
+            Guid teacherAccountId,
+            MaterialImportCommand command,
+            CancellationToken cancellationToken) => Task.FromResult(
+                new MaterialImportResult(MaterialImportOutcome.InvalidInput));
     }
 }

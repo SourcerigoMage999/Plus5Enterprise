@@ -31,7 +31,7 @@ describe('application shell', () => {
 
     expect(await screen.findByRole('link', { name: /Materijali/ })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('heading', { level: 1, name: '4.1 Biblioteka materijala' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Novi materijal' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Novi materijal' })).toHaveAttribute('href', '/materials/import')
   })
 
   it('provides a skip link and a named main navigation landmark', async () => {
