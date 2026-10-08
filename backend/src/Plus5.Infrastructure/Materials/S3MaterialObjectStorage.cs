@@ -77,6 +77,22 @@ public sealed class S3MaterialObjectStorage : IMaterialObjectStorage, IDisposabl
             cancellationToken);
     }
 
+    public async Task CopyCleanAsync(
+        MaterialObjectReference source,
+        MaterialObjectReference destination,
+        CancellationToken cancellationToken)
+    {
+        EnsureReference(source, options.CleanBucket);
+        EnsureReference(destination, options.CleanBucket);
+        await client.CopyObjectAsync(new CopyObjectRequest
+        {
+            SourceBucket = options.CleanBucket,
+            SourceKey = source.ObjectKey,
+            DestinationBucket = options.CleanBucket,
+            DestinationKey = destination.ObjectKey,
+        }, cancellationToken);
+    }
+
     public async Task DeleteAsync(
         MaterialObjectReference reference,
         CancellationToken cancellationToken)

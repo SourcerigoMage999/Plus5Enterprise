@@ -1,4 +1,4 @@
-import { getJson, postFormData } from '../api/apiClient.ts'
+import { getJson, postFormData, postJson, putJson } from '../api/apiClient.ts'
 
 export type MaterialOwnership = 'mine' | 'shared'
 export type MaterialSort = 'newest' | 'oldest' | 'title'
@@ -210,4 +210,78 @@ export function importMaterial(file: File, metadata: MaterialImportMetadata) {
   form.append('file', file, file.name)
   form.append('metadata', JSON.stringify(metadata))
   return postFormData<{ readonly materialId: string }>('/materials/import', form)
+}
+
+export interface MaterialVersionSnapshot {
+  readonly id: string
+  readonly versionNumber: number
+  readonly status: 'draft' | 'active' | 'superseded'
+  readonly title: string
+  readonly description: string | null
+  readonly materialTypeCode: string
+  readonly subject: string | null
+  readonly languageCode: string | null
+  readonly programId: string | null
+  readonly schoolGradeId: string | null
+  readonly proficiencyLevelId: string | null
+  readonly learningGoal: string | null
+  readonly file: MaterialDetailFile
+  readonly tags: readonly string[]
+  readonly knowledgeComponentIds: readonly string[]
+  readonly curriculumOutcomeIds: readonly string[]
+  readonly assessableTaskCount: number
+}
+
+export interface MaterialVersionHistoryItem {
+  readonly id: string
+  readonly versionNumber: number
+  readonly status: 'draft' | 'active' | 'superseded'
+  readonly title: string
+  readonly createdAtUtc: string
+  readonly activatedAtUtc: string | null
+  readonly supersededAtUtc: string | null
+  readonly isCurrent: boolean
+}
+
+export interface MaterialEditWorkspace {
+  readonly materialId: string
+  readonly rowVersion: string
+  readonly visibility: 'private' | 'shared'
+  readonly currentVersionId: string
+  readonly editableVersion: MaterialVersionSnapshot
+  readonly history: readonly MaterialVersionHistoryItem[]
+  readonly options: MaterialImportOptions
+}
+
+export interface MaterialEditPayload {
+  readonly expectedRowVersion: string
+  readonly draftVersionId: string | null
+  readonly title: string
+  readonly materialTypeCode: string
+  readonly description: string | null
+  readonly subject: string | null
+  readonly languageCode: string | null
+  readonly programId: string | null
+  readonly schoolGradeId: string | null
+  readonly proficiencyLevelId: string | null
+  readonly learningGoal: string | null
+  readonly tags: readonly string[]
+  readonly knowledgeComponentIds: readonly string[]
+  readonly curriculumOutcomeIds: readonly string[]
+}
+
+export function getMaterialEditWorkspace(materialId: string, signal?: AbortSignal) {
+  return getJson<MaterialEditWorkspace>(`/materials/${encodeURIComponent(materialId)}/edit`, signal)
+}
+export function getMaterialVersion(materialId: string, versionId: string, signal?: AbortSignal) {
+  return getJson<MaterialVersionSnapshot>(`/materials/${encodeURIComponent(materialId)}/versions/${encodeURIComponent(versionId)}`, signal)
+}
+export function saveMaterialDraft(materialId: string, payload: MaterialEditPayload) {
+  return putJson<{ readonly versionId: string }>(`/materials/${encodeURIComponent(materialId)}/draft`, payload)
+}
+export function publishMaterialDraft(materialId: string, expectedRowVersion: string, draftVersionId: string) {
+  return postJson<{ readonly versionId: string }>(`/materials/${encodeURIComponent(materialId)}/draft/publish`, { expectedRowVersion, draftVersionId })
+}
+export function restoreMaterialVersion(materialId: string, versionId: string, expectedRowVersion: string) {
+  return postJson<{ readonly versionId: string }>(`/materials/${encodeURIComponent(materialId)}/versions/${encodeURIComponent(versionId)}/restore`, { expectedRowVersion })
 }

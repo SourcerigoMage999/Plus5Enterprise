@@ -1,0 +1,68 @@
+.material-edit { position: relative; display: grid; gap: 1.25rem; max-width: 92rem; margin: 0 auto; padding: 1.5rem; color: var(--color-text); }
+.material-edit__breadcrumb { display: flex; gap: .5rem; color: var(--color-text-muted); font-size: .875rem; }
+.material-edit__breadcrumb a { color: var(--color-brand-700); }
+.material-edit__hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.material-edit__hero h1 { margin: 0 0 .3rem; font-size: clamp(1.7rem, 3vw, 2.35rem); }
+.material-edit__hero p { margin: 0; color: var(--color-text-muted); }
+.material-edit__top-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .55rem; }
+.material-edit__top-actions .ds-action { display: inline-flex; align-items: center; gap: .4rem; }
+.material-edit__version { align-self: center; padding: .55rem .8rem; color: #19436e; border: 1px solid #bfd0e3; border-radius: 999px; background: #edf5fc; font-weight: 700; }
+.material-edit__notice { padding: .8rem 1rem; color: #145c3e; border: 1px solid #a7d9c2; border-radius: .7rem; background: #eefaf4; }
+.material-edit__notice.is-error { color: #8b1e2d; border-color: #f0b1b9; background: #fff0f2; }
+.material-edit__steps { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 0; overflow: hidden; list-style: none; border: 1px solid var(--color-border); border-radius: 1rem; background: white; }
+.material-edit__steps li { display: flex; align-items: center; gap: .65rem; padding: .8rem 1rem; color: var(--color-text-muted); border-right: 1px solid var(--color-border); }
+.material-edit__steps li:last-child { border: 0; }
+.material-edit__steps span { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--color-border); border-radius: 50%; }
+.material-edit__steps .is-active { color: #173e67; background: #fff9e7; font-weight: 700; }
+.material-edit__steps .is-active span { border-color: #e3ab11; background: #ffc928; }
+.material-edit__layout { display: grid; grid-template-columns: minmax(0, 1fr) 23rem; gap: 1.2rem; align-items: start; }
+.material-edit__canvas { display: grid; gap: 1.2rem; min-width: 0; }
+.material-edit__file-card, .material-edit__editor-placeholder, .material-edit__mapping, .material-edit__sidebar > section { border: 1px solid var(--color-border); border-radius: 1rem; background: #fff; box-shadow: var(--shadow-sm); }
+.material-edit__file-card { display: flex; align-items: center; gap: 1rem; padding: 1rem; }
+.material-edit__file-card > div:last-child { display: grid; gap: .2rem; min-width: 0; }
+.material-edit__file-card strong { overflow-wrap: anywhere; }
+.material-edit__file-card small, .material-edit__file-card span { color: var(--color-text-muted); }
+.material-edit__file-icon { display: grid; place-items: center; min-width: 4rem; min-height: 4rem; color: #fff; border-radius: .8rem; background: #254f79; }
+.material-edit__editor-placeholder { display: grid; place-items: center; min-height: 22rem; padding: 2.5rem; text-align: center; background: linear-gradient(145deg, #fff, #f5f8fb); }
+.material-edit__editor-placeholder h2 { margin: .8rem 0 .3rem; color: #173e67; }
+.material-edit__editor-placeholder p { max-width: 42rem; margin: 0; color: var(--color-text-muted); }
+.material-edit__editor-placeholder > div { display: flex; gap: .65rem; align-items: center; max-width: 34rem; margin-top: 1.3rem; padding: .8rem 1rem; border-radius: .7rem; background: #eef5fb; text-align: left; }
+.material-edit__editor-placeholder > div strong { font-size: 1.6rem; color: #173e67; }
+.material-edit__mapping, .material-edit__sidebar > section { display: grid; gap: 1rem; padding: 1.2rem; }
+.material-edit__mapping h2, .material-edit__sidebar h2, .material-edit__choices h3 { margin: 0; color: #173e67; }
+.material-edit__sidebar { position: sticky; top: 1rem; }
+.material-edit__field { display: grid; gap: .4rem; font-weight: 650; }
+.material-edit__field input, .material-edit__field select, .material-edit__field textarea { width: 100%; min-height: 2.65rem; padding: .65rem .75rem; border: 1px solid var(--color-border); border-radius: .6rem; background: #fff; color: inherit; font: inherit; font-weight: 400; }
+.material-edit__field textarea { resize: vertical; }
+.material-edit__two { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+.material-edit__choices { display: grid; gap: .6rem; }
+.material-edit__choices > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; max-height: 15rem; overflow: auto; }
+.material-edit__choices label { display: flex; gap: .6rem; align-items: flex-start; padding: .7rem; border-radius: .65rem; background: #f5f8fb; }
+.material-edit__choices input { margin-top: .25rem; accent-color: #e5ac0a; }
+.material-edit__choices label span { display: grid; }
+.material-edit__choices small { color: var(--color-text-muted); }
+.material-edit__visibility { display: flex; gap: .6rem; padding: .8rem; color: #19436e; border-radius: .7rem; background: #edf5fc; }
+.material-edit__visibility span { display: grid; }
+.material-edit__visibility small { margin-top: .2rem; color: var(--color-text-muted); }
+.material-edit__history { position: fixed; z-index: 20; inset: 0 0 0 auto; width: min(26rem, 92vw); padding: 1.2rem; overflow: auto; border-left: 1px solid var(--color-border); background: #fff; box-shadow: -12px 0 30px #18324d26; }
+.material-edit__history header, .material-edit__preview header { display: flex; align-items: center; justify-content: space-between; }
+.material-edit__history header > div, .material-edit__preview header > div { display: flex; align-items: center; gap: .6rem; }
+.material-edit__history h2, .material-edit__preview h2 { margin: 0; }
+.material-edit__history header button, .material-edit__preview header button { border: 0; background: transparent; cursor: pointer; }
+.material-edit__history ol { display: grid; gap: .6rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.material-edit__history li button { display: grid; grid-template-columns: auto 1fr auto; gap: .7rem; align-items: center; width: 100%; padding: .8rem; text-align: left; border: 1px solid var(--color-border); border-radius: .7rem; background: #fff; cursor: pointer; }
+.material-edit__history li button > span { padding: .35rem .5rem; border-radius: .45rem; background: #edf5fc; font-weight: 800; }
+.material-edit__history li button > div { display: grid; }
+.material-edit__history small { color: var(--color-text-muted); }
+.material-edit__history em { color: #145c3e; font-size: .75rem; font-style: normal; font-weight: 700; }
+.material-edit__preview { z-index: 30; width: min(38rem, calc(100vw - 2rem)); margin: auto; padding: 0; border: 0; border-radius: 1rem; box-shadow: 0 20px 60px #11273f66; }
+.material-edit__preview::backdrop { background: #11273f80; }
+.material-edit__preview > div { display: grid; gap: 1rem; padding: 1.3rem; }
+.material-edit__preview dl { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin: 0; }
+.material-edit__preview dl > div { padding: .7rem; border-radius: .6rem; background: #f5f8fb; }
+.material-edit__preview dt { color: var(--color-text-muted); font-size: .8rem; }
+.material-edit__preview dd { margin: .2rem 0 0; overflow-wrap: anywhere; font-weight: 700; }
+.material-edit-state { display: grid; place-items: center; gap: 1rem; min-height: 24rem; text-align: center; }
+.material-detail__edit-link { display: inline-flex; align-items: center; padding: .55rem .8rem; color: inherit; border: 1px solid var(--color-border); border-radius: .55rem; background: #fff; text-decoration: none; }
+@media (max-width: 980px) { .material-edit__hero { display: grid; } .material-edit__top-actions { justify-content: flex-start; } .material-edit__layout { grid-template-columns: 1fr; } .material-edit__sidebar { position: static; } }
+@media (max-width: 620px) { .material-edit { padding: 1rem; } .material-edit__top-actions .ds-action { flex: 1 1 45%; justify-content: center; } .material-edit__version { width: 100%; text-align: center; } .material-edit__steps li { justify-content: center; padding: .65rem; font-size: 0; } .material-edit__steps li span { font-size: .875rem; } .material-edit__choices > div, .material-edit__two, .material-edit__preview dl { grid-template-columns: 1fr; } .material-edit__editor-placeholder { min-height: 18rem; padding: 1.2rem; } }

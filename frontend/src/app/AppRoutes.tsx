@@ -21,6 +21,7 @@ import { ScheduleEditPage } from '../schedule/ScheduleEditPage.tsx'
 import { MaterialLibraryPage } from '../materials/MaterialLibraryPage.tsx'
 import { MaterialDetailPage } from '../materials/MaterialDetailPage.tsx'
 import { MaterialImportPage } from '../materials/MaterialImportPage.tsx'
+import { MaterialEditPage } from '../materials/MaterialEditPage.tsx'
 
 const dashboard = navigationItems[0]
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials')
@@ -54,6 +55,7 @@ export function AppRoutes() {
           <Route path="schedule/:sessionId" element={<ScheduleSessionDetailPage />} />
           <Route path="materials" element={<MaterialLibraryPage />} />
           <Route path="materials/import" element={<MaterialImportPage />} />
+          <Route path="materials/:materialId/edit" element={<MaterialEditPage />} />
           <Route path="materials/:materialId" element={<MaterialDetailPage />} />
           {moduleItems.map((item) => (
             <Route

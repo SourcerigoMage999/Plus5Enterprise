@@ -17,6 +17,11 @@ public interface IMaterialObjectStorage
         MaterialObjectReference reference,
         CancellationToken cancellationToken);
 
+    Task CopyCleanAsync(
+        MaterialObjectReference source,
+        MaterialObjectReference destination,
+        CancellationToken cancellationToken);
+
     Task DeleteAsync(
         MaterialObjectReference reference,
         CancellationToken cancellationToken);

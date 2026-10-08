@@ -183,6 +183,31 @@ public sealed class MaterialFoundationTests
     }
 
     [Fact]
+    public void CleanCopyCreatesIndependentVerifiedFileWithoutPretendingToRescan()
+    {
+        var material = CreateMaterial();
+        var sourceVersion = CreateVersion(material);
+        var source = CreatePdf(material, sourceVersion);
+        source.MarkUploaded(100, new string('C', 64), CreatedAt.AddMinutes(1));
+        source.StartScanning(CreatedAt.AddMinutes(2));
+        source.MarkClean(CreatedAt.AddMinutes(3));
+        sourceVersion.Activate(source, CreatedAt.AddMinutes(4));
+
+        var draft = sourceVersion.CreateRestoredDraft(Guid.NewGuid(), material, 2, CreatedAt.AddMinutes(5));
+        var copy = new MaterialFile(Guid.NewGuid(), material, draft, source.Format, source.OriginalFileName,
+            source.DeclaredMediaType, source.DeclaredSizeBytes, source.StorageProvider, source.StorageContainer,
+            CreatedAt.AddMinutes(5));
+        copy.MarkCleanCopy(source, CreatedAt.AddMinutes(6));
+
+        Assert.Equal(MaterialFileStatus.Clean, copy.Status);
+        Assert.Equal(source.Sha256Checksum, copy.Sha256Checksum);
+        Assert.Equal(source.ActualSizeBytes, copy.ActualSizeBytes);
+        Assert.Equal("CLEAN_COPY", copy.LastScanResultCategory);
+        Assert.Equal(0, copy.ScanAttemptCount);
+        Assert.NotEqual(source.ObjectKey, copy.ObjectKey);
+    }
+
+    [Fact]
     public void ShareSupportsOnlyViewOrUseAndNeverTransfersOwnership()
     {
         var material = CreateMaterial();

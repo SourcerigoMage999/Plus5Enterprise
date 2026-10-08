@@ -120,6 +120,28 @@ public sealed class MaterialFile
         Status = MaterialFileStatus.Uploaded;
     }
 
+    public void MarkCleanCopy(MaterialFile source, DateTimeOffset copiedAtUtc)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        EnsureStatus(MaterialFileStatus.PendingUpload);
+        EnsureTimestamp(copiedAtUtc, nameof(copiedAtUtc));
+        if (source.Status != MaterialFileStatus.Clean
+            || source.Format != Format
+            || source.ActualSizeBytes is null
+            || string.IsNullOrWhiteSpace(source.Sha256Checksum))
+        {
+            throw new ArgumentException("Only a clean, fully verified file can be copied.", nameof(source));
+        }
+
+        ActualSizeBytes = source.ActualSizeBytes;
+        Sha256Checksum = source.Sha256Checksum;
+        UploadedAtUtc = copiedAtUtc;
+        ScannedAtUtc = copiedAtUtc;
+        LastScanResultCategory = "CLEAN_COPY";
+        UpdatedAtUtc = copiedAtUtc;
+        Status = MaterialFileStatus.Clean;
+    }
+
     public void StartScanning(DateTimeOffset startedAtUtc)
     {
         if (Status is not (MaterialFileStatus.Uploaded or MaterialFileStatus.Failed))

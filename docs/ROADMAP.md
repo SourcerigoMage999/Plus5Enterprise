@@ -660,7 +660,23 @@ uvedeni.
 215-testni backend i 78-testni frontend regression, architecture 4/4, dependency auditi,
 Docker storage/scanner/restart-persistence/runtime/health i canonical visual gateovi odobreni
 su bez dodatnih promjena business/UI contracta.
-## 6.7 Screen 4.5 Edit material and version history — TODO
+## 6.7 Screen 4.5 Edit material and version history — FINAL LOCKED
+
+**Implementirano 2026-10-08:** owner-only `/materials/{materialId}/edit` pruža stvarni
+metadata/mapping editor, read-only version history, Save Draft, transakcijski publish i restore
+povijesnog snapshota kao novi Draft. Svaka verzija dobiva vlastitu private Clean file kopiju i
+opaque key; metadata, mapping i AssessableTaskVersion snapshoti ostaju verzionirani, dok Active
+i Superseded redovi ostaju immutable. Contract: `MATERIAL_EDITING.md`.
+
+Stvarni SQL/storage flow dokazao je import v1 → Draft v2 → Active v2/Superseded v1 → restore
+Draft v3. Canonical desktop/mobile evidence nalazi se u `visual-acceptance/phase-6.7/`.
+Visibility/share mutation ostaje 6.8, a slide/content editor, Quick Check, preview/export i
+autosave ostaju Phase 7.
+
+**Acceptance 6.7: FINAL LOCKED — odobreno 2026-10-08.** Release build, targeted i full
+regression, architecture, EF model drift, stvarni SQL/storage version lifecycle,
+Docker/health/non-root i canonical desktop/mobile visual gateovi odobreni su bez dodatnih
+promjena business/UI contracta.
 ## 6.8 Material sharing, visibility and permissions contract — TODO (contract locked in 6.1)
 
 **Source status:** detaljni source sada postoji za 4.1, 4.2 i 4.4–4.5. Stari 0 B blocker za 4.1 više nije aktivan.

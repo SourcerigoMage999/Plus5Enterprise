@@ -74,6 +74,12 @@ public sealed class Material
         UpdatedAtUtc = archivedAtUtc;
     }
 
+    public void RecordVersionChange(DateTimeOffset updatedAtUtc)
+    {
+        EnsureMutable(updatedAtUtc);
+        UpdatedAtUtc = updatedAtUtc;
+    }
+
     private void EnsureMutable(DateTimeOffset updatedAtUtc)
     {
         MaterialGuard.Utc(updatedAtUtc, nameof(updatedAtUtc));

@@ -95,6 +95,7 @@ app.MapGroups();
 app.MapScheduleCalendar();
 app.MapMaterialLibrary();
 app.MapMaterialImport();
+app.MapMaterialEditing();
 
 app.Run();
 

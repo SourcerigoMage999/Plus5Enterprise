@@ -61,6 +61,29 @@ const detail = {
   tasks: [{ id: 'task-1', versionId: 'task-version-1', versionNumber: 1, sortOrder: 0, prompt: 'I ____ London twice.', taskTypeCode: 'SINGLE_CHOICE', difficulty: 1, evidenceType: 'recognition', correctAnswer: 'B – have visited', evaluationCriterion: null, maxPoints: 1, knowledgeComponents: [{ id: 'component-1', name: 'Present Perfect', knowledgeAreaName: 'Grammar', knowledgeModelCode: 'PLUS5-EN', knowledgeModelVersion: '2026', knowledgeModelStatus: 'published' }] }],
 }
 
+const editWorkspace = {
+  materialId: 'material-1',
+  rowVersion: 'AQIDBA==',
+  visibility: 'private',
+  currentVersionId: 'version-1',
+  editableVersion: {
+    id: 'version-1', versionNumber: 1, status: 'active', title: material.title,
+    description: detail.description, materialTypeCode: material.materialTypeCode,
+    subject: material.subject, languageCode: 'EN', programId: 'program-1', schoolGradeId: 'grade-1',
+    proficiencyLevelId: 'level-1', learningGoal: detail.learningGoal, file: detail.file,
+    tags: material.tags, knowledgeComponentIds: ['component-1'], curriculumOutcomeIds: ['outcome-1'],
+    assessableTaskCount: 1,
+  },
+  history: [{ id: 'version-1', versionNumber: 1, status: 'active', title: material.title, createdAtUtc: material.addedAtUtc, activatedAtUtc: material.addedAtUtc, supersededAtUtc: null, isCurrent: true }],
+  options: {
+    programs: overview.programs, schoolGrades: overview.schoolGrades,
+    proficiencyLevels: [{ id: 'level-1', name: 'B1', code: 'B1' }],
+    knowledgeComponents: detail.knowledgeComponents,
+    curriculumOutcomes: detail.curriculumOutcomes,
+    materialTypeCodes: ['WORKSHEET', 'PRESENTATION'], languageCodes: ['EN'],
+  },
+}
+
 function json(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), {
     status,
@@ -230,5 +253,34 @@ describe('material import', () => {
     expect(screen.getByText('Present Perfect')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Potvrdi i uvezi/ })).toBeEnabled()
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('material editing and version history', () => {
+  it('renders the owner-only metadata editor without simulating a slide editor', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(json(session)).mockResolvedValueOnce(json(editWorkspace))
+
+    renderMaterials('/materials/material-1/edit')
+
+    expect(await screen.findByRole('heading', { level: 1, name: '4.5 Uredi materijal' })).toBeInTheDocument()
+    expect(screen.getByDisplayValue(material.title)).toBeInTheDocument()
+    expect(screen.getByText(/Uređivač slajdova i sadržaja pripada Phase 7/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Objavi novu verziju/ })).toBeDisabled()
+    expect(screen.getByText(/Vidljivost:/)).toBeInTheDocument()
+  })
+
+  it('opens immutable history and describes restore as a new draft', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(editWorkspace))
+      .mockResolvedValueOnce(json(editWorkspace.editableVersion))
+
+    renderMaterials('/materials/material-1/edit')
+    fireEvent.click(await screen.findByRole('button', { name: /Povijest/ }))
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`v1.*${material.title}`, 's') }))
+
+    expect(await screen.findByRole('heading', { name: 'Verzija 1' })).toBeInTheDocument()
+    expect(screen.getByText(/Vraćanje stvara novu skicu/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Vrati kao novu skicu/ })).toBeDisabled()
   })
 })

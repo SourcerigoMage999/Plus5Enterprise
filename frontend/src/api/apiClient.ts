@@ -178,6 +178,14 @@ function friendlyMessage(code?: string): string {
       return 'Sigurnosno skeniranje trenutačno nije dostupno. Datoteka nije aktivirana.'
     case 'material_import_invalid_request':
       return 'Provjerite datoteku i obavezne podatke materijala.'
+    case 'material_edit_invalid_request':
+      return 'Provjerite obavezne podatke materijala.'
+    case 'material_edit_reference_not_found':
+      return 'Odabrani program ili pedagoško mapiranje više nije dostupno. Osvježite podatke.'
+    case 'material_draft_exists':
+      return 'Materijal već ima otvorenu skicu. Osvježite uređivač i nastavite na toj skici.'
+    case 'material_storage_unavailable':
+      return 'Pohrana materijala trenutačno nije dostupna. Pokušajte ponovno.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

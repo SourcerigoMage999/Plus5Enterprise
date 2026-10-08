@@ -1,0 +1,63 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "realObjectStorage": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "screens": [
+    {
+      "name": "edit",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1530
+    },
+    {
+      "name": "history",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1530
+    },
+    {
+      "name": "edit",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2873
+    }
+  ],
+  "checks": [
+    "runtime: import → metadata draft v2 → publish v2 → immutable v1 restore as new draft v3",
+    "security: anonymous edit 401 and authenticated publish without CSRF 400",
+    "desktop: real login/edit API, metadata workspace, Phase 7 boundary and no document overflow",
+    "mobile: real login/edit API, metadata workspace, Phase 7 boundary and no document overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": [],
+  "runtimeVersionFlow": {
+    "materialId": "679f06e8-545e-461d-b94c-db07493debbc",
+    "importStatus": 201,
+    "saveDraftStatus": 200,
+    "publishStatus": 200,
+    "restoreStatus": 200,
+    "history": [
+      "3:draft",
+      "2:active",
+      "1:superseded"
+    ],
+    "editableVersion": "3:draft",
+    "anonymousEditStatus": 401,
+    "missingCsrfPublishStatus": 400
+  }
+}
