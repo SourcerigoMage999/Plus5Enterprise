@@ -2,7 +2,7 @@
 
 ## Status
 
-**Phase 7.1 — IMPLEMENTED / REVIEW READY — 2026-10-09.**
+**Phase 7.1 — FINAL LOCKED — odobreno 2026-10-09.**
 
 Ovaj dokument zaključava tehnički model nativne PLUS 5 prezentacije prije implementacije
 slide CRUD-a, elemenata, Quick Checka, autosavea ili preview/publish flowa. Primjenjuje

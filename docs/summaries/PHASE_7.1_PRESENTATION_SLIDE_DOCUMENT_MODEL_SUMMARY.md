@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED / REVIEW READY — 2026-10-09.**
+**FINAL LOCKED — odobreno 2026-10-09.**
 
 ## Cilj faze
 
@@ -39,7 +39,7 @@ AssessableTaskVersion i Evidence granica.
 |---|---|---|
 | `docs/PRESENTATION_SLIDE_DOCUMENT_MODEL.md` | added | canonical Phase 7.1 technical contract |
 | `docs/DECISION_LOG.md` | changed | ADR-0026 |
-| `docs/ROADMAP.md` | changed | Phase 7.1 REVIEW READY status i acceptance |
+| `docs/ROADMAP.md` | changed | Phase 7.1 status i acceptance |
 | `docs/summaries/PHASE_7.1_PRESENTATION_SLIDE_DOCUMENT_MODEL_SUMMARY.md` | added | phase evidence i handoff |
 
 ## Domain / database promjene

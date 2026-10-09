@@ -2,7 +2,7 @@
 
 ### ADR-0026 — Version-bound relational PresentationDocument with typed element payloads
 - **Datum:** 2026-10-09
-- **Status:** Proposed — Phase 7.1 IMPLEMENTED / REVIEW READY.
+- **Status:** Accepted — Phase 7.1 FINAL LOCKED.
 - **Kontekst:** nativni PLUS 5 Slide Editor treba stabilne slide/element identitete, česte
   concurrency-safe promjene, tipove sadržaja koji evoluiraju i preciznu vezu procjenjivog
   elementa s postojećim TaskVersionom, bez pretvaranja cijelog dokumenta u nevalidirani JSON.

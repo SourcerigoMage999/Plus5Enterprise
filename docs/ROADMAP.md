@@ -707,7 +707,7 @@ contracta.
 
 # PHASE 7 — PLUS 5 Presentation Editor
 
-## 7.1 Technical design for slide document model — IMPLEMENTED / REVIEW READY
+## 7.1 Technical design for slide document model — FINAL LOCKED
 
 **Dizajnirano 2026-10-09:** nativna prezentacija je version-bound `PresentationDocument` unutar
 točne MaterialVersion. Relacijski model nosi document/slide/element identitet, redoslijed,
@@ -721,9 +721,9 @@ time čuva zaključani MaterialFile activation invariant. PPTX import nije autom
 AI ostaje blokiran, a ova podfaza nema domain/EF/schema/API/UI implementaciju. Contract:
 `PRESENTATION_SLIDE_DOCUMENT_MODEL.md`; odluka: ADR-0026.
 
-**Acceptance 7.1: IMPLEMENTED / REVIEW READY.** Document/version/concurrency, typed-payload,
-asset, instructional/assessable, security i publish-package granice su dokumentirane. Čeka SA
-review; 7.2 nije započeta.
+**Acceptance 7.1: FINAL LOCKED — odobreno 2026-10-09.** Document/version/concurrency,
+typed-payload, asset, instructional/assessable, security i publish-package granice su
+dokumentirane i odobrene; 7.2 nije započeta.
 ## 7.2 Slide CRUD/reorder/duplicate — TODO
 ## 7.3 Core content elements — TODO
 ## 7.4 Teaching-specific elements — TODO
