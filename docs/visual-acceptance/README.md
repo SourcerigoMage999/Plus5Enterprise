@@ -327,3 +327,13 @@ document overflowa. Korišteni su stvarni login, SQL podaci i API; nema browser 
 API/DOM manipulacije ni business writeova tijekom capturea.
 
 [Dokazi, mjerenja i namjerna odstupanja](phase-6.3/README.md).
+
+## Phase 6.8 — Material sharing — PASS (2026-10-09)
+
+Stvarni owner-only Private/Shared i eksplicitni Teacher View/Use flow provjeren je normalnom
+prijavom, stvarnim importom, SQL-om i sharing API-jem na desktopu 1536×1024 i mobitelu
+390×844. Nema browser grešaka, document overflowa, API interceptiona, DOM mutationa ni
+business writeova tijekom capturea. Screen 4.1 služi kao Materials/shell baseline jer source
+nema zaseban sharing PNG.
+
+[Dokazi, mjerenja i namjerna odstupanja](phase-6.8/README.md).

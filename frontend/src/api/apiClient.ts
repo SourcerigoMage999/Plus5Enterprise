@@ -186,6 +186,10 @@ function friendlyMessage(code?: string): string {
       return 'Materijal već ima otvorenu skicu. Osvježite uređivač i nastavite na toj skici.'
     case 'material_storage_unavailable':
       return 'Pohrana materijala trenutačno nije dostupna. Pokušajte ponovno.'
+    case 'material_share_invalid_request':
+      return 'Provjerite vidljivost, e-mail adrese i razine pristupa.'
+    case 'material_share_invalid_recipient':
+      return 'Nije moguće dodati ovog učitelja.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

@@ -285,3 +285,34 @@ export function publishMaterialDraft(materialId: string, expectedRowVersion: str
 export function restoreMaterialVersion(materialId: string, versionId: string, expectedRowVersion: string) {
   return postJson<{ readonly versionId: string }>(`/materials/${encodeURIComponent(materialId)}/versions/${encodeURIComponent(versionId)}/restore`, { expectedRowVersion })
 }
+
+export interface MaterialSharingGrant {
+  readonly teacherAccountId: string
+  readonly email: string
+  readonly access: 'view' | 'use'
+}
+
+export interface MaterialSharingWorkspace {
+  readonly materialId: string
+  readonly title: string
+  readonly rowVersion: string
+  readonly visibility: 'private' | 'shared'
+  readonly grants: readonly MaterialSharingGrant[]
+}
+
+export interface MaterialSharingPayload {
+  readonly expectedRowVersion: string
+  readonly visibility: 'private' | 'shared'
+  readonly grants: readonly {
+    readonly recipientEmail: string
+    readonly access: 'view' | 'use'
+  }[]
+}
+
+export function getMaterialSharing(materialId: string, signal?: AbortSignal) {
+  return getJson<MaterialSharingWorkspace>(`/materials/${encodeURIComponent(materialId)}/sharing`, signal)
+}
+
+export function saveMaterialSharing(materialId: string, payload: MaterialSharingPayload) {
+  return putJson<{ readonly saved: boolean }>(`/materials/${encodeURIComponent(materialId)}/sharing`, payload)
+}

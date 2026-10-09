@@ -677,14 +677,31 @@ autosave ostaju Phase 7.
 regression, architecture, EF model drift, stvarni SQL/storage version lifecycle,
 Docker/health/non-root i canonical desktop/mobile visual gateovi odobreni su bez dodatnih
 promjena business/UI contracta.
-## 6.8 Material sharing, visibility and permissions contract — TODO (contract locked in 6.1)
+## 6.8 Material sharing, visibility and permissions contract — FINAL LOCKED
 
-**Source status:** detaljni source sada postoji za 4.1, 4.2 i 4.4–4.5. Stari 0 B blocker za 4.1 više nije aktivan.
+**Implementirano 2026-10-09:** owner-only `/materials/{materialId}/sharing` omogućuje promjenu
+`Private`/`Shared` vidljivosti te atomsko dodavanje, promjenu i uklanjanje eksplicitnih
+`MaterialShare` grantova prema točnoj e-mail adresi aktivnog Teacher računa. Grantovi su
+isključivo `View` ili `Use`; nema edit, re-share, ownership-transfer, public/link/org scopea
+niti implicitnog pristupa Student/Group/Evidence/readiness/Lesson podacima. Contract:
+`MATERIAL_SHARING.md`.
 
-**Gate status:** Phase 6.1 SA/Product odluka zatvorila je storage, format/size,
-validation/scanning, ownership/share, version-history i Materials AI confirmation/privacy
-contract. AI metadata ostaje prijedlog dok ga Teacher ne potvrdi. Kasnije faze implementiraju
-samo svoj eksplicitni scope nad tim contractom.
+Backend ponovno provjerava owner scope, Active/current/Clean granicu, recipient status,
+self-share/duplicate pravila, CSRF i `Material.RowVersion`. Unknown, deaktiviran, self ili drugi
+nedopušteni recipient vraća isti neutralni `material_share_invalid_recipient` rezultat, a sharing
+PUT ima zaseban limit od 10 pokušaja u minuti po izvornoj IP adresi. Povratak na `Private` u istoj
+transakciji prvo uklanja sve grantove, a postojeći SQL trigger ostaje završna zaštita da Private
+materijal ne zadrži grant. Nema nove EF migracije ni model drifta.
+
+Stvarni runtime flow i desktop/mobile evidence nalaze se u `visual-acceptance/phase-6.8/`.
+Canonical Screen 4.1 služi kao Materials/shell baseline jer source nema zaseban sharing PNG;
+permission semantiku vode zaključani Phase 6.1 contract i ADR-0023.
+
+**Acceptance 6.8: FINAL LOCKED — odobreno 2026-10-09.** Release build, targeted i full
+regression baseline, architecture, stvarni SQL concurrency/integrity flow, enumeration-safe
+recipient korekcija s dedicated rate limitom, EF model drift, Docker runtime/health,
+desktop/mobile visual gate i dependency auditi odobreni su bez dodatnih promjena business/UI
+contracta.
 
 ---
 

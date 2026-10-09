@@ -84,6 +84,14 @@ const editWorkspace = {
   },
 }
 
+const sharingWorkspace = {
+  materialId: 'material-1',
+  title: material.title,
+  rowVersion: 'AQIDBA==',
+  visibility: 'private',
+  grants: [],
+}
+
 function json(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), {
     status,
@@ -178,6 +186,7 @@ describe('material detail', () => {
     expect(screen.getByText('ENG.8.1')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Otvori' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Preuzmi' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: /Dijeli/ })).toHaveAttribute('href', '/materials/material-1/sharing')
     expect(screen.getByText(/Sam materijal nije automatski dokaz znanja/)).toBeInTheDocument()
     expect(screen.getByText('I ____ London twice.')).toBeInTheDocument()
     expect(screen.getByText('Težina 1/5')).toBeInTheDocument()
@@ -282,5 +291,67 @@ describe('material editing and version history', () => {
     expect(await screen.findByRole('heading', { name: 'Verzija 1' })).toBeInTheDocument()
     expect(screen.getByText(/Vraćanje stvara novu skicu/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Vrati kao novu skicu/ })).toBeDisabled()
+  })
+})
+
+describe('material sharing and permissions', () => {
+  it('saves an explicit Use grant by exact Teacher email', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(sharingWorkspace))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ saved: true }))
+      .mockResolvedValueOnce(json({
+        ...sharingWorkspace,
+        rowVersion: 'BQYHCA==',
+        visibility: 'shared',
+        grants: [{ teacherAccountId: 'teacher-2', email: 'colleague@example.test', access: 'use' }],
+      }))
+
+    renderMaterials('/materials/material-1/sharing')
+    expect(await screen.findByRole('heading', { level: 1, name: 'Dijeljenje materijala' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('radio', { name: /Dijeljeno/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Dodaj učitelja/ }))
+    fireEvent.change(screen.getByLabelText('E-mail učitelja'), { target: { value: 'colleague@example.test' } })
+    fireEvent.change(screen.getByLabelText('Razina pristupa'), { target: { value: 'use' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Spremi dijeljenje' }))
+
+    expect(await screen.findByText('Postavke dijeljenja su spremljene.')).toBeInTheDocument()
+    const putCall = vi.mocked(fetch).mock.calls.find(([, init]) => init?.method === 'PUT')
+    expect(putCall).toBeDefined()
+    expect(JSON.parse(String(putCall?.[1]?.body))).toEqual({
+      expectedRowVersion: 'AQIDBA==',
+      visibility: 'shared',
+      grants: [{ recipientEmail: 'colleague@example.test', access: 'use' }],
+    })
+  })
+
+  it('does not expose sharing management to a non-owner or missing material', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json({}, 404))
+
+    renderMaterials('/materials/material-1/sharing')
+
+    expect(await screen.findByText('Materijal nije pronađen ili samo vlasnik može upravljati dijeljenjem.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Povratak na materijale' })).toBeInTheDocument()
+  })
+
+  it('shows a neutral message for an invalid sharing recipient', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(sharingWorkspace))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ code: 'material_share_invalid_recipient' }, 400))
+
+    renderMaterials('/materials/material-1/sharing')
+    expect(await screen.findByRole('heading', { level: 1, name: 'Dijeljenje materijala' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('radio', { name: /Dijeljeno/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Dodaj učitelja/ }))
+    fireEvent.change(screen.getByLabelText('E-mail učitelja'), { target: { value: 'unknown@example.test' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Spremi dijeljenje' }))
+
+    expect(await screen.findByText('Nije moguće dodati ovog učitelja.')).toBeInTheDocument()
+    expect(screen.queryByText(/račun.*postoji|nije pronađen aktivan/i)).not.toBeInTheDocument()
   })
 })

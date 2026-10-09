@@ -56,6 +56,7 @@ function MaterialDetailContent({ material }: { readonly material: MaterialDetail
       <div><h1 id="material-detail-title">4.2 Pregled materijala</h1><p>Pregled sadržaja, metapodataka i povezanosti s učenjem.</p></div>
       <div className="material-detail__heading-actions">
         {material.isOwner ? <Link className="material-detail__edit-link" to={`/materials/${material.id}/edit`}>✎ Uredi</Link> : <button disabled title="Samo vlasnik može uređivati materijal" type="button">✎ Uredi</button>}
+        {material.isOwner ? <Link className="material-detail__edit-link" to={`/materials/${material.id}/sharing`}>◎ Dijeli</Link> : <button disabled title="Primatelj ne može ponovno dijeliti materijal" type="button">◎ Dijeli</button>}
         <button disabled title="Povezivanje s pripremom sata dolazi u Phase 9" type="button">＋ Dodaj u pripremu</button>
         <button disabled title="Dodatne write akcije još nemaju zaključan contract" type="button" aria-label="Više akcija">•••</button>
       </div>

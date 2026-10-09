@@ -1,0 +1,71 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "realObjectStorage": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "Screen 4.1 Material library; no dedicated sharing PNG exists",
+  "screens": [
+    {
+      "name": "shared-use-grant",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1024
+    },
+    {
+      "name": "private-empty-unsaved",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1024
+    },
+    {
+      "name": "shared-use-grant",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1579
+    },
+    {
+      "name": "shared-use-grant-scrolled",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1579
+    }
+  ],
+  "checks": [
+    "runtime: private owner material → explicit active Teacher Use grant → persisted Shared material",
+    "security: anonymous sharing workspace 401 and authenticated PUT without CSRF 400",
+    "desktop: real login/sharing API, explicit Use grant, owner-only controls and no document overflow",
+    "desktop: Private selection clears grants locally and honestly renders the empty state before save",
+    "mobile: real login/sharing API, explicit Use grant, owner-only controls and no document overflow",
+    "mobile: scrolled interaction evidence keeps grant controls usable inside the 390 px viewport"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": [],
+  "runtimeSharingFlow": {
+    "materialId": "a2dbd2dd-c771-41af-a91f-ce85ebd1a4fa",
+    "initialVisibility": "private",
+    "savedVisibility": "shared",
+    "grantAccess": "use",
+    "grantCount": 1,
+    "saveStatus": 200,
+    "anonymousStatus": 401,
+    "missingCsrfStatus": 400
+  }
+}
