@@ -707,7 +707,23 @@ contracta.
 
 # PHASE 7 — PLUS 5 Presentation Editor
 
-## 7.1 Technical design for slide document model — TODO
+## 7.1 Technical design for slide document model — IMPLEMENTED / REVIEW READY
+
+**Dizajnirano 2026-10-09:** nativna prezentacija je version-bound `PresentationDocument` unutar
+točne MaterialVersion. Relacijski model nosi document/slide/element identitet, redoslijed,
+geometry, same-version asset i AssessableTaskVersion veze; bounded schema-versioned JSON služi
+samo type-specific presentation payloadu. Draft je mutable uz document rowversion, a
+Active/Superseded graph immutable. Instructional sadržaj ne stvara Evidence, dok budući
+assessable element ponovno koristi exact Phase 6.5 TaskVersion i leaf Knowledge mapping.
+
+Planirani publish deterministički stvara server-generated Clean presentation ZIP manifest i
+time čuva zaključani MaterialFile activation invariant. PPTX import nije automatska konverzija,
+AI ostaje blokiran, a ova podfaza nema domain/EF/schema/API/UI implementaciju. Contract:
+`PRESENTATION_SLIDE_DOCUMENT_MODEL.md`; odluka: ADR-0026.
+
+**Acceptance 7.1: IMPLEMENTED / REVIEW READY.** Document/version/concurrency, typed-payload,
+asset, instructional/assessable, security i publish-package granice su dokumentirane. Čeka SA
+review; 7.2 nije započeta.
 ## 7.2 Slide CRUD/reorder/duplicate — TODO
 ## 7.3 Core content elements — TODO
 ## 7.4 Teaching-specific elements — TODO

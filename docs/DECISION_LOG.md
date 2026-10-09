@@ -1,5 +1,25 @@
 # DECISION_LOG
 
+### ADR-0026 — Version-bound relational PresentationDocument with typed element payloads
+- **Datum:** 2026-10-09
+- **Status:** Proposed — Phase 7.1 IMPLEMENTED / REVIEW READY.
+- **Kontekst:** nativni PLUS 5 Slide Editor treba stabilne slide/element identitete, česte
+  concurrency-safe promjene, tipove sadržaja koji evoluiraju i preciznu vezu procjenjivog
+  elementa s postojećim TaskVersionom, bez pretvaranja cijelog dokumenta u nevalidirani JSON.
+- **Odluka:** `PresentationDocument` pripada točno jednoj Draft/Active/Superseded
+  `MaterialVersion`. Dokument, slajd, redoslijed, geometry, asset i Task reference relacijski su;
+  samo type-specific presentation payload ostaje bounded schema-versioned JSON. Draft je
+  mutable uz vlastiti rowversion, a Active/Superseded snapshot immutable.
+- **Evidence granica:** instructional slajd/element nikad nije dokaz. Assessable element nosi
+  exact same-MaterialVersion `AssessableTaskVersion` vezu i ponovno koristi Phase 6.5 leaf
+  Knowledge mapping; scoring i pedagoški metadata ne dupliciraju se u element payloadu.
+- **Storage/publish:** user asseti ostaju private, version-bound i Clean-only. Prije publisha
+  validirani graph daje deterministic server-generated presentation ZIP manifest koji čuva
+  postojeći Clean `MaterialFile` activation invariant; graph je canonical, paket derived.
+- **Granice:** 7.1 ne stvara schema/API/UI. Slide CRUD, handleri, Quick Check, autosave i
+  publish slijede 7.2–7.8, a AI ostaje blokiran do zasebne odluke. Detalji:
+  `PRESENTATION_SLIDE_DOCUMENT_MODEL.md`.
+
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04
 - **Status:** Accepted — Phase 6.5 FINAL LOCKED.
