@@ -246,3 +246,17 @@ pozitivan score i answer/criterion shape. SQL triggeri dopuštaju TaskVersion i 
 samo na Draft MaterialVersionu, prihvaćaju isključivo Published/Retired leaf Knowledge
 targete te blokiraju aktivaciju ako procjenjivi Task nema barem jedan target. Active i
 Superseded snapshotovi ostaju immutable. Detalji su u `ASSESSABLE_TASK_METADATA.md`.
+
+## Phase 7.2 presentation document and slide schema
+
+Migracija `AddPresentationSlideDocumentModel` dodaje `PresentationDocuments` i
+`PresentationSlides` bez seeda ili backfilla. Dokument je opcionalni version-bound aggregate
+točno jedne `PRESENTATION` MaterialVersion; slide ima stabilni GUID, isti MaterialVersionId i
+contiguous `SortOrder`.
+
+Restrictive FK-ovi i unique `(MaterialVersionId, SortOrder)` indeks štite ownership grafa i
+redoslijed. CHECK constrainti štite schema version, logical `1600×900` canvas i nenegativan
+sort. SQL Server `rowversion` na dokumentu je concurrency authority za slide writeove.
+Triggeri s errorima `51241` i `51242` dopuštaju mutacije samo nad Draft PRESENTATION
+snapshotom; Active/Superseded graph ostaje immutable. Detalji su u
+`PRESENTATION_SLIDE_CRUD.md`.

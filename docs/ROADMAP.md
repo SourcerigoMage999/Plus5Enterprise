@@ -724,7 +724,23 @@ AI ostaje blokiran, a ova podfaza nema domain/EF/schema/API/UI implementaciju. C
 **Acceptance 7.1: FINAL LOCKED — odobreno 2026-10-09.** Document/version/concurrency,
 typed-payload, asset, instructional/assessable, security i publish-package granice su
 dokumentirane i odobrene; 7.2 nije započeta.
-## 7.2 Slide CRUD/reorder/duplicate — TODO
+## 7.2 Slide CRUD/reorder/duplicate — FINAL LOCKED
+
+**Implementirano 2026-10-10:** uvedeni su version-bound `PresentationDocument` i prazni
+`PresentationSlide` persistence, aditivna migracija, Draft/PRESENTATION SQL integrity triggeri
+te owner-only GET/initialize/add/delete/duplicate/reorder endpointi. Prvi document create koristi
+Material rowversion; svi daljnji writeovi koriste document rowversion i stale zahtjev vraća
+kontrolirani `409`. Zadnji slajd se ne briše, redoslijed ostaje contiguous i najviše je 200
+slajdova. Contract: `PRESENTATION_SLIDE_CRUD.md`.
+
+Route `/materials/:materialId/presentation` implementira canonical P3 hijerarhiju nad stvarnim
+Draft podacima. Desktop/mobile runtime evidence nalazi se u `visual-acceptance/phase-7.2/`.
+Content elementi, Quick Check, autosave i preview/publish ostaju 7.3–7.8.
+
+**Acceptance 7.2: FINAL LOCKED — odobreno 2026-10-11.** Release build, targeted domain/API i stvarni
+SQL migration/concurrency/integrity testovi, architecture, EF drift/idempotent script,
+frontend test/lint/typecheck/build, Docker health/non-root, dependency audit i canonical
+desktop/mobile visual gate odobreni su bez dodatnih promjena business/UI contracta.
 ## 7.3 Core content elements — TODO
 ## 7.4 Teaching-specific elements — TODO
 ## 7.5 Interactive question / Quick Check — TODO

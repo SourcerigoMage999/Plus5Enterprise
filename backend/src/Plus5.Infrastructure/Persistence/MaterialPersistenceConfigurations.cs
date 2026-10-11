@@ -365,6 +365,72 @@ internal sealed class MaterialShareConfiguration : IEntityTypeConfiguration<Mate
     }
 }
 
+internal sealed class PresentationDocumentConfiguration
+    : IEntityTypeConfiguration<PresentationDocument>
+{
+    public void Configure(EntityTypeBuilder<PresentationDocument> builder)
+    {
+        builder.ToTable("PresentationDocuments", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_PresentationDocuments_SchemaVersion",
+                "[DocumentSchemaVersion] > 0");
+            table.HasCheckConstraint(
+                "CK_PresentationDocuments_Canvas",
+                $"[CanvasWidth] = {PresentationDocument.CanvasWidthValue} AND [CanvasHeight] = {PresentationDocument.CanvasHeightValue}");
+            table.HasTrigger("TR_PresentationDocuments_ProtectSnapshot");
+        });
+
+        builder.HasKey(document => document.MaterialVersionId);
+        builder.Property(document => document.DocumentSchemaVersion).IsRequired();
+        builder.Property(document => document.CanvasWidth).IsRequired();
+        builder.Property(document => document.CanvasHeight).IsRequired();
+        builder.Property(document => document.CreatedAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(document => document.UpdatedAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(document => document.RowVersion).IsRowVersion();
+
+        builder.HasOne<MaterialVersion>()
+            .WithOne()
+            .HasForeignKey<PresentationDocument>(document => document.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class PresentationSlideConfiguration
+    : IEntityTypeConfiguration<PresentationSlide>
+{
+    public void Configure(EntityTypeBuilder<PresentationSlide> builder)
+    {
+        builder.ToTable("PresentationSlides", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_PresentationSlides_SortOrder",
+                "[SortOrder] >= 0");
+            table.HasTrigger("TR_PresentationSlides_ProtectSnapshot");
+        });
+
+        builder.HasKey(slide => slide.Id);
+        builder.HasAlternateKey(slide => new
+        {
+            slide.MaterialVersionId,
+            slide.Id,
+        })
+            .HasName("AK_PresentationSlides_MaterialVersion_Id");
+        builder.Property(slide => slide.SortOrder).IsRequired();
+        builder.HasOne<PresentationDocument>()
+            .WithMany()
+            .HasForeignKey(slide => slide.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(slide => new
+        {
+            slide.MaterialVersionId,
+            slide.SortOrder,
+        })
+            .IsUnique()
+            .HasDatabaseName("UX_PresentationSlides_Document_SortOrder");
+    }
+}
+
 internal sealed class AssessableTaskConfiguration : IEntityTypeConfiguration<AssessableTask>
 {
     public void Configure(EntityTypeBuilder<AssessableTask> builder)

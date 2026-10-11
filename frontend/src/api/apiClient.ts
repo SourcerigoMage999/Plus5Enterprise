@@ -88,6 +88,17 @@ export async function putJson<T>(path: string, body: object): Promise<T> {
   return (await response.json()) as T
 }
 
+export async function deleteJson<T>(path: string, body: object): Promise<T> {
+  const csrfResponse = await apiRequest('/auth/csrf')
+  const csrf = (await csrfResponse.json()) as CsrfResponse
+  const response = await apiRequest(path, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf.token },
+    body: JSON.stringify(body),
+  })
+  return (await response.json()) as T
+}
+
 export async function postFormData<T>(path: string, body: FormData): Promise<T> {
   const csrfResponse = await apiRequest('/auth/csrf')
   const csrf = (await csrfResponse.json()) as CsrfResponse

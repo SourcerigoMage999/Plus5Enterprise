@@ -15,6 +15,7 @@ public static class IdentityServiceExtensions
     public const string AuthRateLimitPolicy = "AuthSensitive";
     public const string MaterialUploadRateLimitPolicy = "MaterialUpload";
     public const string MaterialSharingRateLimitPolicy = "MaterialSharing";
+    public const string PresentationEditingRateLimitPolicy = "PresentationEditing";
     public const string CsrfHeaderName = "X-CSRF-TOKEN";
 
     public static IServiceCollection AddTeacherIdentity(
@@ -112,6 +113,18 @@ public static class IdentityServiceExtensions
                     _ => new FixedWindowRateLimiterOptions
                     {
                         PermitLimit = 10,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1),
+                        AutoReplenishment = true,
+                    }));
+            options.AddPolicy(PresentationEditingRateLimitPolicy, context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? context.Connection.RemoteIpAddress?.ToString()
+                        ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 120,
                         QueueLimit = 0,
                         Window = TimeSpan.FromMinutes(1),
                         AutoReplenishment = true,

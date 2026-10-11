@@ -19,6 +19,10 @@
 - **Granice:** 7.1 ne stvara schema/API/UI. Slide CRUD, handleri, Quick Check, autosave i
   publish slijede 7.2–7.8, a AI ostaje blokiran do zasebne odluke. Detalji:
   `PRESENTATION_SLIDE_DOCUMENT_MODEL.md`.
+- **Phase 7.2 primjena:** uvedeni su version-bound document/slide redci, Draft-only SQL
+  zaštita, document `rowversion` nakon inicijalnog Material-revision createa te atomski
+  add/delete/duplicate/reorder praznih slajdova. Ova primjena ne mijenja 7.1 typed-element,
+  asset, assessable ili publish granice.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04

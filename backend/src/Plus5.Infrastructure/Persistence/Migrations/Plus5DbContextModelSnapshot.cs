@@ -949,6 +949,79 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationDocument", b =>
+                {
+                    b.Property<Guid>("MaterialVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CanvasHeight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CanvasWidth")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<int>("DocumentSchemaVersion")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.HasKey("MaterialVersionId");
+
+                    b.ToTable("PresentationDocuments", null, t =>
+                        {
+                            t.HasTrigger("TR_PresentationDocuments_ProtectSnapshot");
+
+                            t.HasCheckConstraint("CK_PresentationDocuments_Canvas", "[CanvasWidth] = 1600 AND [CanvasHeight] = 900");
+
+                            t.HasCheckConstraint("CK_PresentationDocuments_SchemaVersion", "[DocumentSchemaVersion] > 0");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationSlide", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MaterialVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("MaterialVersionId", "Id")
+                        .HasName("AK_PresentationSlides_MaterialVersion_Id");
+
+                    b.HasIndex("MaterialVersionId", "SortOrder")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PresentationSlides_Document_SortOrder");
+
+                    b.ToTable("PresentationSlides", null, t =>
+                        {
+                            t.HasTrigger("TR_PresentationSlides_ProtectSnapshot");
+
+                            t.HasCheckConstraint("CK_PresentationSlides_SortOrder", "[SortOrder] >= 0");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("Plus5.Domain.Readiness.CurriculumOutcomeReadinessEstimate", b =>
                 {
                     b.Property<Guid>("StudentId")
@@ -2216,6 +2289,24 @@ namespace Plus5.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Plus5.Domain.Materials.MaterialVersionTag", b =>
                 {
                     b.HasOne("Plus5.Domain.Materials.MaterialVersion", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationDocument", b =>
+                {
+                    b.HasOne("Plus5.Domain.Materials.MaterialVersion", null)
+                        .WithOne()
+                        .HasForeignKey("Plus5.Domain.Materials.PresentationDocument", "MaterialVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationSlide", b =>
+                {
+                    b.HasOne("Plus5.Domain.Materials.PresentationDocument", null)
                         .WithMany()
                         .HasForeignKey("MaterialVersionId")
                         .OnDelete(DeleteBehavior.Restrict)

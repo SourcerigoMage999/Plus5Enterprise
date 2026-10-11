@@ -47,6 +47,9 @@ koje trenutni scope i njegove direktne dependency granice stvarno zahtijevaju:
    - `EVIDENCE_EVENT.md` nakon Phase 5.3 za provenance, idempotency, leaf targete i append-only Evidence lifecycle
    - `EVIDENCE_METADATA.md` nakon Phase 5.4 za immutable metadata snapshot, canonical codeove i correction semantics
    - `MASTERY_READINESS.md` nakon Phase 5.5 za PerformanceScore, weighting, decay, confidence, agregaciju i projection refresh
+   - `MATERIAL_FOUNDATION.md`, `MATERIAL_METADATA_MAPPING.md`, `ASSESSABLE_TASK_METADATA.md` i ostali Phase 6 contracti za version-bound Material lifecycle
+   - `PRESENTATION_SLIDE_DOCUMENT_MODEL.md` nakon Phase 7.1 za document/slide/element, concurrency, asset i publish-package granice
+   - `PRESENTATION_SLIDE_CRUD.md` nakon Phase 7.2 za Draft-only prazne slajdove, owner scope, redoslijed i editor write contract
    - `DOCKER_DEPLOYMENT_STANDARD.md`
    - `TESTING_QUALITY_STANDARD.md`
 - `SCREEN_SPEC_STATUS.md`

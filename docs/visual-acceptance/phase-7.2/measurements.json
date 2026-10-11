@@ -1,0 +1,60 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "realObjectStorage": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "4.3 P3.png",
+  "screens": [
+    {
+      "name": "editor",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1164
+    },
+    {
+      "name": "editor",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1787
+    },
+    {
+      "name": "editor-workspace",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1787
+    }
+  ],
+  "checks": [
+    "runtime: import PRESENTATION → Draft v2 → initialize → add → duplicate → reorder → delete → add",
+    "security/concurrency: anonymous 401, missing CSRF 400 and stale document rowversion 409",
+    "desktop: real login/editor API, three persisted blank slides, Phase 7.2 controls and no document overflow",
+    "mobile: real login/editor API, three persisted blank slides, Phase 7.2 controls and no document overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": [],
+  "runtimeSlideFlow": {
+    "materialId": "b8d7e870-73fe-4adc-b8e6-aff5b51ff8f7",
+    "importStatus": 201,
+    "draftStatus": 200,
+    "initializeStatus": 200,
+    "slideCount": 3,
+    "contiguousSortOrder": true,
+    "staleRowVersionStatus": 409,
+    "missingCsrfStatus": 400,
+    "anonymousStatus": 401
+  }
+}

@@ -65,8 +65,8 @@ var app = builder.Build();
 app.UseObservability();
 app.UseApiConventions();
 app.UseCors("Frontend");
-app.UseRateLimiter();
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseAuthorization();
 app.UseAntiforgery();
 
@@ -97,6 +97,7 @@ app.MapMaterialLibrary();
 app.MapMaterialImport();
 app.MapMaterialEditing();
 app.MapMaterialSharing();
+app.MapPresentationEditor();
 
 app.Run();
 

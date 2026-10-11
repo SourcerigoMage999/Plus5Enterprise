@@ -104,7 +104,10 @@ export function MaterialEditPage() {
           <div><span>Izvorna datoteka</span><strong>{workspace.editableVersion.file.originalFileName}</strong><small>{formatBytes(workspace.editableVersion.file.sizeBytes)} · sadržaj ostaje nepromijenjen</small></div>
         </section>
         <section className="material-edit__editor-placeholder">
-          <BookOpen size={44} /><h2>Uređivanje sadržaja</h2><p>U ovoj fazi uređuju se metapodaci i pedagoško mapiranje. Uređivač slajdova i sadržaja pripada Phase 7 i nije simuliran.</p>
+          <BookOpen size={44} /><h2>Uređivanje sadržaja</h2>
+          {workspace.editableVersion.status === 'draft' && workspace.editableVersion.materialTypeCode === 'PRESENTATION'
+            ? <><p>Skica prezentacije spremna je za uređivanje praznih slajdova.</p><Link className="ds-action" to={`/materials/${materialId}/presentation`}>Otvori editor prezentacije</Link></>
+            : <p>U ovoj fazi uređuju se metapodaci i pedagoško mapiranje. Editor prezentacije dostupan je za spremljenu skicu vrste Prezentacija.</p>}
           <div><strong>{workspace.editableVersion.assessableTaskCount}</strong><span>verzioniranih procjenjivih zadataka prenosi se bez promjene u novu verziju</span></div>
         </section>
         <section className="material-edit__mapping">

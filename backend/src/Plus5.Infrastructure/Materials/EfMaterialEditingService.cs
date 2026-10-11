@@ -153,6 +153,7 @@ public sealed class EfMaterialEditingService(
                                   select outcome).ToListAsync(cancellationToken);
             db.MaterialVersionCurriculumOutcomes.AddRange(outcomes.Select(outcome => new MaterialVersionCurriculumOutcome(draft, outcome)));
             await CloneTasksAsync(source.Id, draft, now, cancellationToken);
+            await ClonePresentationAsync(source.Id, draft, now, cancellationToken);
             return draft;
         }
         catch
@@ -179,6 +180,33 @@ public sealed class EfMaterialEditingService(
                                  select new { component, model, IsLeaf = !db.KnowledgeComponents.Any(child => child.ParentComponentId == component.Id) }).ToListAsync(cancellationToken);
             db.AssessableTaskVersionKnowledgeComponents.AddRange(targets.Select(target => new AssessableTaskVersionKnowledgeComponent(clone, draft, target.component, target.model, target.IsLeaf)));
         }
+    }
+
+    private async Task ClonePresentationAsync(
+        Guid sourceVersionId,
+        MaterialVersion draft,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        var sourceDocument = await db.PresentationDocuments
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                document => document.MaterialVersionId == sourceVersionId,
+                cancellationToken);
+        if (sourceDocument is null)
+        {
+            return;
+        }
+
+        var document = new PresentationDocument(draft, now);
+        db.PresentationDocuments.Add(document);
+        var slides = await db.PresentationSlides
+            .AsNoTracking()
+            .Where(slide => slide.MaterialVersionId == sourceVersionId)
+            .OrderBy(slide => slide.SortOrder)
+            .ToListAsync(cancellationToken);
+        db.PresentationSlides.AddRange(slides.Select(slide =>
+            new PresentationSlide(Guid.NewGuid(), document, slide.SortOrder)));
     }
 
     private async Task ReplaceMappingsAsync(MaterialVersion draft, MaterialEditCommand command, EditReferences references, CancellationToken cancellationToken)
