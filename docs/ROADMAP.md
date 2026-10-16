@@ -741,7 +741,25 @@ Content elementi, Quick Check, autosave i preview/publish ostaju 7.3–7.8.
 SQL migration/concurrency/integrity testovi, architecture, EF drift/idempotent script,
 frontend test/lint/typecheck/build, Docker health/non-root, dependency audit i canonical
 desktop/mobile visual gate odobreni su bez dodatnih promjena business/UI contracta.
-## 7.3 Core content elements — TODO
+## 7.3 Core content elements — FINAL LOCKED
+
+**Implementirano 2026-10-16:** Presentation Editor podržava version-bound `TEXT`, `IMAGE`,
+`SHAPE` i `TABLE` elemente sa zatvorenim v1 payload registryjem, logical-canvas geometryjem,
+contiguous z-indexom, document rowversion concurrencyjem i Draft-only SQL zaštitom. Private
+PNG/JPEG/WebP asset prolazi signature/size validaciju, quarantine, stvarni fail-closed malware
+scan i Clean promote; storage interni podaci nisu dio API-ja. Contract:
+`PRESENTATION_CORE_ELEMENTS.md`.
+
+Owner-only API i responsive canonical P3 editor omogućuju persisted create/update/delete,
+image upload/read, property editing i layer selection. Slide duplicate klonira elemente, a
+Material restore kopira elemente i assete u novu version boundary. Teaching elementi, Quick
+Check/Knowledge mapping, autosave i preview/publish ostaju 7.4–7.8. Stvarni desktop/mobile
+evidence nalazi se u `visual-acceptance/phase-7.3/`.
+
+**Acceptance 7.3: FINAL LOCKED — odobreno 2026-10-16.** Release build, targeted
+domain/API/security, stvarni SQL migration/integrity, EF drift/idempotent script, architecture,
+frontend i canonical desktop/mobile gate odobreni su bez dodatnih promjena business/UI
+contracta.
 ## 7.4 Teaching-specific elements — TODO
 ## 7.5 Interactive question / Quick Check — TODO
 ## 7.6 Knowledge Component mapping per question — TODO

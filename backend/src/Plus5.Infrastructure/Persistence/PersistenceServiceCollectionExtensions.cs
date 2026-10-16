@@ -127,7 +127,9 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IMaterialSharingService, EfMaterialSharingService>();
         services.AddScoped<IPresentationEditorQuery, EfPresentationEditorQuery>();
         services.AddScoped<IPresentationSlideService, EfPresentationSlideService>();
+        services.AddScoped<IPresentationElementService, EfPresentationElementService>();
         services.AddSingleton<IMaterialFileValidator, MaterialFileValidator>();
+        services.AddSingleton<IPresentationImageValidator, PresentationImageValidator>();
         services.AddSingleton<IMaterialObjectStorage, S3MaterialObjectStorage>();
         services.AddSingleton<IMalwareScanner, ClamAvMalwareScanner>();
         services.AddScoped<IReadinessRefreshService, EfReadinessRefreshService>();

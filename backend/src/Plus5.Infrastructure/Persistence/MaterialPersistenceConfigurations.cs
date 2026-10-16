@@ -431,6 +431,143 @@ internal sealed class PresentationSlideConfiguration
     }
 }
 
+internal sealed class PresentationAssetConfiguration
+    : IEntityTypeConfiguration<PresentationAsset>
+{
+    public void Configure(EntityTypeBuilder<PresentationAsset> builder)
+    {
+        builder.ToTable("PresentationAssets", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_PresentationAssets_Status",
+                $"[Status] = {(int)PresentationAssetStatus.Clean}");
+            table.HasCheckConstraint(
+                "CK_PresentationAssets_MediaType",
+                "[MediaType] IN ('image/png', 'image/jpeg', 'image/webp')");
+            table.HasCheckConstraint(
+                "CK_PresentationAssets_Size",
+                $"[SizeBytes] > 0 AND [SizeBytes] <= {PresentationAsset.MaximumImageSizeBytes}");
+            table.HasTrigger("TR_PresentationAssets_ProtectSnapshot");
+        });
+
+        builder.HasKey(asset => asset.Id);
+        builder.HasAlternateKey(asset => new
+        {
+            asset.MaterialVersionId,
+            asset.Id,
+        })
+            .HasName("AK_PresentationAssets_MaterialVersion_Id");
+        builder.Property(asset => asset.OriginalFileName)
+            .HasMaxLength(MaterialFilePolicy.OriginalFileNameMaxLength)
+            .IsRequired();
+        builder.Property(asset => asset.MediaType)
+            .HasMaxLength(MaterialFilePolicy.MediaTypeMaxLength)
+            .IsRequired();
+        builder.Property(asset => asset.StorageProvider)
+            .HasMaxLength(MaterialFilePolicy.StorageProviderMaxLength)
+            .IsRequired();
+        builder.Property(asset => asset.StorageContainer)
+            .HasMaxLength(MaterialFilePolicy.StorageContainerMaxLength)
+            .IsRequired();
+        builder.Property(asset => asset.ObjectKey)
+            .HasMaxLength(MaterialFilePolicy.ObjectKeyMaxLength)
+            .IsRequired();
+        builder.Property(asset => asset.Sha256Checksum)
+            .HasMaxLength(MaterialFilePolicy.ChecksumMaxLength)
+            .IsFixedLength()
+            .IsRequired();
+        builder.Property(asset => asset.Status).HasConversion<int>().IsRequired();
+        builder.Property(asset => asset.CreatedAtUtc).HasPrecision(7).IsRequired();
+        builder.HasOne<PresentationDocument>()
+            .WithMany()
+            .HasForeignKey(asset => asset.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(asset => asset.ObjectKey)
+            .IsUnique()
+            .HasDatabaseName("UX_PresentationAssets_ObjectKey");
+    }
+}
+
+internal sealed class PresentationElementConfiguration
+    : IEntityTypeConfiguration<PresentationElement>
+{
+    public void Configure(EntityTypeBuilder<PresentationElement> builder)
+    {
+        builder.ToTable("PresentationElements", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_PresentationElements_Type",
+                "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE')");
+            table.HasCheckConstraint(
+                "CK_PresentationElements_Schema",
+                "[ElementSchemaVersion] = 1");
+            table.HasCheckConstraint(
+                "CK_PresentationElements_ZIndex",
+                "[ZIndex] >= 0");
+            table.HasCheckConstraint(
+                "CK_PresentationElements_Bounds",
+                $"[X] >= 0 AND [Y] >= 0 AND [Width] > 0 AND [Height] > 0 AND [X] + [Width] <= {PresentationDocument.CanvasWidthValue} AND [Y] + [Height] <= {PresentationDocument.CanvasHeightValue}");
+            table.HasCheckConstraint(
+                "CK_PresentationElements_Payload",
+                $"ISJSON([PayloadJson]) = 1 AND DATALENGTH([PayloadJson]) <= {PresentationElement.MaximumPayloadBytes}");
+            table.HasCheckConstraint(
+                "CK_PresentationElements_Asset",
+                "([ElementTypeCode] = 'IMAGE' AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] <> 'IMAGE' AND [PresentationAssetId] IS NULL)");
+            table.HasTrigger("TR_PresentationElements_ProtectSnapshot");
+        });
+
+        builder.HasKey(element => element.Id);
+        builder.HasAlternateKey(element => new
+        {
+            element.MaterialVersionId,
+            element.Id,
+        })
+            .HasName("AK_PresentationElements_MaterialVersion_Id");
+        builder.Property(element => element.ElementTypeCode).HasMaxLength(32).IsRequired();
+        builder.Property(element => element.ElementSchemaVersion).IsRequired();
+        builder.Property(element => element.X).HasPrecision(9, 3).IsRequired();
+        builder.Property(element => element.Y).HasPrecision(9, 3).IsRequired();
+        builder.Property(element => element.Width).HasPrecision(9, 3).IsRequired();
+        builder.Property(element => element.Height).HasPrecision(9, 3).IsRequired();
+        builder.Property(element => element.PayloadJson)
+            .HasColumnType("nvarchar(max)")
+            .IsRequired();
+        builder.HasOne<PresentationSlide>()
+            .WithMany()
+            .HasForeignKey(element => new
+            {
+                element.MaterialVersionId,
+                element.PresentationSlideId,
+            })
+            .HasPrincipalKey(slide => new
+            {
+                slide.MaterialVersionId,
+                slide.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<PresentationAsset>()
+            .WithMany()
+            .HasForeignKey(element => new
+            {
+                element.MaterialVersionId,
+                element.PresentationAssetId,
+            })
+            .HasPrincipalKey(asset => new
+            {
+                asset.MaterialVersionId,
+                asset.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(element => new
+        {
+            element.PresentationSlideId,
+            element.ZIndex,
+        })
+            .IsUnique()
+            .HasDatabaseName("UX_PresentationElements_Slide_ZIndex");
+    }
+}
+
 internal sealed class AssessableTaskConfiguration : IEntityTypeConfiguration<AssessableTask>
 {
     public void Configure(EntityTypeBuilder<AssessableTask> builder)

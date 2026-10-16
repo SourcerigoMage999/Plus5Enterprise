@@ -205,8 +205,83 @@ public sealed class EfMaterialEditingService(
             .Where(slide => slide.MaterialVersionId == sourceVersionId)
             .OrderBy(slide => slide.SortOrder)
             .ToListAsync(cancellationToken);
-        db.PresentationSlides.AddRange(slides.Select(slide =>
-            new PresentationSlide(Guid.NewGuid(), document, slide.SortOrder)));
+        var slideMap = slides.ToDictionary(
+            slide => slide.Id,
+            slide => new PresentationSlide(Guid.NewGuid(), document, slide.SortOrder));
+        db.PresentationSlides.AddRange(slideMap.Values);
+
+        var sourceAssets = await db.PresentationAssets
+            .AsNoTracking()
+            .Where(asset => asset.MaterialVersionId == sourceVersionId
+                && asset.Status == PresentationAssetStatus.Clean)
+            .ToListAsync(cancellationToken);
+        var material = await db.Materials.SingleAsync(
+            candidate => candidate.Id == draft.MaterialId,
+            cancellationToken);
+        var copiedReferences = new List<MaterialObjectReference>();
+        var assetMap = new Dictionary<Guid, PresentationAsset>();
+        try
+        {
+            foreach (var sourceAsset in sourceAssets)
+            {
+                var clone = new PresentationAsset(
+                    Guid.NewGuid(),
+                    draft.Id,
+                    material.OwnerTeacherId,
+                    material.Id,
+                    sourceAsset.OriginalFileName,
+                    sourceAsset.MediaType,
+                    sourceAsset.SizeBytes,
+                    sourceAsset.StorageProvider,
+                    sourceAsset.StorageContainer,
+                    sourceAsset.Sha256Checksum,
+                    now);
+                var destination = new MaterialObjectReference(
+                    clone.StorageProvider,
+                    clone.StorageContainer,
+                    clone.ObjectKey);
+                await storage.CopyCleanAsync(
+                    new MaterialObjectReference(
+                        sourceAsset.StorageProvider,
+                        sourceAsset.StorageContainer,
+                        sourceAsset.ObjectKey),
+                    destination,
+                    cancellationToken);
+                copiedReferences.Add(destination);
+                assetMap.Add(sourceAsset.Id, clone);
+                db.PresentationAssets.Add(clone);
+            }
+
+            var elements = await db.PresentationElements
+                .AsNoTracking()
+                .Where(element => element.MaterialVersionId == sourceVersionId)
+                .OrderBy(element => element.PresentationSlideId)
+                .ThenBy(element => element.ZIndex)
+                .ToListAsync(cancellationToken);
+            db.PresentationElements.AddRange(elements.Select(element =>
+                new PresentationElement(
+                    Guid.NewGuid(),
+                    slideMap[element.PresentationSlideId],
+                    element.ElementTypeCode,
+                    element.ZIndex,
+                    element.X,
+                    element.Y,
+                    element.Width,
+                    element.Height,
+                    element.PayloadJson,
+                    element.PresentationAssetId.HasValue
+                        ? assetMap[element.PresentationAssetId.Value].Id
+                        : null)));
+        }
+        catch
+        {
+            foreach (var reference in copiedReferences)
+            {
+                await TryDeleteAsync(reference);
+            }
+
+            throw;
+        }
     }
 
     private async Task ReplaceMappingsAsync(MaterialVersion draft, MaterialEditCommand command, EditReferences references, CancellationToken cancellationToken)

@@ -260,3 +260,22 @@ sort. SQL Server `rowversion` na dokumentu je concurrency authority za slide wri
 Triggeri s errorima `51241` i `51242` dopuštaju mutacije samo nad Draft PRESENTATION
 snapshotom; Active/Superseded graph ostaje immutable. Detalji su u
 `PRESENTATION_SLIDE_CRUD.md`.
+
+## Phase 7.3 presentation element and asset schema
+
+Migracija `AddPresentationCoreElements` dodaje `PresentationElements` i `PresentationAssets`
+bez seeda ili backfilla. Element ima stabilni GUID, isti `MaterialVersionId` kao document i
+slide, zatvoreni type code (`TEXT`, `IMAGE`, `SHAPE`, `TABLE`), `SchemaVersion = 1`, bounded
+JSON payload, logical-canvas geometry i contiguous z-index. IMAGE jedini smije/ mora imati
+same-version `PresentationAssetId`.
+
+Asset čuva private object-storage reference, SHA-256 i validirani PNG/JPEG/WebP metadata;
+klijent nikad ne bira niti dobiva storage key. Composite restrictive FK-ovi jamče isti
+MaterialVersion kroz document/slide/element/asset graph. Unique indeks štiti z-index, a CHECK
+constrainti type/schema/geometry/payload byte limit i Clean image shape.
+
+SQL trigger `TR_PresentationAssets_ProtectSnapshot` (`51243`) i
+`TR_PresentationElements_ProtectSnapshot` (`51244`) dopuštaju INSERT/UPDATE/DELETE samo nad
+Draft PRESENTATION snapshotom. Active/Superseded sadržaj ostaje immutable. Material Draft
+restore klonira elemente i fizički kopira Clean assete u novu version boundary. Detalji su u
+`PRESENTATION_CORE_ELEMENTS.md`.

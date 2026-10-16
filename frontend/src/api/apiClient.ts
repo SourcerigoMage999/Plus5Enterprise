@@ -197,6 +197,18 @@ function friendlyMessage(code?: string): string {
       return 'Materijal već ima otvorenu skicu. Osvježite uređivač i nastavite na toj skici.'
     case 'material_storage_unavailable':
       return 'Pohrana materijala trenutačno nije dostupna. Pokušajte ponovno.'
+    case 'presentation_invalid_request':
+      return 'Provjerite sadržaj, položaj i veličinu elementa.'
+    case 'presentation_element_limit_reached':
+      return 'Slajd može sadržavati najviše 200 elemenata.'
+    case 'presentation_payload_limit_reached':
+      return 'Sadržaj prezentacije prelazi dopuštenu veličinu.'
+    case 'presentation_invalid_asset':
+      return 'Odaberite valjanu PNG, JPEG ili WebP sliku do 10 MB.'
+    case 'presentation_asset_malware_detected':
+      return 'Slika nije dodana jer nije prošla sigurnosnu provjeru.'
+    case 'presentation_asset_scanner_unavailable':
+      return 'Sigurnosno skeniranje slike trenutačno nije dostupno.'
     case 'material_share_invalid_request':
       return 'Provjerite vidljivost, e-mail adrese i razine pristupa.'
     case 'material_share_invalid_recipient':

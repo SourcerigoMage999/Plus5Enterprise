@@ -13,6 +13,10 @@ public interface IMaterialObjectStorage
         MaterialObjectReference reference,
         CancellationToken cancellationToken);
 
+    Task<Stream> OpenCleanReadAsync(
+        MaterialObjectReference reference,
+        CancellationToken cancellationToken);
+
     Task PromoteCleanAsync(
         MaterialObjectReference reference,
         CancellationToken cancellationToken);
@@ -36,6 +40,16 @@ public interface IMaterialFileValidator
 {
     Task<MaterialFileValidationResult> ValidateAsync(
         MaterialFileValidationRequest request,
+        Stream content,
+        CancellationToken cancellationToken);
+}
+
+public interface IPresentationImageValidator
+{
+    Task<PresentationImageValidationResult> ValidateAsync(
+        string originalFileName,
+        string declaredMediaType,
+        long declaredSizeBytes,
         Stream content,
         CancellationToken cancellationToken);
 }
@@ -73,6 +87,12 @@ public sealed record MaterialFileValidationRequest(
     long DeclaredSizeBytes);
 
 public sealed record MaterialFileValidationResult(
+    bool IsValid,
+    string ResultCategory,
+    long ActualSizeBytes,
+    string? Sha256Checksum);
+
+public sealed record PresentationImageValidationResult(
     bool IsValid,
     string ResultCategory,
     long ActualSizeBytes,

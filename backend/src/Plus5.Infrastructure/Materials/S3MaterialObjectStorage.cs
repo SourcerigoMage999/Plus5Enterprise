@@ -59,6 +59,18 @@ public sealed class S3MaterialObjectStorage : IMaterialObjectStorage, IDisposabl
         return new ResponseOwnedStream(response);
     }
 
+    public async Task<Stream> OpenCleanReadAsync(
+        MaterialObjectReference reference,
+        CancellationToken cancellationToken)
+    {
+        EnsureReference(reference, options.CleanBucket);
+        var response = await client.GetObjectAsync(
+            options.CleanBucket,
+            reference.ObjectKey,
+            cancellationToken);
+        return new ResponseOwnedStream(response);
+    }
+
     public async Task PromoteCleanAsync(
         MaterialObjectReference reference,
         CancellationToken cancellationToken)

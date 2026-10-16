@@ -121,6 +121,60 @@ public sealed class PresentationEditorApiTests
         Assert.Equal(HttpStatusCode.OK, secondTeacherResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task ElementWritesRequireTeacherAndCsrfWithoutExposingAssets()
+    {
+        var teacherId = Guid.NewGuid();
+        var materialId = Guid.NewGuid();
+        var slideId = Guid.NewGuid();
+        await using var app = await StartApplicationAsync(new CapturingQuery(materialId));
+        using var client = app.GetTestClient();
+
+        using var anonymousAsset = await client.GetAsync(
+            $"/api/v1/materials/{materialId:D}/presentation/assets/{Guid.NewGuid():D}");
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousAsset.StatusCode);
+
+        var csrf = await SignInAndGetCsrfAsync(client, teacherId);
+        using var missingCsrf = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/v1/materials/{materialId:D}/presentation/slides/{slideId:D}/elements")
+        {
+            Content = JsonContent.Create(new
+            {
+                expectedDocumentRowVersion = "AAAAAAAAAAA=",
+                elementTypeCode = "TEXT",
+                x = 0,
+                y = 0,
+                width = 400,
+                height = 100,
+                payloadJson = "{}",
+            }),
+        };
+        missingCsrf.Headers.Add("Cookie", csrf.Cookie);
+        using var rejected = await client.SendAsync(missingCsrf);
+        Assert.Equal(HttpStatusCode.BadRequest, rejected.StatusCode);
+
+        using var valid = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/v1/materials/{materialId:D}/presentation/slides/{slideId:D}/elements")
+        {
+            Content = JsonContent.Create(new
+            {
+                expectedDocumentRowVersion = "AAAAAAAAAAA=",
+                elementTypeCode = "TEXT",
+                x = 0,
+                y = 0,
+                width = 400,
+                height = 100,
+                payloadJson = "{}",
+            }),
+        };
+        valid.Headers.Add("Cookie", csrf.Cookie);
+        valid.Headers.Add(IdentityServiceExtensions.CsrfHeaderName, csrf.Token);
+        using var accepted = await client.SendAsync(valid);
+        Assert.Equal(HttpStatusCode.OK, accepted.StatusCode);
+    }
+
     private static async Task<WebApplication> StartApplicationAsync(CapturingQuery query)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -137,6 +191,7 @@ public sealed class PresentationEditorApiTests
             options => options.Events.OnValidatePrincipal = _ => Task.CompletedTask);
         builder.Services.AddSingleton<IPresentationEditorQuery>(query);
         builder.Services.AddSingleton<IPresentationSlideService, SuccessfulSlideService>();
+        builder.Services.AddSingleton<IPresentationElementService, SuccessfulElementService>();
 
         var app = builder.Build();
         app.UseAuthentication();
@@ -225,6 +280,18 @@ public sealed class PresentationEditorApiTests
         public Task<PresentationMutationResult> DeleteAsync(Guid teacherAccountId, Guid materialId, Guid slideId, PresentationConcurrencyCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> DuplicateAsync(Guid teacherAccountId, Guid materialId, Guid slideId, PresentationConcurrencyCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> ReorderAsync(Guid teacherAccountId, Guid materialId, ReorderPresentationSlidesCommand command, CancellationToken cancellationToken) => Success();
+
+        private static Task<PresentationMutationResult> Success() => Task.FromResult(
+            new PresentationMutationResult(PresentationMutationOutcome.Success));
+    }
+
+    private sealed class SuccessfulElementService : IPresentationElementService
+    {
+        public Task<PresentationAssetContent?> OpenAssetAsync(Guid teacherAccountId, Guid materialId, Guid assetId, CancellationToken cancellationToken) => Task.FromResult<PresentationAssetContent?>(null);
+        public Task<PresentationMutationResult> CreateAsync(Guid teacherAccountId, Guid materialId, Guid slideId, CreatePresentationElementCommand command, CancellationToken cancellationToken) => Success();
+        public Task<PresentationMutationResult> UploadImageAsync(Guid teacherAccountId, Guid materialId, Guid slideId, UploadPresentationImageCommand command, CancellationToken cancellationToken) => Success();
+        public Task<PresentationMutationResult> UpdateAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, UpdatePresentationElementCommand command, CancellationToken cancellationToken) => Success();
+        public Task<PresentationMutationResult> DeleteAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, PresentationConcurrencyCommand command, CancellationToken cancellationToken) => Success();
 
         private static Task<PresentationMutationResult> Success() => Task.FromResult(
             new PresentationMutationResult(PresentationMutationOutcome.Success));

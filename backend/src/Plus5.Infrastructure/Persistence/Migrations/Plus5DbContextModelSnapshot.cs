@@ -949,6 +949,79 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationAsset", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<Guid>("MaterialVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MediaType")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<string>("ObjectKey")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Sha256Checksum")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nchar(64)")
+                        .IsFixedLength();
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StorageContainer")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("StorageProvider")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("MaterialVersionId", "Id")
+                        .HasName("AK_PresentationAssets_MaterialVersion_Id");
+
+                    b.HasIndex("ObjectKey")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PresentationAssets_ObjectKey");
+
+                    b.ToTable("PresentationAssets", null, t =>
+                        {
+                            t.HasTrigger("TR_PresentationAssets_ProtectSnapshot");
+
+                            t.HasCheckConstraint("CK_PresentationAssets_MediaType", "[MediaType] IN ('image/png', 'image/jpeg', 'image/webp')");
+
+                            t.HasCheckConstraint("CK_PresentationAssets_Size", "[SizeBytes] > 0 AND [SizeBytes] <= 10485760");
+
+                            t.HasCheckConstraint("CK_PresentationAssets_Status", "[Status] = 1");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("Plus5.Domain.Materials.PresentationDocument", b =>
                 {
                     b.Property<Guid>("MaterialVersionId")
@@ -986,6 +1059,85 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                             t.HasCheckConstraint("CK_PresentationDocuments_Canvas", "[CanvasWidth] = 1600 AND [CanvasHeight] = 900");
 
                             t.HasCheckConstraint("CK_PresentationDocuments_SchemaVersion", "[DocumentSchemaVersion] > 0");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationElement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ElementSchemaVersion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ElementTypeCode")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<decimal>("Height")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("decimal(9,3)");
+
+                    b.Property<Guid>("MaterialVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PayloadJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PresentationAssetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PresentationSlideId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Width")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("decimal(9,3)");
+
+                    b.Property<decimal>("X")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("decimal(9,3)");
+
+                    b.Property<decimal>("Y")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("decimal(9,3)");
+
+                    b.Property<int>("ZIndex")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("MaterialVersionId", "Id")
+                        .HasName("AK_PresentationElements_MaterialVersion_Id");
+
+                    b.HasIndex("MaterialVersionId", "PresentationAssetId");
+
+                    b.HasIndex("MaterialVersionId", "PresentationSlideId");
+
+                    b.HasIndex("PresentationSlideId", "ZIndex")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PresentationElements_Slide_ZIndex");
+
+                    b.ToTable("PresentationElements", null, t =>
+                        {
+                            t.HasTrigger("TR_PresentationElements_ProtectSnapshot");
+
+                            t.HasCheckConstraint("CK_PresentationElements_Asset", "([ElementTypeCode] = 'IMAGE' AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] <> 'IMAGE' AND [PresentationAssetId] IS NULL)");
+
+                            t.HasCheckConstraint("CK_PresentationElements_Bounds", "[X] >= 0 AND [Y] >= 0 AND [Width] > 0 AND [Height] > 0 AND [X] + [Width] <= 1600 AND [Y] + [Height] <= 900");
+
+                            t.HasCheckConstraint("CK_PresentationElements_Payload", "ISJSON([PayloadJson]) = 1 AND DATALENGTH([PayloadJson]) <= 262144");
+
+                            t.HasCheckConstraint("CK_PresentationElements_Schema", "[ElementSchemaVersion] = 1");
+
+                            t.HasCheckConstraint("CK_PresentationElements_Type", "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE')");
+
+                            t.HasCheckConstraint("CK_PresentationElements_ZIndex", "[ZIndex] >= 0");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -2295,11 +2447,36 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationAsset", b =>
+                {
+                    b.HasOne("Plus5.Domain.Materials.PresentationDocument", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Plus5.Domain.Materials.PresentationDocument", b =>
                 {
                     b.HasOne("Plus5.Domain.Materials.MaterialVersion", null)
                         .WithOne()
                         .HasForeignKey("Plus5.Domain.Materials.PresentationDocument", "MaterialVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationElement", b =>
+                {
+                    b.HasOne("Plus5.Domain.Materials.PresentationAsset", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId", "PresentationAssetId")
+                        .HasPrincipalKey("MaterialVersionId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.Materials.PresentationSlide", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId", "PresentationSlideId")
+                        .HasPrincipalKey("MaterialVersionId", "Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

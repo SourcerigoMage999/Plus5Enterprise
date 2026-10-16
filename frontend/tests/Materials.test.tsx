@@ -273,7 +273,8 @@ describe('material editing and version history', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: '4.5 Uredi materijal' })).toBeInTheDocument()
     expect(screen.getByDisplayValue(material.title)).toBeInTheDocument()
-    expect(screen.getByText(/Uređivač slajdova i sadržaja pripada Phase 7/)).toBeInTheDocument()
+    expect(screen.getByText(/Editor prezentacije dostupan je za spremljenu skicu vrste Prezentacija/)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Otvori editor prezentacije' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Objavi novu verziju/ })).toBeDisabled()
     expect(screen.getByText(/Vidljivost:/)).toBeInTheDocument()
   })

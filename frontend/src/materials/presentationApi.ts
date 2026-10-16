@@ -1,8 +1,33 @@
-import { deleteJson, getJson, postJson, putJson } from '../api/apiClient.ts'
+import { deleteJson, getJson, postFormData, postJson, putJson } from '../api/apiClient.ts'
+import { environment } from '../config/environment.ts'
+
+export type PresentationElementType = 'TEXT' | 'IMAGE' | 'SHAPE' | 'TABLE'
+
+export interface PresentationAsset {
+  readonly id: string
+  readonly originalFileName: string
+  readonly mediaType: string
+  readonly sizeBytes: number
+  readonly readPath: string
+}
+
+export interface PresentationElement {
+  readonly id: string
+  readonly elementTypeCode: PresentationElementType
+  readonly elementSchemaVersion: number
+  readonly zIndex: number
+  readonly x: number
+  readonly y: number
+  readonly width: number
+  readonly height: number
+  readonly payloadJson: string
+  readonly asset: PresentationAsset | null
+}
 
 export interface PresentationSlide {
   readonly id: string
   readonly sortOrder: number
+  readonly elements: readonly PresentationElement[]
 }
 
 export interface PresentationDocument {
@@ -25,6 +50,7 @@ export interface PresentationEditorWorkspace {
 
 interface PresentationMutationResponse {
   readonly slideId: string | null
+  readonly elementId: string | null
 }
 
 const path = (materialId: string) => `/materials/${materialId}/presentation`
@@ -84,4 +110,70 @@ export function reorderPresentationSlides(
     expectedDocumentRowVersion,
     orderedSlideIds,
   })
+}
+
+export function createPresentationElement(
+  materialId: string,
+  slideId: string,
+  body: {
+    readonly expectedDocumentRowVersion: string
+    readonly elementTypeCode: Exclude<PresentationElementType, 'IMAGE'>
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
+    readonly payloadJson: string
+  },
+): Promise<PresentationMutationResponse> {
+  return postJson(`${path(materialId)}/slides/${slideId}/elements`, body)
+}
+
+export function updatePresentationElement(
+  materialId: string,
+  slideId: string,
+  elementId: string,
+  body: {
+    readonly expectedDocumentRowVersion: string
+    readonly zIndex: number
+    readonly x: number
+    readonly y: number
+    readonly width: number
+    readonly height: number
+    readonly payloadJson: string
+  },
+): Promise<PresentationMutationResponse> {
+  return putJson(`${path(materialId)}/slides/${slideId}/elements/${elementId}`, body)
+}
+
+export function deletePresentationElement(
+  materialId: string,
+  slideId: string,
+  elementId: string,
+  expectedDocumentRowVersion: string,
+): Promise<PresentationMutationResponse> {
+  return deleteJson(`${path(materialId)}/slides/${slideId}/elements/${elementId}`, {
+    expectedDocumentRowVersion,
+  })
+}
+
+export function uploadPresentationImage(
+  materialId: string,
+  slideId: string,
+  file: File,
+  expectedDocumentRowVersion: string,
+): Promise<PresentationMutationResponse> {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('expectedDocumentRowVersion', expectedDocumentRowVersion)
+  form.append('x', '570')
+  form.append('y', '260')
+  form.append('width', '460')
+  form.append('height', '380')
+  form.append('altText', file.name.replace(/\.[^.]+$/, ''))
+  form.append('fit', 'contain')
+  return postFormData(`${path(materialId)}/slides/${slideId}/images`, form)
+}
+
+export function presentationAssetUrl(asset: PresentationAsset): string {
+  return `${environment.apiBaseUrl}${asset.readPath}`
 }

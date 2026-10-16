@@ -51,15 +51,56 @@ public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentation
                 .AsNoTracking()
                 .Where(slide => slide.MaterialVersionId == candidate.MaterialVersionId)
                 .OrderBy(slide => slide.SortOrder)
-                .Select(slide => new PresentationSlideView(slide.Id, slide.SortOrder))
                 .ToListAsync(cancellationToken);
+            var slideIds = slides.Select(slide => slide.Id).ToList();
+            var elements = await db.PresentationElements
+                .AsNoTracking()
+                .Where(element => slideIds.Contains(element.PresentationSlideId))
+                .OrderBy(element => element.ZIndex)
+                .ToListAsync(cancellationToken);
+            var assetIds = elements
+                .Where(element => element.PresentationAssetId.HasValue)
+                .Select(element => element.PresentationAssetId!.Value)
+                .Distinct()
+                .ToList();
+            var assets = await db.PresentationAssets
+                .AsNoTracking()
+                .Where(asset => assetIds.Contains(asset.Id)
+                    && asset.Status == PresentationAssetStatus.Clean)
+                .ToDictionaryAsync(asset => asset.Id, cancellationToken);
+            var slideViews = slides.Select(slide => new PresentationSlideView(
+                slide.Id,
+                slide.SortOrder,
+                elements
+                    .Where(element => element.PresentationSlideId == slide.Id)
+                    .Select(element => new PresentationElementView(
+                        element.Id,
+                        element.ElementTypeCode,
+                        element.ElementSchemaVersion,
+                        element.ZIndex,
+                        element.X,
+                        element.Y,
+                        element.Width,
+                        element.Height,
+                        element.PayloadJson,
+                        element.PresentationAssetId.HasValue
+                            && assets.TryGetValue(element.PresentationAssetId.Value, out var asset)
+                                ? new PresentationAssetView(
+                                    asset.Id,
+                                    asset.OriginalFileName,
+                                    asset.MediaType,
+                                    asset.SizeBytes,
+                                    $"/materials/{candidate.Id}/presentation/assets/{asset.Id}")
+                                : null))
+                    .ToList()))
+                .ToList();
             documentView = new PresentationDocumentView(
                 document.DocumentSchemaVersion,
                 document.CanvasWidth,
                 document.CanvasHeight,
                 Convert.ToBase64String(document.RowVersion),
                 document.UpdatedAtUtc,
-                slides);
+                slideViews);
         }
 
         return new PresentationEditorWorkspace(

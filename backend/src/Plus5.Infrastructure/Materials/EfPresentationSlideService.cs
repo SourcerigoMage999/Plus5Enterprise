@@ -175,6 +175,10 @@ public sealed class EfPresentationSlideService(
         }
 
         state.Slides.Remove(slide);
+        var slideElements = await db.PresentationElements
+            .Where(element => element.PresentationSlideId == slide.Id)
+            .ToListAsync(cancellationToken);
+        db.PresentationElements.RemoveRange(slideElements);
         db.PresentationSlides.Remove(slide);
 
         try
@@ -231,6 +235,23 @@ public sealed class EfPresentationSlideService(
             TemporaryOrderOffset + state.Slides.Count);
         state.Slides.Insert(sourceIndex + 1, duplicate);
         db.PresentationSlides.Add(duplicate);
+        var sourceElements = await db.PresentationElements
+            .AsNoTracking()
+            .Where(element => element.PresentationSlideId == slideId)
+            .OrderBy(element => element.ZIndex)
+            .ToListAsync(cancellationToken);
+        db.PresentationElements.AddRange(sourceElements.Select(element =>
+            new PresentationElement(
+                Guid.NewGuid(),
+                duplicate,
+                element.ElementTypeCode,
+                element.ZIndex,
+                element.X,
+                element.Y,
+                element.Width,
+                element.Height,
+                element.PayloadJson,
+                element.PresentationAssetId)));
 
         try
         {

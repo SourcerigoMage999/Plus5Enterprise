@@ -10,8 +10,8 @@ const session = {
   expiresAtUtc: '2026-10-10T12:00:00Z',
 }
 
-const slideOne = { id: '10000000-0000-0000-0000-000000000001', sortOrder: 0 }
-const slideTwo = { id: '10000000-0000-0000-0000-000000000002', sortOrder: 1 }
+const slideOne = { id: '10000000-0000-0000-0000-000000000001', sortOrder: 0, elements: [] }
+const slideTwo = { id: '10000000-0000-0000-0000-000000000002', sortOrder: 1, elements: [] }
 const workspace = {
   materialId: '20000000-0000-0000-0000-000000000001',
   materialVersionId: '30000000-0000-0000-0000-000000000001',
@@ -54,7 +54,7 @@ describe('presentation slide editor', () => {
     renderEditor()
     fireEvent.click(await screen.findByRole('button', { name: /Započni prezentaciju/ }))
 
-    expect(await screen.findByRole('heading', { name: 'Prazan slajd 1' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Prazan slajd' })).toBeInTheDocument()
     const createCall = vi.mocked(fetch).mock.calls.find(([, init]) => init?.method === 'POST')
     expect(JSON.parse(String(createCall?.[1]?.body))).toEqual({
       materialVersionId: workspace.materialVersionId,
@@ -73,7 +73,7 @@ describe('presentation slide editor', () => {
         document: {
           ...workspace.document,
           rowVersion: 'CQgHBgUEAwI=',
-          slides: [...workspace.document.slides, { id: 'slide-3', sortOrder: 2 }],
+          slides: [...workspace.document.slides, { id: 'slide-3', sortOrder: 2, elements: [] }],
         },
       }))
 
@@ -106,7 +106,7 @@ describe('presentation slide editor', () => {
       }))
 
     renderEditor()
-    await screen.findByRole('heading', { name: 'Prazan slajd 1' })
+    await screen.findByRole('heading', { name: 'Prazan slajd' })
     fireEvent.click(screen.getByRole('button', { name: 'Pomakni slajd dolje' }))
 
     await waitFor(() => expect(vi.mocked(fetch).mock.calls.some(([, init]) =>
@@ -126,6 +126,51 @@ describe('presentation slide editor', () => {
         document: { ...workspace.document, slides: [slideOne] },
       }))
     renderEditor()
-    expect(await screen.findByRole('button', { name: /Obriši/ })).toBeDisabled()
+    expect(await screen.findByRole('button', { name: /Obriši odabrani slajd/ })).toBeDisabled()
+  })
+
+  it('creates a structured text element with the current document revision', async () => {
+    const textElement = {
+      id: '40000000-0000-0000-0000-000000000001',
+      elementTypeCode: 'TEXT',
+      elementSchemaVersion: 1,
+      zIndex: 0,
+      x: 160,
+      y: 100,
+      width: 1280,
+      height: 180,
+      payloadJson: JSON.stringify({ text: 'Novi tekst', fontSize: 52, fontWeight: 'bold', color: '#173E67', align: 'left' }),
+      asset: null,
+    }
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(workspace))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ elementId: textElement.id }))
+      .mockResolvedValueOnce(json({
+        ...workspace,
+        document: {
+          ...workspace.document,
+          rowVersion: 'CQgHBgUEAwI=',
+          slides: [{ ...slideOne, elements: [textElement] }, slideTwo],
+        },
+      }))
+
+    renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: 'Tekst' }))
+
+    expect(await screen.findByDisplayValue('Novi tekst')).toBeInTheDocument()
+    const createCall = vi.mocked(fetch).mock.calls.find(([, init]) =>
+      init?.method === 'POST' && String(init.body).includes('elementTypeCode'))
+    const body = JSON.parse(String(createCall?.[1]?.body))
+    expect(body.expectedDocumentRowVersion).toBe(workspace.document.rowVersion)
+    expect(body.elementTypeCode).toBe('TEXT')
+    expect(JSON.parse(body.payloadJson)).toEqual({
+      text: 'Novi tekst',
+      fontSize: 52,
+      fontWeight: 'bold',
+      color: '#173E67',
+      align: 'left',
+    })
   })
 })

@@ -23,6 +23,11 @@
   zaštita, document `rowversion` nakon inicijalnog Material-revision createa te atomski
   add/delete/duplicate/reorder praznih slajdova. Ova primjena ne mijenja 7.1 typed-element,
   asset, assessable ili publish granice.
+- **Phase 7.3 primjena:** uvedeni su version-bound `TEXT`, `IMAGE`, `SHAPE` i `TABLE` elementi,
+  closed v1 payload registry, logical-canvas geometry/z-index te private Clean-only image
+  asseti s quarantine, fail-closed malware scanom i same-version SQL zaštitom. Slide duplicate
+  klonira elemente, a Material restore kopira elemente i assete u novu version boundary.
+  Teaching/assessable, autosave i publish granice ADR-a ostaju nepromijenjene.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04

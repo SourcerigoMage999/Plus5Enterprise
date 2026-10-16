@@ -35,7 +35,7 @@
 .presentation-editor__order button { border-color: var(--color-border); }
 .presentation-editor__add { margin-top: auto; color: #0751dc !important; }
 .presentation-editor__stage { display: grid; grid-template-rows: 1fr auto; min-width: 0; padding: 1rem; background: #f4f6f9; }
-.presentation-editor__canvas { align-self: center; display: grid; place-items: center; width: 100%; max-height: 100%; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid #ccd5e3; background: #fff; box-shadow: 0 8px 24px #15305218; }
+.presentation-editor__canvas { position: relative; align-self: center; display: grid; place-items: center; width: 100%; max-height: 100%; aspect-ratio: 16 / 9; overflow: hidden; container-type: inline-size; border: 1px solid #ccd5e3; background: #fff; box-shadow: 0 8px 24px #15305218; }
 .presentation-editor__canvas > div { display: grid; place-items: center; padding: 1.5rem; color: #6780a7; text-align: center; }
 .presentation-editor__canvas h2 { margin: .65rem 0 .2rem; color: #183c74; }
 .presentation-editor__canvas p { margin: 0; }
@@ -52,6 +52,39 @@
 .presentation-editor__properties section > div button { border-color: var(--color-border); }
 .presentation-editor__properties > p { margin: 1rem; padding: .9rem; color: #6a5411; border: 1px solid #f2d283; border-radius: .65rem; background: #fff9e8; font-size: .82rem; }
 .presentation-editor__properties > p strong { display: block; color: #173e67; }
+.presentation-canvas-element { position: absolute; display: block; min-width: 0; min-height: 0; padding: 0; overflow: hidden; color: inherit; border: 2px solid transparent; background: transparent; cursor: pointer; }
+.presentation-canvas-element.is-selected { border-color: #1767ff; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1767ff; }
+.presentation-canvas-element--text span { display: flex; align-items: center; width: 100%; height: 100%; line-height: 1.15; white-space: pre-wrap; }
+.presentation-canvas-element--image img { width: 100%; height: 100%; }
+.presentation-canvas-element--shape span { display: block; width: 100%; height: 100%; border-style: solid; }
+.presentation-canvas-element--table table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; color: #173e67; background: #fff; font-size: clamp(.35rem, 1.25cqw, 1rem); }
+.presentation-canvas-element--table th, .presentation-canvas-element--table td { padding: .2em .35em; overflow: hidden; border: 1px solid #9aabc3; text-overflow: ellipsis; }
+.presentation-canvas-element--table th { background: #eaf1ff; font-weight: 800; }
+.presentation-editor__empty { pointer-events: none; }
+.presentation-element-form { display: grid; gap: .75rem; padding: 1rem; overflow-y: auto; }
+.presentation-editor__layers { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; padding: .75rem; border-bottom: 1px solid var(--color-border); background: #f8faff; }
+.presentation-editor__layers strong { grid-column: 1 / -1; color: #173e67; font-size: .78rem; }
+.presentation-editor__layers button { justify-content: flex-start; min-width: 0; overflow: hidden; border-color: var(--color-border); text-overflow: ellipsis; white-space: nowrap; }
+.presentation-editor__layers button.is-selected { color: #0751dc; border-color: #76a1ff; background: #eef4ff; }
+.presentation-editor__layers button span { display: grid; place-items: center; width: 1.2rem; height: 1.2rem; flex: 0 0 auto; border-radius: 50%; background: #dfe9fb; font-size: .68rem; }
+.presentation-element-form header { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.presentation-element-form h2 { margin: .1rem 0 0; color: #173e67; }
+.presentation-element-form header small { color: var(--color-text-muted); }
+.presentation-element-form header button { color: #aa2338; border-color: #efc1c8; }
+.presentation-element-form label { display: grid; gap: .3rem; color: #24446d; font-size: .78rem; font-weight: 750; }
+.presentation-element-form input, .presentation-element-form textarea, .presentation-element-form select { width: 100%; min-width: 0; padding: .5rem .55rem; color: #173e67; border: 1px solid #b8c4d6; border-radius: .4rem; background: #fff; font: inherit; }
+.presentation-element-form input[type='color'] { height: 2.5rem; padding: .2rem; }
+.presentation-element-form textarea { min-height: 5.5rem; resize: vertical; }
+.presentation-element-form fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin: 0; padding: .7rem; border: 1px solid var(--color-border); border-radius: .55rem; }
+.presentation-element-form legend { padding: 0 .35rem; color: #173e67; font-size: .8rem; font-weight: 800; }
+.presentation-element-form .ds-action { color: #fff; background: #075ef7; }
+.presentation-element-form__check { display: flex !important; grid-template-columns: auto 1fr; align-items: center; }
+.presentation-element-form__check input { width: auto; }
+.presentation-element-form__asset { display: grid; gap: .2rem; margin: 0; padding: .65rem; overflow-wrap: anywhere; border-radius: .45rem; background: #f2f6fc; font-size: .78rem; }
+.presentation-element-form__asset small { color: var(--color-text-muted); }
+.presentation-editor__slide-actions { display: flex; justify-content: flex-end; gap: .6rem; }
+.presentation-editor__slide-actions button { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem .75rem; color: #183c74; border: 1px solid var(--color-border); border-radius: .5rem; background: #fff; font: inherit; font-size: .82rem; font-weight: 750; }
+.presentation-editor__slide-actions button:last-child { color: #a02236; }
 .presentation-start { display: grid; gap: 1.25rem; max-width: 70rem; margin: 0 auto; padding: 1.5rem; }
 .presentation-start > div { display: grid; place-items: center; gap: .8rem; min-height: 30rem; padding: 2rem; text-align: center; border: 1px solid var(--color-border); border-radius: 1rem; background: #fff; box-shadow: var(--shadow-sm); }
 .presentation-start > div > svg { color: #0b58df; }
@@ -61,4 +94,4 @@
 .presentation-start strong[role='alert'] { color: #9d2235; }
 .presentation-editor-state { display: grid; place-items: center; gap: 1rem; min-height: 28rem; padding: 2rem; text-align: center; }
 @media (max-width: 1100px) { .presentation-editor__workspace { grid-template: auto auto minmax(28rem, 1fr) auto / 1fr; } .presentation-editor__toolbar { grid-row: 1; } .presentation-editor__slides { grid-row: 2; flex-direction: row; overflow-x: auto; overflow-y: hidden; border-right: 0; border-bottom: 1px solid var(--color-border); } .presentation-editor__slides ol { display: flex; } .presentation-editor__slides li { width: 9rem; flex: 0 0 auto; } .presentation-editor__order { width: 6rem; flex: 0 0 auto; align-self: center; } .presentation-editor__add { min-width: 8rem; margin: 0; align-self: center; } .presentation-editor__stage { grid-row: 3; } .presentation-editor__properties { grid-row: 4; border-top: 1px solid var(--color-border); border-left: 0; } .presentation-editor__properties section { grid-template-columns: 10rem minmax(0, 1fr); align-items: center; } }
-@media (max-width: 680px) { .presentation-editor { padding: .85rem; } .presentation-editor__hero { display: grid; } .presentation-editor__hero > div:last-child { justify-content: flex-start; } .presentation-editor__hero .ds-action { flex: 1 1 42%; justify-content: center; } .presentation-editor__steps li { justify-content: center; padding: .6rem; font-size: 0; } .presentation-editor__steps li span { font-size: .8rem; } .presentation-editor__workspace { min-height: 36rem; } .presentation-editor__toolbar button { white-space: nowrap; } .presentation-editor__stage { min-height: 22rem; padding: .65rem; } .presentation-editor__properties section { grid-template-columns: 1fr; } .presentation-editor__breadcrumb { overflow-x: auto; white-space: nowrap; } }
+@media (max-width: 680px) { .presentation-editor { padding: .85rem; } .presentation-editor__hero { display: grid; } .presentation-editor__hero > div:last-child { justify-content: flex-start; } .presentation-editor__hero .ds-action { flex: 1 1 42%; justify-content: center; } .presentation-editor__steps li { justify-content: center; padding: .6rem; font-size: 0; } .presentation-editor__steps li span { font-size: .8rem; } .presentation-editor__workspace { min-height: 36rem; } .presentation-editor__toolbar button { white-space: nowrap; } .presentation-editor__stage { min-height: 22rem; padding: .65rem; } .presentation-editor__properties section { grid-template-columns: 1fr; } .presentation-editor__breadcrumb { overflow-x: auto; white-space: nowrap; } .presentation-editor__slide-actions { display: grid; } .presentation-element-form fieldset { grid-template-columns: 1fr; } }
