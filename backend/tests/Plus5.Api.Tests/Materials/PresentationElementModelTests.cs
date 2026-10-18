@@ -63,10 +63,11 @@ public sealed class PresentationElementModelTests
         string fileName,
         byte[] bytes)
     {
-        var validator = new PresentationImageValidator();
+        var validator = new PresentationAssetValidator();
         await using var stream = new MemoryStream(bytes);
 
         var result = await validator.ValidateAsync(
+            "IMAGE",
             fileName,
             mediaType,
             bytes.Length,
@@ -75,6 +76,73 @@ public sealed class PresentationElementModelTests
 
         Assert.True(result.IsValid);
         Assert.NotNull(result.Sha256Checksum);
+    }
+
+    [Fact]
+    public void TeachingElementRegistryEnforcesInstructionalAndAudioContracts()
+    {
+        Assert.True(PresentationElementPayloadRegistry.TryNormalize(
+            "RULE",
+            """{"heading":"Pravilo","body":"Objašnjenje","accentColor":"#F4B400"}""",
+            out _));
+        Assert.True(PresentationElementPayloadRegistry.TryNormalize(
+            "QUESTION",
+            """{"prompt":"Razgovarajte.","discussionNote":"Bez bodovanja."}""",
+            out _));
+        Assert.True(PresentationElementPayloadRegistry.TryNormalize(
+            "AUDIO",
+            """{"schemaVersion":1,"autoplay":false,"showControls":true}""",
+            out _));
+        Assert.False(PresentationElementPayloadRegistry.TryNormalize(
+            "AUDIO",
+            """{"schemaVersion":1,"autoplay":true,"showControls":true}""",
+            out _));
+        Assert.False(PresentationElementPayloadRegistry.TryNormalize(
+            "QUESTION",
+            """{"prompt":"Test","discussionNote":"","points":10}""",
+            out _));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task AudioValidatorAcceptsOnlyStructurallyValidMp3(bool withId3v2)
+    {
+        var validator = new PresentationAssetValidator();
+        var frames = CreateMp3Frames();
+        var bytes = withId3v2
+            ? new byte[] { 0x49, 0x44, 0x33, 0x04, 0x00, 0x00, 0, 0, 0, 0 }.Concat(frames).ToArray()
+            : frames;
+        await using var stream = new MemoryStream(bytes);
+
+        var result = await validator.ValidateAsync(
+            "AUDIO",
+            "lesson.mp3",
+            "audio/mpeg",
+            bytes.Length,
+            stream,
+            CancellationToken.None);
+
+        Assert.True(result.IsValid);
+        Assert.NotNull(result.Sha256Checksum);
+    }
+
+    [Fact]
+    public async Task AudioValidatorRejectsTruncatedOrMismatchedContent()
+    {
+        var validator = new PresentationAssetValidator();
+        var bytes = CreateMp3Frames()[..500];
+        await using var stream = new MemoryStream(bytes);
+
+        var result = await validator.ValidateAsync(
+            "AUDIO",
+            "lesson.mp3",
+            "audio/mpeg",
+            bytes.Length,
+            stream,
+            CancellationToken.None);
+
+        Assert.False(result.IsValid);
     }
 
     [Fact]
@@ -117,5 +185,20 @@ public sealed class PresentationElementModelTests
             .UseInMemoryDatabase(Guid.NewGuid().ToString("N"))
             .Options;
         return new Plus5DbContext(options);
+    }
+
+    private static byte[] CreateMp3Frames()
+    {
+        const int frameLength = 417;
+        var bytes = new byte[frameLength * 2];
+        foreach (var offset in new[] { 0, frameLength })
+        {
+            bytes[offset] = 0xFF;
+            bytes[offset + 1] = 0xFB;
+            bytes[offset + 2] = 0x90;
+            bytes[offset + 3] = 0x00;
+        }
+
+        return bytes;
     }
 }

@@ -279,3 +279,17 @@ SQL trigger `TR_PresentationAssets_ProtectSnapshot` (`51243`) i
 Draft PRESENTATION snapshotom. Active/Superseded sadržaj ostaje immutable. Material Draft
 restore klonira elemente i fizički kopira Clean assete u novu version boundary. Detalji su u
 `PRESENTATION_CORE_ELEMENTS.md`.
+
+## Phase 7.4 teaching elements and media asset kinds
+
+Migracija `AddPresentationTeachingElements` proširuje zatvoreni element type code s `RULE`,
+`EXAMPLE`, `VOCABULARY`, `QUESTION`, `VIDEO` i `AUDIO` te dodaje obavezni
+`PresentationAsset.AssetKindCode`. Postojeći asseti deterministički se backfillaju kao
+`IMAGE`. CHECK constraint veže IMAGE uz PNG/JPEG/WebP do 10 MiB, VIDEO uz MP4 do 250 MiB i
+AUDIO uz MP3 do 25 MiB.
+
+IMAGE/VIDEO/AUDIO element mora imati asset, a svi strukturirani tekstualni tipovi ne smiju.
+Composite FK zadržava istu MaterialVersion granicu. Prošireni
+`TR_PresentationElements_ProtectSnapshot` uz Draft immutability vraća SQL `51245` kada asset
+nije Clean, nije pronađen u istoj verziji ili mu `AssetKindCode` ne odgovara element typeu.
+Detalji su u `PRESENTATION_TEACHING_ELEMENTS.md`.

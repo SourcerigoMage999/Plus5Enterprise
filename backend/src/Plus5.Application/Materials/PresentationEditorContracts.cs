@@ -65,6 +65,13 @@ public interface IPresentationElementService
         UploadPresentationImageCommand command,
         CancellationToken cancellationToken);
 
+    Task<PresentationMutationResult> UploadMediaAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        UploadPresentationMediaCommand command,
+        CancellationToken cancellationToken);
+
     Task<PresentationMutationResult> UpdateAsync(
         Guid teacherAccountId,
         Guid materialId,
@@ -132,6 +139,19 @@ public sealed record UploadPresentationImageCommand(
     string Fit,
     Func<Stream> OpenReadStream);
 
+public sealed record UploadPresentationMediaCommand(
+    string ExpectedDocumentRowVersion,
+    string ElementTypeCode,
+    string OriginalFileName,
+    string DeclaredMediaType,
+    long DeclaredSizeBytes,
+    decimal X,
+    decimal Y,
+    decimal Width,
+    decimal Height,
+    string PayloadJson,
+    Func<Stream> OpenReadStream);
+
 public enum PresentationMutationOutcome
 {
     Success,
@@ -188,6 +208,7 @@ public sealed record PresentationElementView(
 
 public sealed record PresentationAssetView(
     Guid Id,
+    string AssetKindCode,
     string OriginalFileName,
     string MediaType,
     long SizeBytes,

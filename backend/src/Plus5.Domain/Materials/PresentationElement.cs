@@ -15,6 +15,12 @@ public sealed class PresentationElement
         "IMAGE",
         "SHAPE",
         "TABLE",
+        "RULE",
+        "EXAMPLE",
+        "VOCABULARY",
+        "QUESTION",
+        "VIDEO",
+        "AUDIO",
     };
 
     private PresentationElement()
@@ -83,6 +89,9 @@ public sealed class PresentationElement
     public static bool IsSupportedType(string? value) =>
         value is not null && SupportedTypes.Contains(value);
 
+    public static bool RequiresAsset(string? value) =>
+        value is "IMAGE" or "VIDEO" or "AUDIO";
+
     private void SetTypeAndPayload(
         string elementTypeCode,
         string payloadJson,
@@ -97,10 +106,10 @@ public sealed class PresentationElement
             throw new ArgumentException("Unsupported presentation element type.", nameof(elementTypeCode));
         }
 
-        if ((normalizedType == "IMAGE") != presentationAssetId.HasValue)
+        if (RequiresAsset(normalizedType) != presentationAssetId.HasValue)
         {
             throw new ArgumentException(
-                "Only IMAGE elements require a presentation asset.",
+                "IMAGE, VIDEO and AUDIO elements require a presentation asset.",
                 nameof(presentationAssetId));
         }
 

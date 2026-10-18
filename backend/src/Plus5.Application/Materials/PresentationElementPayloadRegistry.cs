@@ -24,6 +24,12 @@ public static partial class PresentationElementPayloadRegistry
                 "IMAGE" => TryImage(document.RootElement, out normalized),
                 "SHAPE" => TryShape(document.RootElement, out normalized),
                 "TABLE" => TryTable(document.RootElement, out normalized),
+                "RULE" => TryRule(document.RootElement, out normalized),
+                "EXAMPLE" => TryExample(document.RootElement, out normalized),
+                "VOCABULARY" => TryVocabulary(document.RootElement, out normalized),
+                "QUESTION" => TryQuestion(document.RootElement, out normalized),
+                "VIDEO" => TryVideo(document.RootElement, out normalized),
+                "AUDIO" => TryAudio(document.RootElement, out normalized),
                 _ => false,
             };
         }
@@ -35,6 +41,14 @@ public static partial class PresentationElementPayloadRegistry
 
     public static string Image(string altText, string fit) => JsonSerializer.Serialize(
         new ImagePayload(altText.Trim(), fit),
+        JsonOptions);
+
+    public static string Video(string title) => JsonSerializer.Serialize(
+        new VideoPayload(title.Trim(), true),
+        JsonOptions);
+
+    public static string Audio() => JsonSerializer.Serialize(
+        new AudioPayload(1, false, true),
         JsonOptions);
 
     private static bool TryText(JsonElement root, out string normalized)
@@ -135,6 +149,107 @@ public static partial class PresentationElementPayloadRegistry
         return true;
     }
 
+    private static bool TryRule(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "heading", "body", "accentColor")
+            || !TryString(root, "heading", 160, true, out var heading)
+            || !TryString(root, "body", 4000, true, out var body)
+            || !TryColor(root, "accentColor", out var accentColor))
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(
+            new RulePayload(heading, body, accentColor),
+            JsonOptions);
+        return true;
+    }
+
+    private static bool TryExample(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "example", "explanation", "accentColor")
+            || !TryString(root, "example", 2000, true, out var example)
+            || !TryString(root, "explanation", 2000, false, out var explanation)
+            || !TryColor(root, "accentColor", out var accentColor))
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(
+            new ExamplePayload(example, explanation, accentColor),
+            JsonOptions);
+        return true;
+    }
+
+    private static bool TryVocabulary(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "term", "definition", "example")
+            || !TryString(root, "term", 200, true, out var term)
+            || !TryString(root, "definition", 1000, true, out var definition)
+            || !TryString(root, "example", 2000, false, out var example))
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(
+            new VocabularyPayload(term, definition, example),
+            JsonOptions);
+        return true;
+    }
+
+    private static bool TryQuestion(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "prompt", "discussionNote")
+            || !TryString(root, "prompt", 4000, true, out var prompt)
+            || !TryString(root, "discussionNote", 4000, false, out var discussionNote))
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(
+            new QuestionPayload(prompt, discussionNote),
+            JsonOptions);
+        return true;
+    }
+
+    private static bool TryVideo(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "title", "showControls")
+            || !TryString(root, "title", 200, false, out var title)
+            || !TryBoolean(root, "showControls", out var showControls)
+            || !showControls)
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(new VideoPayload(title, true), JsonOptions);
+        return true;
+    }
+
+    private static bool TryAudio(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "schemaVersion", "autoplay", "showControls")
+            || !TryInt(root, "schemaVersion", 1, 1, out var schemaVersion)
+            || !TryBoolean(root, "autoplay", out var autoplay)
+            || !TryBoolean(root, "showControls", out var showControls)
+            || autoplay
+            || !showControls)
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(
+            new AudioPayload(schemaVersion, false, true),
+            JsonOptions);
+        return true;
+    }
+
     private static bool HasOnly(JsonElement root, params string[] allowed)
     {
         var names = root.EnumerateObject().Select(property => property.Name).ToList();
@@ -186,6 +301,19 @@ public static partial class PresentationElementPayloadRegistry
             && value <= maximum;
     }
 
+    private static bool TryBoolean(JsonElement root, string name, out bool value)
+    {
+        value = false;
+        if (!root.TryGetProperty(name, out var property)
+            || property.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+        {
+            return false;
+        }
+
+        value = property.GetBoolean();
+        return true;
+    }
+
     [GeneratedRegex("^#[0-9A-Fa-f]{6}$", RegexOptions.CultureInvariant)]
     private static partial Regex ColorRegex();
 
@@ -207,4 +335,16 @@ public static partial class PresentationElementPayloadRegistry
     private sealed record TablePayload(
         IReadOnlyList<IReadOnlyList<string>> Cells,
         bool HeaderRow);
+
+    private sealed record RulePayload(string Heading, string Body, string AccentColor);
+
+    private sealed record ExamplePayload(string Example, string Explanation, string AccentColor);
+
+    private sealed record VocabularyPayload(string Term, string Definition, string Example);
+
+    private sealed record QuestionPayload(string Prompt, string DiscussionNote);
+
+    private sealed record VideoPayload(string Title, bool ShowControls);
+
+    private sealed record AudioPayload(int SchemaVersion, bool Autoplay, bool ShowControls);
 }

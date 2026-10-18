@@ -87,6 +87,7 @@ public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentation
                             && assets.TryGetValue(element.PresentationAssetId.Value, out var asset)
                                 ? new PresentationAssetView(
                                     asset.Id,
+                                    asset.AssetKindCode,
                                     asset.OriginalFileName,
                                     asset.MediaType,
                                     asset.SizeBytes,

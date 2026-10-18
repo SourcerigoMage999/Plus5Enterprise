@@ -117,6 +117,124 @@ npm test -- <relevant test file/pattern>
 Nemoj nakon svake izmjene pokretati cijeli backend/frontend suite. Full regression se radi
 samo kada to zahtijeva acceptance matrix niže.
 
+## 6A. STRICT VALIDATION BUDGET
+
+Ovo poglavlje je obavezno za sve buduće faze i ima prednost nad širim ili starijim
+validation navodima u drugim dokumentima.
+
+Validation scope odredi **prije** pokretanja testova. Nakon toga ga ne proširuj osim ako
+trenutni diff stvarno uvede novu kategoriju promjene. Testovi, audit i runtime provjere nisu
+otvoreni istraživački proces.
+
+### Targeted-first
+
+Za feature phase prvo pokreni samo targeted testove trenutne faze. Ako prolaze, nemoj
+automatski pokretati full backend/frontend regression.
+
+Full regression je dopušten samo kada trenutna promjena:
+
+- mijenja shared infrastructure;
+- mijenja auth/session/security foundation;
+- mijenja shared domain behavior koji koristi više modula;
+- završava cijeli milestone;
+- ili ga Solution Architect eksplicitno traži.
+
+Ako ništa od toga ne vrijedi, zapiši:
+
+```text
+Full regression: N/A — targeted phase validation is sufficient.
+```
+
+### Ne ponavljaj FINAL LOCKED infrastrukturu
+
+Ne dokazuj ponovno Docker non-root UID, health endpointove, Compose startup, container user,
+global auth baseline, global shell ni zaključane migration deployment principe osim ako
+trenutni diff izravno mijenja relevantnu infrastrukturu.
+
+Ako Dockerfile, Compose, startup i runtime identity nisu promijenjeni, zapiši:
+
+```text
+Docker infrastructure validation: N/A — infrastructure unchanged.
+```
+
+### Dependency audit
+
+Ne pokreći NuGet/npm security audit ako dependency graph ili lockfile nisu promijenjeni.
+
+Ako audit ipak otkrije ranjivost koju trenutni diff nije uveo:
+
+- nemoj je automatski popravljati unutar feature faze;
+- nemoj širiti feature scope;
+- zabilježi je kao zaseban maintenance/security finding za Solution Architecta;
+- nastavi phase acceptance ako ranjivost nije blocker trenutnog featurea.
+
+Dependency upgrade unutar feature faze dopušten je samo kada faza uvodi ili mijenja taj
+dependency ili kada je ranjivost izravno iskoristiva kroz upravo implementirani feature i
+predstavlja blocker.
+
+### Visual acceptance budget
+
+Za UI fazu napravi samo minimalni stvarni browser evidence potreban za novu funkcionalnost:
+
+- 1 desktop screenshot;
+- 1 mobile screenshot;
+- relevantni feature state;
+- document overflow assertion;
+- browser/page errors = 0.
+
+Visual gate služi stvarnom UI renderu i interakciji, a ne ponovnom certificiranju cijelog
+backenda. Ako targeted integration/security test već pouzdano dokazuje anonymous `401`,
+owner/foreign isolation, malware scanner, storage persistence, SQL trigger, rate limit ili
+CSRF, nemoj te činjenice ponovno dokazivati u browseru.
+
+### Screenshot disciplina
+
+Ne dodaj dodatne screenshotove samo kako bi više elemenata bilo vizualno vidljivo ako je
+ponašanje pokriveno targeted testom, element je stvarno stvoren kroz runtime i minimalni
+acceptance screenshot već dokazuje layout i integraciju. Dodatni screenshot dopušten je samo
+ako bez njega ključni acceptance kriterij nije dokaziv.
+
+### Jedan finalni runtime gate
+
+Ako je stvarni runtime flow jednom prošao nakon konačnog koda, nemoj ga ponovno pokretati
+nakon visual acceptancea osim ako je poslije toga promijenjen relevantni runtime/backend kod.
+Zabranjen je obrazac bez relevantne izmjene:
+
+```text
+runtime PASS → visual PASS → ponovno runtime PASS
+```
+
+### Failure containment
+
+Kada targeted test padne:
+
+1. utvrdi pripada li problem trenutnoj fazi;
+2. ako pripada, popravi ga;
+3. ponovi samo taj gate.
+
+Jedan targeted fail ne aktivira automatski full regression. Ako fail dolazi iz Windows
+sandboxa, `EPERM`-a, privremenog direktorija ili test-runner okruženja, jednom primijeni već
+poznati alternativni runner i nastavi. Ne eksperimentiraj s više različitih runnera.
+
+### No opportunistic cleanup
+
+Tijekom feature faze ne popravljaj nepovezane dependency ranjivosti, stare warninge,
+unrelated lint probleme/refaktore, stare testove ili dokumentacijske nedosljednosti drugih
+faza osim ako blokiraju trenutnu fazu. Prijavi ih odvojeno.
+
+### Stop condition
+
+Čim svi unaprijed određeni phase gateovi prođu, **STOP**. Nemoj pojačavati dokaz, dodavati
+testove za već dokazane invariante, ponovno pokretati Docker/full regression/audit ili tražiti
+dodatne screenshotove samo radi veće sigurnosti. Dovoljno dobro dokumentiran targeted
+evidence jest acceptance evidence.
+
+### Token/context budget
+
+Tijekom rada ne šalji progress poruke osim kada postoji pravi blocker, potrebna SA odluka ili
+stvarni functional/security defect. Ne najavljuj pojedinačne SQL, visual, runtime ili statičke
+gateove. U završnom odgovoru ne prepričavaj command history; navedi samo konačne rezultate.
+
 ## 7. Validation matrix
 
 ### DOCS_ONLY

@@ -14,6 +14,7 @@ public sealed class PresentationElementSqlTests
         "20261009200502_AddPresentationSlideDocumentModel";
     private const int AssetSnapshotViolation = 51243;
     private const int ElementSnapshotViolation = 51244;
+    private const int AssetKindViolation = 51245;
     private static readonly DateTimeOffset CreatedAt =
         new(2026, 10, 11, 12, 0, 0, TimeSpan.Zero);
 
@@ -88,6 +89,22 @@ public sealed class PresentationElementSqlTests
                     WHERE [Id] = {{element.Id}};
                     """));
             Assert.Equal(547, invalidBounds.Number);
+
+            var invalidAssetKind = await Assert.ThrowsAsync<SqlException>(() =>
+                db.Database.ExecuteSqlInterpolatedAsync($$"""
+                    UPDATE [PresentationElements]
+                    SET [ElementTypeCode] = N'AUDIO'
+                    WHERE [Id] = {{element.Id}};
+                    """));
+            Assert.Equal(AssetKindViolation, invalidAssetKind.Number);
+
+            var invalidReferencedStatus = await Assert.ThrowsAsync<SqlException>(() =>
+                db.Database.ExecuteSqlInterpolatedAsync($$"""
+                    UPDATE [PresentationAssets]
+                    SET [Status] = 2
+                    WHERE [Id] = {{asset.Id}};
+                    """));
+            Assert.Equal(AssetKindViolation, invalidReferencedStatus.Number);
 
             version.Activate(file, CreatedAt.AddMinutes(5));
             await db.SaveChangesAsync();

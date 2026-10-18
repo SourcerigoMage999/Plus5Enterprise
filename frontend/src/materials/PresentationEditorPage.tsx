@@ -3,9 +3,13 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUp,
+  BookOpen,
+  CircleHelp,
   Copy,
   FilePlus2,
   Image as ImageIcon,
+  Film,
+  Headphones,
   LayoutTemplate,
   Palette,
   Plus,
@@ -13,6 +17,7 @@ import {
   Save,
   Shapes,
   Table2,
+  Quote,
   Trash2,
   Type,
   Undo2,
@@ -32,17 +37,21 @@ import {
   reorderPresentationSlides,
   updatePresentationElement,
   uploadPresentationImage,
+  uploadPresentationAudio,
+  uploadPresentationVideo,
   type PresentationEditorWorkspace,
   type PresentationElement,
   type PresentationElementType,
 } from './presentationApi.ts'
 import './PresentationEditorPage.css'
 
-type CoreElementType = Exclude<PresentationElementType, 'IMAGE'>
+type StructuredElementType = Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO'>
 
 export function PresentationEditorPage() {
   const { materialId = '' } = useParams()
   const imageInput = useRef<HTMLInputElement>(null)
+  const videoInput = useRef<HTMLInputElement>(null)
+  const audioInput = useRef<HTMLInputElement>(null)
   const [workspace, setWorkspace] = useState<PresentationEditorWorkspace | null>(null)
   const [selectedSlideId, setSelectedSlideId] = useState<string | null>(null)
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null)
@@ -149,7 +158,7 @@ export function PresentationEditorPage() {
     )
   }
 
-  function addElement(type: CoreElementType) {
+  function addElement(type: StructuredElementType) {
     if (!document || !selectedSlide) return
     const preset = newElementPreset(type)
     void mutate(
@@ -178,6 +187,21 @@ export function PresentationEditorPage() {
         setSelectedElementId(result.elementId)
       },
       'Slika je sigurno provjerena i dodana na slajd.',
+    )
+  }
+
+  function uploadMedia(file: File | undefined, type: 'VIDEO' | 'AUDIO') {
+    if (!file || !document || !selectedSlide) return
+    void mutate(
+      async () => {
+        const result = type === 'VIDEO'
+          ? await uploadPresentationVideo(materialId, selectedSlide.id, file, document.rowVersion)
+          : await uploadPresentationAudio(materialId, selectedSlide.id, file, document.rowVersion)
+        setSelectedElementId(result.elementId)
+      },
+      type === 'VIDEO'
+        ? 'MP4 video je sigurno provjeren i dodan na slajd.'
+        : 'MP3 audio je sigurno provjeren i dodan na slajd.',
     )
   }
 
@@ -239,7 +263,7 @@ export function PresentationEditorPage() {
     </header>
 
     <ol className="presentation-editor__steps"><li className="is-done"><span>✓</span> Vrsta i osnovni podaci</li><li className="is-done"><span>✓</span> Ciljevi i povezanost</li><li className="is-active"><span>3</span> Izrada prezentacije</li><li><span>4</span> Pregled i spremanje</li></ol>
-    <div className="presentation-editor__intro"><h2>3. Izrada prezentacije</h2><p>Dodajte tekst, sigurnu sliku, oblik ili tablicu i uredite ih na 16:9 platnu.</p></div>
+    <div className="presentation-editor__intro"><h2>3. Izrada prezentacije</h2><p>Gradite 16:9 slajdove osnovnim i nastavnim elementima te privatnim, sigurnosno provjerenim medijima.</p></div>
     {(error || notice) && <div className={`presentation-editor__notice${error ? ' is-error' : ''}`} role={error ? 'alert' : 'status'}>{error || notice}</div>}
 
     <div className="presentation-editor__workspace" aria-busy={busy}>
@@ -249,6 +273,14 @@ export function PresentationEditorPage() {
         <input ref={imageInput} accept="image/png,image/jpeg,image/webp" hidden type="file" onChange={event => { uploadImage(event.target.files?.[0]); event.target.value = '' }} />
         <button disabled={busy} onClick={() => addElement('SHAPE')} type="button"><Shapes size={18} /> Oblik</button>
         <button disabled={busy} onClick={() => addElement('TABLE')} type="button"><Table2 size={18} /> Tablica</button>
+        <button disabled={busy} onClick={() => addElement('RULE')} type="button"><BookOpen size={18} /> Pravilo</button>
+        <button disabled={busy} onClick={() => addElement('EXAMPLE')} type="button"><Quote size={18} /> Primjer</button>
+        <button disabled={busy} onClick={() => addElement('VOCABULARY')} type="button"><Type size={18} /> Vokabular</button>
+        <button disabled={busy} onClick={() => addElement('QUESTION')} type="button"><CircleHelp size={18} /> Pitanje</button>
+        <button disabled={busy} onClick={() => videoInput.current?.click()} type="button"><Film size={18} /> Video</button>
+        <input ref={videoInput} accept="video/mp4,.mp4" hidden type="file" onChange={event => { uploadMedia(event.target.files?.[0], 'VIDEO'); event.target.value = '' }} />
+        <button disabled={busy} onClick={() => audioInput.current?.click()} type="button"><Headphones size={18} /> Audio</button>
+        <input ref={audioInput} accept="audio/mpeg,.mp3" hidden type="file" onChange={event => { uploadMedia(event.target.files?.[0], 'AUDIO'); event.target.value = '' }} />
         <span />
         <button disabled title="Undo dolazi s autosave/version safety fazom." type="button"><Undo2 size={17} /> Poništi</button>
         <button disabled title="Redo dolazi s autosave/version safety fazom." type="button"><Redo2 size={17} /> Ponovi</button>
@@ -294,7 +326,7 @@ export function PresentationEditorPage() {
         </nav>}
         {selectedElement
           ? <ElementProperties key={`${selectedElement.id}-${document.rowVersion}`} element={selectedElement} busy={busy} count={selectedSlide?.elements.length ?? 0} onDelete={removeElement} onSave={saveElement} />
-          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.3</strong> Osnovni elementi spremaju se strukturirano. Quick Check, nastavni elementi, autosave i objava dolaze u kasnijim fazama.</p></>}
+          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.4</strong> Nastavni elementi i privatni MP4/MP3 mediji spremaju se strukturirano. Audio se uvijek pokreće ručno. Quick Check, autosave i objava dolaze kasnije.</p></>}
       </aside>
     </div>
 
@@ -353,6 +385,36 @@ function ElementProperties({ element, busy, count, onDelete, onSave }: {
       <label>Debljina ruba<input min="0" max="20" type="number" value={Number(values.payload.strokeWidth ?? 4)} onChange={event => updatePayload('strokeWidth', Number(event.target.value))} /></label>
     </>}
     {element.elementTypeCode === 'TABLE' && <TableFields payload={values.payload} onChange={updatePayload} />}
+    {element.elementTypeCode === 'RULE' && <>
+      <label>Naslov pravila<input maxLength={160} required value={String(values.payload.heading ?? '')} onChange={event => updatePayload('heading', event.target.value)} /></label>
+      <label>Pravilo<textarea maxLength={4000} required value={String(values.payload.body ?? '')} onChange={event => updatePayload('body', event.target.value)} /></label>
+      <label>Naglasna boja<input type="color" value={String(values.payload.accentColor ?? '#F4B400')} onChange={event => updatePayload('accentColor', event.target.value.toUpperCase())} /></label>
+    </>}
+    {element.elementTypeCode === 'EXAMPLE' && <>
+      <label>Primjer<textarea maxLength={2000} required value={String(values.payload.example ?? '')} onChange={event => updatePayload('example', event.target.value)} /></label>
+      <label>Objašnjenje<textarea maxLength={2000} value={String(values.payload.explanation ?? '')} onChange={event => updatePayload('explanation', event.target.value)} /></label>
+      <label>Naglasna boja<input type="color" value={String(values.payload.accentColor ?? '#1767FF')} onChange={event => updatePayload('accentColor', event.target.value.toUpperCase())} /></label>
+    </>}
+    {element.elementTypeCode === 'VOCABULARY' && <>
+      <label>Pojam<input maxLength={200} required value={String(values.payload.term ?? '')} onChange={event => updatePayload('term', event.target.value)} /></label>
+      <label>Značenje<textarea maxLength={1000} required value={String(values.payload.definition ?? '')} onChange={event => updatePayload('definition', event.target.value)} /></label>
+      <label>Primjer uporabe<textarea maxLength={2000} value={String(values.payload.example ?? '')} onChange={event => updatePayload('example', event.target.value)} /></label>
+    </>}
+    {element.elementTypeCode === 'QUESTION' && <>
+      <label>Pitanje<textarea maxLength={4000} required value={String(values.payload.prompt ?? '')} onChange={event => updatePayload('prompt', event.target.value)} /></label>
+      <label>Napomena za raspravu<textarea maxLength={4000} value={String(values.payload.discussionNote ?? '')} onChange={event => updatePayload('discussionNote', event.target.value)} /></label>
+      <p className="presentation-element-form__asset"><strong>Nastavno pitanje</strong><small>Nije kviz, zadatak za ocjenjivanje ni dokaz znanja.</small></p>
+    </>}
+    {element.elementTypeCode === 'VIDEO' && <>
+      <label>Naslov videa<input maxLength={200} value={String(values.payload.title ?? '')} onChange={event => updatePayload('title', event.target.value)} /></label>
+      <label className="presentation-element-form__check"><input checked disabled type="checkbox" /> Prikaži kontrole reprodukcije</label>
+      <p className="presentation-element-form__asset">{element.asset?.originalFileName}<small>Privatni MP4 · {element.asset ? formatBytes(element.asset.sizeBytes) : 'Datoteka nije dostupna'}</small></p>
+    </>}
+    {element.elementTypeCode === 'AUDIO' && <>
+      <label className="presentation-element-form__check"><input checked disabled type="checkbox" /> Prikaži kontrole reprodukcije</label>
+      <label className="presentation-element-form__check"><input checked={false} disabled type="checkbox" /> Automatska reprodukcija</label>
+      <p className="presentation-element-form__asset">{element.asset?.originalFileName}<small>Privatni MP3 · ručno pokretanje · {element.asset ? formatBytes(element.asset.sizeBytes) : 'Datoteka nije dostupna'}</small></p>
+    </>}
     <fieldset><legend>Položaj i veličina</legend>
       <label>X<input min="0" max="1599" step="1" type="number" value={values.x} onChange={event => updateNumber('x', event.target.value)} /></label>
       <label>Y<input min="0" max="899" step="1" type="number" value={values.y} onChange={event => updateNumber('y', event.target.value)} /></label>
@@ -382,12 +444,18 @@ function CanvasElement({ element, selected, onSelect }: { readonly element: Pres
     height: `${element.height / 9}%`,
     zIndex: element.zIndex + 1,
   }
-  return <button className={`presentation-canvas-element presentation-canvas-element--${element.elementTypeCode.toLowerCase()}${selected ? ' is-selected' : ''}`} onClick={event => { event.stopPropagation(); onSelect() }} style={style} type="button">
+  return <div className={`presentation-canvas-element presentation-canvas-element--${element.elementTypeCode.toLowerCase()}${selected ? ' is-selected' : ''}`} onClick={event => { event.stopPropagation(); onSelect() }} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') onSelect() }} role="button" tabIndex={0} style={style}>
     {element.elementTypeCode === 'TEXT' && <span style={{ color: String(payload.color), fontSize: `${Number(payload.fontSize) / 16}cqw`, fontWeight: payload.fontWeight === 'bold' ? 800 : 400, textAlign: String(payload.align) as 'left' | 'center' | 'right' }}>{String(payload.text ?? '')}</span>}
     {element.elementTypeCode === 'IMAGE' && element.asset && <img alt={String(payload.altText ?? '')} src={presentationAssetUrl(element.asset)} style={{ objectFit: String(payload.fit) as 'contain' | 'cover' }} />}
     {element.elementTypeCode === 'SHAPE' && <span style={{ background: String(payload.fill), borderColor: String(payload.stroke), borderRadius: payload.shape === 'ellipse' ? '50%' : payload.shape === 'line' ? '0' : '.4rem', borderWidth: payload.shape === 'line' ? '0 0 3px' : `${Number(payload.strokeWidth)}px` }} />}
     {element.elementTypeCode === 'TABLE' && <CanvasTable payload={payload} />}
-  </button>
+    {element.elementTypeCode === 'RULE' && <article className="presentation-teaching-card" style={{ borderColor: String(payload.accentColor) }}><small>PRAVILO</small><strong>{String(payload.heading ?? '')}</strong><p>{String(payload.body ?? '')}</p></article>}
+    {element.elementTypeCode === 'EXAMPLE' && <article className="presentation-teaching-card" style={{ borderColor: String(payload.accentColor) }}><small>PRIMJER</small><strong>{String(payload.example ?? '')}</strong><p>{String(payload.explanation ?? '')}</p></article>}
+    {element.elementTypeCode === 'VOCABULARY' && <article className="presentation-teaching-card"><small>VOKABULAR</small><strong>{String(payload.term ?? '')}</strong><p>{String(payload.definition ?? '')}</p><em>{String(payload.example ?? '')}</em></article>}
+    {element.elementTypeCode === 'QUESTION' && <article className="presentation-teaching-card presentation-teaching-card--question"><small>PITANJE ZA RASPRAVU</small><strong>{String(payload.prompt ?? '')}</strong><p>{String(payload.discussionNote ?? '')}</p></article>}
+    {element.elementTypeCode === 'VIDEO' && element.asset && <video controls preload="metadata" src={presentationAssetUrl(element.asset)} />}
+    {element.elementTypeCode === 'AUDIO' && element.asset && <div className="presentation-audio"><Headphones aria-hidden="true" /><strong>{element.asset.originalFileName}</strong><audio controls preload="metadata" src={presentationAssetUrl(element.asset)} /></div>}
+  </div>
 }
 
 function CanvasTable({ payload }: { readonly payload: Record<string, unknown> }) {
@@ -398,11 +466,15 @@ function CanvasTable({ payload }: { readonly payload: Record<string, unknown> })
   })}</tr>)}</tbody></table>
 }
 
-function newElementPreset(type: CoreElementType) {
+function newElementPreset(type: StructuredElementType) {
   switch (type) {
     case 'TEXT': return { x: 120, y: 70, width: 1360, height: 140, payloadJson: JSON.stringify({ text: 'Novi tekst', fontSize: 52, fontWeight: 'bold', color: '#173E67', align: 'left' }) }
     case 'SHAPE': return { x: 120, y: 300, width: 360, height: 300, payloadJson: JSON.stringify({ shape: 'rectangle', fill: '#FFF3BF', stroke: '#F4B400', strokeWidth: 4 }) }
     case 'TABLE': return { x: 1100, y: 260, width: 380, height: 380, payloadJson: JSON.stringify({ cells: [['Pojam', 'Opis'], ['Primjer', 'Vrijednost']], headerRow: true }) }
+    case 'RULE': return { x: 130, y: 250, width: 650, height: 330, payloadJson: JSON.stringify({ heading: 'Zapamti pravilo', body: 'Upišite jasno i kratko nastavno pravilo.', accentColor: '#F4B400' }) }
+    case 'EXAMPLE': return { x: 820, y: 250, width: 650, height: 330, payloadJson: JSON.stringify({ example: 'Primjer', explanation: 'Objasnite kako se pravilo primjenjuje.', accentColor: '#1767FF' }) }
+    case 'VOCABULARY': return { x: 160, y: 600, width: 560, height: 220, payloadJson: JSON.stringify({ term: 'Novi pojam', definition: 'Upišite značenje pojma.', example: 'Dodajte primjer uporabe.' }) }
+    case 'QUESTION': return { x: 780, y: 600, width: 660, height: 220, payloadJson: JSON.stringify({ prompt: 'Pitanje za učenike', discussionNote: 'Napomena za vođenu raspravu.' }) }
   }
 }
 
@@ -418,7 +490,7 @@ function parsePayload(payloadJson: string): Record<string, unknown> {
 }
 
 function elementName(type: PresentationElementType): string {
-  return ({ TEXT: 'Tekst', IMAGE: 'Slika', SHAPE: 'Oblik', TABLE: 'Tablica' })[type]
+  return ({ TEXT: 'Tekst', IMAGE: 'Slika', SHAPE: 'Oblik', TABLE: 'Tablica', RULE: 'Pravilo', EXAMPLE: 'Primjer', VOCABULARY: 'Vokabular', QUESTION: 'Pitanje', VIDEO: 'Video', AUDIO: 'Audio' })[type]
 }
 
 function formatBytes(bytes: number): string {

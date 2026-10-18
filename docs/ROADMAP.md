@@ -760,7 +760,21 @@ evidence nalazi se u `visual-acceptance/phase-7.3/`.
 domain/API/security, stvarni SQL migration/integrity, EF drift/idempotent script, architecture,
 frontend i canonical desktop/mobile gate odobreni su bez dodatnih promjena business/UI
 contracta.
-## 7.4 Teaching-specific elements — TODO
+## 7.4 Teaching-specific elements — FINAL LOCKED
+
+**Implementirano 2026-10-16:** Presentation Editor podržava version-bound `RULE`, `EXAMPLE`,
+`VOCABULARY`, instructional `QUESTION`, private MP4 `VIDEO` i private MP3 `AUDIO` elemente.
+Zatvoreni v1 payload registry ne dopušta HTML, arbitrary URL ni assessable/scoring polja.
+AUDIO je zaključan na `.mp3`/`audio/mpeg`, 25 MiB, structural MPEG/optional ID3v2 provjeru i
+`autoplay = false`. Media upload ponovno koristi private quarantine → fail-closed ClamAV →
+Clean pipeline, a SQL štiti same-version Clean asset i podudaranje kinda. Contract:
+`PRESENTATION_TEACHING_ELEMENTS.md`.
+
+**Acceptance 7.4: FINAL LOCKED — odobreno 2026-10-18.** Release build, targeted payload/media/API i
+SQL integrity testovi, frontend lint/typecheck/build/test te minimalni desktop/mobile visual
+gate dokumentirani su u Phase 7.4 summaryju. Full regression, dependency audit i Docker
+infrastructure validation su N/A jer Phase 7.4 ne mijenja njihove zaključane granice.
+Quick Check, Knowledge mapping, autosave i preview/publish nisu dio ove faze.
 ## 7.5 Interactive question / Quick Check — TODO
 ## 7.6 Knowledge Component mapping per question — TODO
 ## 7.7 Autosave/version safety — TODO

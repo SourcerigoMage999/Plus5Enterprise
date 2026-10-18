@@ -3,6 +3,8 @@ namespace Plus5.Domain.Materials;
 public sealed class PresentationAsset
 {
     public const long MaximumImageSizeBytes = 10 * MaterialFilePolicy.Megabyte;
+    public const long MaximumVideoSizeBytes = 250 * MaterialFilePolicy.Megabyte;
+    public const long MaximumAudioSizeBytes = 25 * MaterialFilePolicy.Megabyte;
 
     private PresentationAsset()
     {
@@ -26,13 +28,15 @@ public sealed class PresentationAsset
         MaterialGuard.Identifier(ownerTeacherId, nameof(ownerTeacherId));
         MaterialGuard.Identifier(materialId, nameof(materialId));
         MaterialGuard.Utc(createdAtUtc, nameof(createdAtUtc));
-        if (sizeBytes is <= 0 or > MaximumImageSizeBytes)
+        var assetKindCode = KindForMediaType(mediaType);
+        if (sizeBytes <= 0 || sizeBytes > MaximumSizeBytes(assetKindCode))
         {
             throw new ArgumentOutOfRangeException(nameof(sizeBytes));
         }
 
         Id = id;
         MaterialVersionId = materialVersionId;
+        AssetKindCode = assetKindCode;
         OriginalFileName = NormalizeFileName(originalFileName, mediaType);
         MediaType = NormalizeMediaType(mediaType);
         SizeBytes = sizeBytes;
@@ -54,6 +58,8 @@ public sealed class PresentationAsset
 
     public Guid MaterialVersionId { get; private set; }
 
+    public string AssetKindCode { get; private set; } = string.Empty;
+
     public string OriginalFileName { get; private set; } = string.Empty;
 
     public string MediaType { get; private set; } = string.Empty;
@@ -72,14 +78,43 @@ public sealed class PresentationAsset
 
     public DateTimeOffset CreatedAtUtc { get; private set; }
 
+    public void MarkQuarantined()
+    {
+        if (Status != PresentationAssetStatus.Clean)
+        {
+            throw new InvalidOperationException("Only a newly validated asset can be quarantined.");
+        }
+
+        Status = PresentationAssetStatus.Quarantined;
+    }
+
     public static bool IsAllowedMediaType(string? mediaType) =>
-        mediaType is "image/png" or "image/jpeg" or "image/webp";
+        mediaType is "image/png" or "image/jpeg" or "image/webp"
+            or "video/mp4" or "audio/mpeg";
+
+    public static string KindForMediaType(string? mediaType) => mediaType switch
+    {
+        "image/png" or "image/jpeg" or "image/webp" => "IMAGE",
+        "video/mp4" => "VIDEO",
+        "audio/mpeg" => "AUDIO",
+        _ => throw new ArgumentOutOfRangeException(nameof(mediaType)),
+    };
+
+    public static long MaximumSizeBytes(string assetKindCode) => assetKindCode switch
+    {
+        "IMAGE" => MaximumImageSizeBytes,
+        "VIDEO" => MaximumVideoSizeBytes,
+        "AUDIO" => MaximumAudioSizeBytes,
+        _ => throw new ArgumentOutOfRangeException(nameof(assetKindCode)),
+    };
 
     public static string RequiredExtension(string mediaType) => mediaType switch
     {
         "image/png" => ".png",
         "image/jpeg" => ".jpg",
         "image/webp" => ".webp",
+        "video/mp4" => ".mp4",
+        "audio/mpeg" => ".mp3",
         _ => throw new ArgumentOutOfRangeException(nameof(mediaType)),
     };
 
@@ -97,7 +132,7 @@ public sealed class PresentationAsset
             || normalized.IndexOfAny(['/', '\\']) >= 0
             || normalized.Any(char.IsControl))
         {
-            throw new ArgumentException("Image filename is not safe or does not match its type.", nameof(value));
+            throw new ArgumentException("Asset filename is not safe or does not match its type.", nameof(value));
         }
 
         return normalized!;
@@ -108,7 +143,7 @@ public sealed class PresentationAsset
         var normalized = value?.Trim().ToLowerInvariant();
         if (!IsAllowedMediaType(normalized))
         {
-            throw new ArgumentException("Only PNG, JPEG and WebP images are supported.", nameof(value));
+            throw new ArgumentException("Unsupported presentation asset media type.", nameof(value));
         }
 
         return normalized!;
@@ -131,4 +166,5 @@ public sealed class PresentationAsset
 public enum PresentationAssetStatus
 {
     Clean = 1,
+    Quarantined = 2,
 }

@@ -955,6 +955,11 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AssetKindCode")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<DateTimeOffset>("CreatedAtUtc")
                         .HasPrecision(7)
                         .HasColumnType("datetimeoffset(7)");
@@ -1012,11 +1017,11 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         {
                             t.HasTrigger("TR_PresentationAssets_ProtectSnapshot");
 
-                            t.HasCheckConstraint("CK_PresentationAssets_MediaType", "[MediaType] IN ('image/png', 'image/jpeg', 'image/webp')");
+                            t.HasCheckConstraint("CK_PresentationAssets_MediaType", "([AssetKindCode] = 'IMAGE' AND [MediaType] IN ('image/png', 'image/jpeg', 'image/webp')) OR ([AssetKindCode] = 'VIDEO' AND [MediaType] = 'video/mp4') OR ([AssetKindCode] = 'AUDIO' AND [MediaType] = 'audio/mpeg')");
 
-                            t.HasCheckConstraint("CK_PresentationAssets_Size", "[SizeBytes] > 0 AND [SizeBytes] <= 10485760");
+                            t.HasCheckConstraint("CK_PresentationAssets_Size", "[SizeBytes] > 0 AND (([AssetKindCode] = 'IMAGE' AND [SizeBytes] <= 10485760) OR ([AssetKindCode] = 'VIDEO' AND [SizeBytes] <= 262144000) OR ([AssetKindCode] = 'AUDIO' AND [SizeBytes] <= 26214400))");
 
-                            t.HasCheckConstraint("CK_PresentationAssets_Status", "[Status] = 1");
+                            t.HasCheckConstraint("CK_PresentationAssets_Status", "[Status] IN (1, 2)");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -1127,7 +1132,7 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         {
                             t.HasTrigger("TR_PresentationElements_ProtectSnapshot");
 
-                            t.HasCheckConstraint("CK_PresentationElements_Asset", "([ElementTypeCode] = 'IMAGE' AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] <> 'IMAGE' AND [PresentationAssetId] IS NULL)");
+                            t.HasCheckConstraint("CK_PresentationElements_Asset", "([ElementTypeCode] IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] NOT IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NULL)");
 
                             t.HasCheckConstraint("CK_PresentationElements_Bounds", "[X] >= 0 AND [Y] >= 0 AND [Width] > 0 AND [Height] > 0 AND [X] + [Width] <= 1600 AND [Y] + [Height] <= 900");
 
@@ -1135,7 +1140,7 @@ namespace Plus5.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_PresentationElements_Schema", "[ElementSchemaVersion] = 1");
 
-                            t.HasCheckConstraint("CK_PresentationElements_Type", "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE')");
+                            t.HasCheckConstraint("CK_PresentationElements_Type", "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE', 'RULE', 'EXAMPLE', 'VOCABULARY', 'QUESTION', 'VIDEO', 'AUDIO')");
 
                             t.HasCheckConstraint("CK_PresentationElements_ZIndex", "[ZIndex] >= 0");
                         });

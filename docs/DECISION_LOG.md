@@ -28,6 +28,12 @@
   asseti s quarantine, fail-closed malware scanom i same-version SQL zaštitom. Slide duplicate
   klonira elemente, a Material restore kopira elemente i assete u novu version boundary.
   Teaching/assessable, autosave i publish granice ADR-a ostaju nepromijenjene.
+- **Phase 7.4 primjena:** uvedeni su instructional `RULE`, `EXAMPLE`, `VOCABULARY`,
+  `QUESTION`, `VIDEO` i `AUDIO`. AUDIO v1 je isključivo `.mp3`/`audio/mpeg`, najviše 25 MiB,
+  uz server-side MPEG frame/optional ID3v2 validaciju, private quarantine, fail-closed scan i
+  obavezni `autoplay = false`. VIDEO ostaje na postojećem MP4 contractu. Media elementi imaju
+  same-version Clean asset istog kind codea; SQL error `51245` štiti granicu. Instructional
+  pitanje nije AssessableTask, Attempt ni Evidence.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04

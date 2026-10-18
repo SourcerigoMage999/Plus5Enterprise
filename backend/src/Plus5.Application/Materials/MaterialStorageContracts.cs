@@ -44,9 +44,10 @@ public interface IMaterialFileValidator
         CancellationToken cancellationToken);
 }
 
-public interface IPresentationImageValidator
+public interface IPresentationAssetValidator
 {
-    Task<PresentationImageValidationResult> ValidateAsync(
+    Task<PresentationAssetValidationResult> ValidateAsync(
+        string elementTypeCode,
         string originalFileName,
         string declaredMediaType,
         long declaredSizeBytes,
@@ -92,7 +93,7 @@ public sealed record MaterialFileValidationResult(
     long ActualSizeBytes,
     string? Sha256Checksum);
 
-public sealed record PresentationImageValidationResult(
+public sealed record PresentationAssetValidationResult(
     bool IsValid,
     string ResultCategory,
     long ActualSizeBytes,

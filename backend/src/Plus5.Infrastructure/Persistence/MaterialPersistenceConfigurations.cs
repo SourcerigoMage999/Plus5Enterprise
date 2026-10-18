@@ -440,13 +440,13 @@ internal sealed class PresentationAssetConfiguration
         {
             table.HasCheckConstraint(
                 "CK_PresentationAssets_Status",
-                $"[Status] = {(int)PresentationAssetStatus.Clean}");
+                $"[Status] IN ({(int)PresentationAssetStatus.Clean}, {(int)PresentationAssetStatus.Quarantined})");
             table.HasCheckConstraint(
                 "CK_PresentationAssets_MediaType",
-                "[MediaType] IN ('image/png', 'image/jpeg', 'image/webp')");
+                "([AssetKindCode] = 'IMAGE' AND [MediaType] IN ('image/png', 'image/jpeg', 'image/webp')) OR ([AssetKindCode] = 'VIDEO' AND [MediaType] = 'video/mp4') OR ([AssetKindCode] = 'AUDIO' AND [MediaType] = 'audio/mpeg')");
             table.HasCheckConstraint(
                 "CK_PresentationAssets_Size",
-                $"[SizeBytes] > 0 AND [SizeBytes] <= {PresentationAsset.MaximumImageSizeBytes}");
+                $"[SizeBytes] > 0 AND (([AssetKindCode] = 'IMAGE' AND [SizeBytes] <= {PresentationAsset.MaximumImageSizeBytes}) OR ([AssetKindCode] = 'VIDEO' AND [SizeBytes] <= {PresentationAsset.MaximumVideoSizeBytes}) OR ([AssetKindCode] = 'AUDIO' AND [SizeBytes] <= {PresentationAsset.MaximumAudioSizeBytes}))");
             table.HasTrigger("TR_PresentationAssets_ProtectSnapshot");
         });
 
@@ -460,6 +460,7 @@ internal sealed class PresentationAssetConfiguration
         builder.Property(asset => asset.OriginalFileName)
             .HasMaxLength(MaterialFilePolicy.OriginalFileNameMaxLength)
             .IsRequired();
+        builder.Property(asset => asset.AssetKindCode).HasMaxLength(32).IsRequired();
         builder.Property(asset => asset.MediaType)
             .HasMaxLength(MaterialFilePolicy.MediaTypeMaxLength)
             .IsRequired();
@@ -497,7 +498,7 @@ internal sealed class PresentationElementConfiguration
         {
             table.HasCheckConstraint(
                 "CK_PresentationElements_Type",
-                "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE')");
+                "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE', 'RULE', 'EXAMPLE', 'VOCABULARY', 'QUESTION', 'VIDEO', 'AUDIO')");
             table.HasCheckConstraint(
                 "CK_PresentationElements_Schema",
                 "[ElementSchemaVersion] = 1");
@@ -512,7 +513,7 @@ internal sealed class PresentationElementConfiguration
                 $"ISJSON([PayloadJson]) = 1 AND DATALENGTH([PayloadJson]) <= {PresentationElement.MaximumPayloadBytes}");
             table.HasCheckConstraint(
                 "CK_PresentationElements_Asset",
-                "([ElementTypeCode] = 'IMAGE' AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] <> 'IMAGE' AND [PresentationAssetId] IS NULL)");
+                "([ElementTypeCode] IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] NOT IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NULL)");
             table.HasTrigger("TR_PresentationElements_ProtectSnapshot");
         });
 

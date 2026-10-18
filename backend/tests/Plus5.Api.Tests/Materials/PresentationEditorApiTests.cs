@@ -290,6 +290,8 @@ public sealed class PresentationEditorApiTests
         public Task<PresentationAssetContent?> OpenAssetAsync(Guid teacherAccountId, Guid materialId, Guid assetId, CancellationToken cancellationToken) => Task.FromResult<PresentationAssetContent?>(null);
         public Task<PresentationMutationResult> CreateAsync(Guid teacherAccountId, Guid materialId, Guid slideId, CreatePresentationElementCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> UploadImageAsync(Guid teacherAccountId, Guid materialId, Guid slideId, UploadPresentationImageCommand command, CancellationToken cancellationToken) => Success();
+
+        public Task<PresentationMutationResult> UploadMediaAsync(Guid teacherAccountId, Guid materialId, Guid slideId, UploadPresentationMediaCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> UpdateAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, UpdatePresentationElementCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> DeleteAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, PresentationConcurrencyCommand command, CancellationToken cancellationToken) => Success();
 

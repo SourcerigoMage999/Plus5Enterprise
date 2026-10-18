@@ -1,10 +1,14 @@
 import { deleteJson, getJson, postFormData, postJson, putJson } from '../api/apiClient.ts'
 import { environment } from '../config/environment.ts'
 
-export type PresentationElementType = 'TEXT' | 'IMAGE' | 'SHAPE' | 'TABLE'
+export type PresentationElementType =
+  | 'TEXT' | 'IMAGE' | 'SHAPE' | 'TABLE'
+  | 'RULE' | 'EXAMPLE' | 'VOCABULARY' | 'QUESTION'
+  | 'VIDEO' | 'AUDIO'
 
 export interface PresentationAsset {
   readonly id: string
+  readonly assetKindCode: 'IMAGE' | 'VIDEO' | 'AUDIO'
   readonly originalFileName: string
   readonly mediaType: string
   readonly sizeBytes: number
@@ -117,7 +121,7 @@ export function createPresentationElement(
   slideId: string,
   body: {
     readonly expectedDocumentRowVersion: string
-    readonly elementTypeCode: Exclude<PresentationElementType, 'IMAGE'>
+    readonly elementTypeCode: Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO'>
     readonly x: number
     readonly y: number
     readonly width: number
@@ -172,6 +176,53 @@ export function uploadPresentationImage(
   form.append('altText', file.name.replace(/\.[^.]+$/, ''))
   form.append('fit', 'contain')
   return postFormData(`${path(materialId)}/slides/${slideId}/images`, form)
+}
+
+export function uploadPresentationVideo(
+  materialId: string,
+  slideId: string,
+  file: File,
+  expectedDocumentRowVersion: string,
+): Promise<PresentationMutationResponse> {
+  return uploadPresentationMedia(
+    materialId,
+    slideId,
+    file,
+    expectedDocumentRowVersion,
+    'videos',
+    { x: '260', y: '130', width: '1080', height: '608', title: file.name.replace(/\.[^.]+$/, '') },
+  )
+}
+
+export function uploadPresentationAudio(
+  materialId: string,
+  slideId: string,
+  file: File,
+  expectedDocumentRowVersion: string,
+): Promise<PresentationMutationResponse> {
+  return uploadPresentationMedia(
+    materialId,
+    slideId,
+    file,
+    expectedDocumentRowVersion,
+    'audio',
+    { x: '360', y: '360', width: '880', height: '160' },
+  )
+}
+
+function uploadPresentationMedia(
+  materialId: string,
+  slideId: string,
+  file: File,
+  expectedDocumentRowVersion: string,
+  segment: 'videos' | 'audio',
+  fields: Readonly<Record<string, string>>,
+): Promise<PresentationMutationResponse> {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('expectedDocumentRowVersion', expectedDocumentRowVersion)
+  Object.entries(fields).forEach(([name, value]) => form.append(name, value))
+  return postFormData(`${path(materialId)}/slides/${slideId}/${segment}`, form)
 }
 
 export function presentationAssetUrl(asset: PresentationAsset): string {

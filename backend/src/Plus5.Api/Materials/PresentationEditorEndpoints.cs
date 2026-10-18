@@ -9,6 +9,8 @@ public static class PresentationEditorEndpoints
 {
     private const long CommandBodyLimit = 16 * 1024;
     private const long ImageBodyLimit = 11 * 1024 * 1024;
+    private const long AudioBodyLimit = 26 * 1024 * 1024;
+    private const long VideoBodyLimit = 251 * 1024 * 1024;
 
     public static IEndpointRouteBuilder MapPresentationEditor(
         this IEndpointRouteBuilder endpoints)
@@ -24,6 +26,12 @@ public static class PresentationEditorEndpoints
         ConfigureWrite(group.MapPut("/slides/order", ReorderAsync));
         ConfigureWrite(group.MapPost("/slides/{slideId:guid}/elements", CreateElementAsync));
         ConfigureImageWrite(group.MapPost("/slides/{slideId:guid}/images", UploadImageAsync));
+        ConfigureAssetWrite(
+            group.MapPost("/slides/{slideId:guid}/videos", UploadVideoAsync),
+            VideoBodyLimit);
+        ConfigureAssetWrite(
+            group.MapPost("/slides/{slideId:guid}/audio", UploadAudioAsync),
+            AudioBodyLimit);
         ConfigureWrite(group.MapPut(
             "/slides/{slideId:guid}/elements/{elementId:guid}",
             UpdateElementAsync));
@@ -260,6 +268,91 @@ public static class PresentationEditorEndpoints
             cancellationToken));
     }
 
+    private static Task<IResult> UploadVideoAsync(
+        Guid materialId,
+        Guid slideId,
+        HttpContext context,
+        IPresentationElementService service,
+        CancellationToken cancellationToken) => UploadMediaAsync(
+            materialId,
+            slideId,
+            "VIDEO",
+            context,
+            service,
+            cancellationToken);
+
+    private static Task<IResult> UploadAudioAsync(
+        Guid materialId,
+        Guid slideId,
+        HttpContext context,
+        IPresentationElementService service,
+        CancellationToken cancellationToken) => UploadMediaAsync(
+            materialId,
+            slideId,
+            "AUDIO",
+            context,
+            service,
+            cancellationToken);
+
+    private static async Task<IResult> UploadMediaAsync(
+        Guid materialId,
+        Guid slideId,
+        string elementTypeCode,
+        HttpContext context,
+        IPresentationElementService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        if (!context.Request.HasFormContentType)
+        {
+            return Problem(400, "presentation_invalid_asset");
+        }
+
+        var form = await context.Request.ReadFormAsync(cancellationToken);
+        var file = form.Files.Count == 1 ? form.Files[0] : null;
+        if (file is null
+            || !TryDecimal(form["x"], out var x)
+            || !TryDecimal(form["y"], out var y)
+            || !TryDecimal(form["width"], out var width)
+            || !TryDecimal(form["height"], out var height))
+        {
+            return Problem(400, "presentation_invalid_asset");
+        }
+
+        var payload = elementTypeCode == "VIDEO"
+            ? PresentationElementPayloadRegistry.Video(form["title"].ToString())
+            : PresentationElementPayloadRegistry.Audio();
+        return Map(await service.UploadMediaAsync(
+            teacherId,
+            materialId,
+            slideId,
+            new UploadPresentationMediaCommand(
+                form["expectedDocumentRowVersion"].ToString(),
+                elementTypeCode,
+                Path.GetFileName(file.FileName),
+                file.ContentType,
+                file.Length,
+                x,
+                y,
+                width,
+                height,
+                payload,
+                file.OpenReadStream),
+            cancellationToken));
+    }
+
+    private static bool TryDecimal(
+        Microsoft.Extensions.Primitives.StringValues value,
+        out decimal result) => decimal.TryParse(
+            value,
+            System.Globalization.NumberStyles.Number,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out result);
+
     private static async Task<IResult> UpdateElementAsync(
         Guid materialId,
         Guid slideId,
@@ -327,6 +420,25 @@ public static class PresentationEditorEndpoints
 
     private static void ConfigureImageWrite(RouteHandlerBuilder builder) => builder
         .WithMetadata(new RequestSizeLimitAttribute(ImageBodyLimit))
+        .RequireRateLimiting(IdentityServiceExtensions.PresentationEditingRateLimitPolicy)
+        .AddEndpointFilter(async (context, next) =>
+        {
+            try
+            {
+                await context.HttpContext.RequestServices
+                    .GetRequiredService<IAntiforgery>()
+                    .ValidateRequestAsync(context.HttpContext);
+            }
+            catch (AntiforgeryValidationException)
+            {
+                return Problem(400, "invalid_csrf_token");
+            }
+
+            return await next(context);
+        });
+
+    private static void ConfigureAssetWrite(RouteHandlerBuilder builder, long bodyLimit) => builder
+        .WithMetadata(new RequestSizeLimitAttribute(bodyLimit))
         .RequireRateLimiting(IdentityServiceExtensions.PresentationEditingRateLimitPolicy)
         .AddEndpointFilter(async (context, next) =>
         {

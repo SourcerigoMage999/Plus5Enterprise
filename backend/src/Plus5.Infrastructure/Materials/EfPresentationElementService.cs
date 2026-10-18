@@ -10,7 +10,7 @@ namespace Plus5.Infrastructure.Materials;
 
 public sealed class EfPresentationElementService(
     Plus5DbContext db,
-    IPresentationImageValidator imageValidator,
+    IPresentationAssetValidator assetValidator,
     IMaterialObjectStorage storage,
     IMalwareScanner scanner,
     IOptions<MaterialStorageOptions> configuredStorage,
@@ -59,7 +59,7 @@ public sealed class EfPresentationElementService(
     {
         if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
             || slideId == Guid.Empty
-            || command.ElementTypeCode == "IMAGE"
+            || PresentationElement.RequiresAsset(command.ElementTypeCode)
             || !PresentationElementPayloadRegistry.TryNormalize(
                 command.ElementTypeCode,
                 command.PayloadJson,
@@ -131,21 +131,69 @@ public sealed class EfPresentationElementService(
         UploadPresentationImageCommand command,
         CancellationToken cancellationToken)
     {
+        var payload = PresentationElementPayloadRegistry.Image(command.AltText, command.Fit);
+        return await UploadAssetAsync(
+            teacherAccountId,
+            materialId,
+            slideId,
+            new UploadPresentationMediaCommand(
+                command.ExpectedDocumentRowVersion,
+                "IMAGE",
+                command.OriginalFileName,
+                command.DeclaredMediaType,
+                command.DeclaredSizeBytes,
+                command.X,
+                command.Y,
+                command.Width,
+                command.Height,
+                payload,
+                command.OpenReadStream),
+            cancellationToken);
+    }
+
+    public Task<PresentationMutationResult> UploadMediaAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        UploadPresentationMediaCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (command.ElementTypeCode is not ("VIDEO" or "AUDIO"))
+        {
+            return Task.FromResult(Invalid());
+        }
+
+        return UploadAssetAsync(
+            teacherAccountId,
+            materialId,
+            slideId,
+            command,
+            cancellationToken);
+    }
+
+    private async Task<PresentationMutationResult> UploadAssetAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        UploadPresentationMediaCommand command,
+        CancellationToken cancellationToken)
+    {
         if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
             || slideId == Guid.Empty
             || !PresentationElementPayloadRegistry.TryNormalize(
-                "IMAGE",
-                PresentationElementPayloadRegistry.Image(command.AltText, command.Fit),
+                command.ElementTypeCode,
+                command.PayloadJson,
                 out var payload))
         {
             return Invalid();
         }
 
-        PresentationImageValidationResult validation;
+        PresentationAssetValidationResult validation;
         try
         {
             await using var validationStream = command.OpenReadStream();
-            validation = await imageValidator.ValidateAsync(
+            validation = await assetValidator.ValidateAsync(
+                command.ElementTypeCode,
                 command.OriginalFileName,
                 command.DeclaredMediaType,
                 command.DeclaredSizeBytes,
@@ -211,7 +259,18 @@ public sealed class EfPresentationElementService(
             var scan = await scanner.ScanAsync(scanStream, cancellationToken);
             if (scan.IsMalware)
             {
-                await TryDeleteAsync(reference);
+                asset.MarkQuarantined();
+                db.PresentationAssets.Add(asset);
+                try
+                {
+                    await db.SaveChangesAsync(cancellationToken);
+                }
+                catch
+                {
+                    await TryDeleteAsync(reference);
+                    throw;
+                }
+
                 return new(PresentationMutationOutcome.MalwareDetected);
             }
 
@@ -260,7 +319,7 @@ public sealed class EfPresentationElementService(
             element = new PresentationElement(
                 Guid.NewGuid(),
                 state.Slide!,
-                "IMAGE",
+                command.ElementTypeCode,
                 state.Elements.Count,
                 command.X,
                 command.Y,

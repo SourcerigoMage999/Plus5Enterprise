@@ -173,4 +173,46 @@ describe('presentation slide editor', () => {
       align: 'left',
     })
   })
+
+  it('exposes all teaching tools and never autoplays an audio element', async () => {
+    const audioElement = {
+      id: '40000000-0000-0000-0000-000000000009',
+      elementTypeCode: 'AUDIO',
+      elementSchemaVersion: 1,
+      zIndex: 0,
+      x: 360,
+      y: 360,
+      width: 880,
+      height: 160,
+      payloadJson: JSON.stringify({ schemaVersion: 1, autoplay: false, showControls: true }),
+      asset: {
+        id: '50000000-0000-0000-0000-000000000001',
+        assetKindCode: 'AUDIO',
+        originalFileName: 'lesson.mp3',
+        mediaType: 'audio/mpeg',
+        sizeBytes: 1024,
+        readPath: '/materials/test/presentation/assets/audio',
+      },
+    }
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json({
+        ...workspace,
+        document: {
+          ...workspace.document,
+          slides: [{ ...slideOne, elements: [audioElement] }, slideTwo],
+        },
+      }))
+
+    const view = renderEditor()
+    expect(await screen.findByRole('button', { name: 'Pravilo' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Primjer' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Vokabular' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Pitanje' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Video' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Audio' })).toBeInTheDocument()
+    const audio = view.container.querySelector('audio')
+    expect(audio).toHaveAttribute('controls')
+    expect(audio).not.toHaveAttribute('autoplay')
+  })
 })

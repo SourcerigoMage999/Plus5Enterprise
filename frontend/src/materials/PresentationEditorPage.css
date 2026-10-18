@@ -60,6 +60,15 @@
 .presentation-canvas-element--table table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; color: #173e67; background: #fff; font-size: clamp(.35rem, 1.25cqw, 1rem); }
 .presentation-canvas-element--table th, .presentation-canvas-element--table td { padding: .2em .35em; overflow: hidden; border: 1px solid #9aabc3; text-overflow: ellipsis; }
 .presentation-canvas-element--table th { background: #eaf1ff; font-weight: 800; }
+.presentation-teaching-card { display: flex; box-sizing: border-box; width: 100%; height: 100%; flex-direction: column; justify-content: center; gap: .4em; padding: 1.2em; overflow: hidden; color: #173e67; text-align: left; border: .35em solid #f4b400; border-radius: 1em; background: #fffdf5; font-size: clamp(.35rem, 1.5cqw, 1.3rem); }
+.presentation-teaching-card small { color: #5d7090; font-size: .65em; font-weight: 850; letter-spacing: .12em; }
+.presentation-teaching-card strong { font-size: 1.35em; line-height: 1.15; }
+.presentation-teaching-card p, .presentation-teaching-card em { margin: 0; overflow: hidden; line-height: 1.35; white-space: pre-wrap; }
+.presentation-teaching-card--question { border-color: #1767ff; background: #f3f7ff; }
+.presentation-canvas-element--video video { width: 100%; height: 100%; background: #10233e; object-fit: contain; }
+.presentation-audio { display: grid; box-sizing: border-box; width: 100%; height: 100%; grid-template-columns: auto 1fr; align-items: center; gap: .8rem; padding: .8rem 1rem; color: #173e67; border: 2px solid #aac1e8; border-radius: .8rem; background: #f3f7ff; }
+.presentation-audio strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.presentation-audio audio { grid-column: 1 / -1; width: 100%; height: 2.5rem; }
 .presentation-editor__empty { pointer-events: none; }
 .presentation-element-form { display: grid; gap: .75rem; padding: 1rem; overflow-y: auto; }
 .presentation-editor__layers { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; padding: .75rem; border-bottom: 1px solid var(--color-border); background: #f8faff; }
