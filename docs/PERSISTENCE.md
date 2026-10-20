@@ -293,3 +293,19 @@ Composite FK zadržava istu MaterialVersion granicu. Prošireni
 `TR_PresentationElements_ProtectSnapshot` uz Draft immutability vraća SQL `51245` kada asset
 nije Clean, nije pronađen u istoj verziji ili mu `AssetKindCode` ne odgovara element typeu.
 Detalji su u `PRESENTATION_TEACHING_ELEMENTS.md`.
+
+## Phase 7.5 interactive Quick Check
+
+Migracija `AddPresentationQuickChecks` dodaje optional version-bound
+`PresentationElement.AssessableTaskVersionId` i bounded
+`AssessableTaskVersion.AuthoringPayloadJson`. Composite FK zahtijeva isti
+`MaterialVersionId`, filtered unique index dopušta najviše jedan element po TaskVersionu, a
+CHECK constraint zahtijeva TaskVersion vezu isključivo za `QUICK_CHECK` element.
+
+`SINGLE_CHOICE_QUICK_CHECK` authoring payload ima schema version 1 i točno 2–8 redoslijednih
+`A`–`H` opcija. SQL trigger `51246` ponovno provjerava shape, tekstove, correct answer,
+Difficulty postojeće tablice, `MaxPoints = 1` i absence evaluation criteriona. SQL `51247`
+štiti podudaranje `QUICK_CHECK` elementa sa same-version
+`SINGLE_CHOICE_QUICK_CHECK` TaskVersionom. Draft-only `51231/51244` snapshot zaštita i Phase
+6.5 activation mapping invariant ostaju authority. Detalji su u
+`PRESENTATION_QUICK_CHECK.md`.

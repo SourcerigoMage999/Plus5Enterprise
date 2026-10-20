@@ -178,7 +178,27 @@ public sealed class EfPresentationSlideService(
         var slideElements = await db.PresentationElements
             .Where(element => element.PresentationSlideId == slide.Id)
             .ToListAsync(cancellationToken);
+        var taskVersionIds = slideElements
+            .Where(element => element.AssessableTaskVersionId.HasValue)
+            .Select(element => element.AssessableTaskVersionId!.Value)
+            .ToList();
+        var taskVersions = await db.AssessableTaskVersions
+            .Where(version => taskVersionIds.Contains(version.Id))
+            .ToListAsync(cancellationToken);
+        var mappings = await db.AssessableTaskVersionKnowledgeComponents
+            .Where(mapping => taskVersionIds.Contains(mapping.AssessableTaskVersionId))
+            .ToListAsync(cancellationToken);
+        var taskIds = taskVersions.Select(version => version.AssessableTaskId).ToList();
+        var removableTasks = await db.AssessableTasks
+            .Where(task => taskIds.Contains(task.Id)
+                && !db.AssessableTaskVersions.Any(version =>
+                    version.AssessableTaskId == task.Id
+                    && !taskVersionIds.Contains(version.Id)))
+            .ToListAsync(cancellationToken);
+        db.AssessableTaskVersionKnowledgeComponents.RemoveRange(mappings);
         db.PresentationElements.RemoveRange(slideElements);
+        db.AssessableTaskVersions.RemoveRange(taskVersions);
+        db.AssessableTasks.RemoveRange(removableTasks);
         db.PresentationSlides.Remove(slide);
 
         try
@@ -240,6 +260,48 @@ public sealed class EfPresentationSlideService(
             .Where(element => element.PresentationSlideId == slideId)
             .OrderBy(element => element.ZIndex)
             .ToListAsync(cancellationToken);
+        var sourceTaskVersionIds = sourceElements
+            .Where(element => element.AssessableTaskVersionId.HasValue)
+            .Select(element => element.AssessableTaskVersionId!.Value)
+            .ToList();
+        var sourceTaskVersions = await db.AssessableTaskVersions
+            .AsNoTracking()
+            .Where(version => sourceTaskVersionIds.Contains(version.Id))
+            .ToDictionaryAsync(version => version.Id, cancellationToken);
+        var material = await db.Materials.SingleAsync(
+            candidate => candidate.Id == materialId,
+            cancellationToken);
+        var materialVersion = await db.MaterialVersions.SingleAsync(
+            candidate => candidate.Id == state.Document!.MaterialVersionId,
+            cancellationToken);
+        var maximumSortOrder = await db.AssessableTaskVersions
+            .Where(version => version.MaterialVersionId == materialVersion.Id)
+            .Select(version => (int?)version.SortOrder)
+            .MaxAsync(cancellationToken) ?? -1;
+        var now = timeProvider.GetUtcNow();
+        var taskVersionMap = new Dictionary<Guid, Guid>();
+        foreach (var sourceTaskVersion in sourceTaskVersions.Values.OrderBy(version => version.SortOrder))
+        {
+            var task = new AssessableTask(Guid.NewGuid(), material, now);
+            var taskVersion = new AssessableTaskVersion(
+                Guid.NewGuid(),
+                task,
+                materialVersion,
+                1,
+                ++maximumSortOrder,
+                sourceTaskVersion.Prompt,
+                sourceTaskVersion.TaskTypeCode,
+                sourceTaskVersion.Difficulty,
+                sourceTaskVersion.EvidenceType,
+                sourceTaskVersion.MaxPoints,
+                now,
+                sourceTaskVersion.CorrectAnswer,
+                sourceTaskVersion.EvaluationCriterion,
+                sourceTaskVersion.AuthoringPayloadJson);
+            db.AddRange(task, taskVersion);
+            taskVersionMap.Add(sourceTaskVersion.Id, taskVersion.Id);
+        }
+
         db.PresentationElements.AddRange(sourceElements.Select(element =>
             new PresentationElement(
                 Guid.NewGuid(),
@@ -251,7 +313,10 @@ public sealed class EfPresentationSlideService(
                 element.Width,
                 element.Height,
                 element.PayloadJson,
-                element.PresentationAssetId)));
+                element.PresentationAssetId,
+                element.AssessableTaskVersionId.HasValue
+                    ? taskVersionMap[element.AssessableTaskVersionId.Value]
+                    : null)));
 
         try
         {

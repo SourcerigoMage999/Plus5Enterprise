@@ -1,3 +1,5 @@
+using Plus5.Domain.Evidence;
+
 namespace Plus5.Application.Materials;
 
 public interface IPresentationEditorQuery
@@ -70,6 +72,21 @@ public interface IPresentationElementService
         Guid materialId,
         Guid slideId,
         UploadPresentationMediaCommand command,
+        CancellationToken cancellationToken);
+
+    Task<PresentationMutationResult> CreateQuickCheckAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        UpsertPresentationQuickCheckCommand command,
+        CancellationToken cancellationToken);
+
+    Task<PresentationMutationResult> UpdateQuickCheckAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        Guid elementId,
+        UpsertPresentationQuickCheckCommand command,
         CancellationToken cancellationToken);
 
     Task<PresentationMutationResult> UpdateAsync(
@@ -152,6 +169,19 @@ public sealed record UploadPresentationMediaCommand(
     string PayloadJson,
     Func<Stream> OpenReadStream);
 
+public sealed record UpsertPresentationQuickCheckCommand(
+    string ExpectedDocumentRowVersion,
+    int ZIndex,
+    decimal X,
+    decimal Y,
+    decimal Width,
+    decimal Height,
+    string Prompt,
+    IReadOnlyList<string> Options,
+    int CorrectOptionIndex,
+    int Difficulty,
+    EvidenceType EvidenceType);
+
 public enum PresentationMutationOutcome
 {
     Success,
@@ -204,7 +234,8 @@ public sealed record PresentationElementView(
     decimal Width,
     decimal Height,
     string PayloadJson,
-    PresentationAssetView? Asset);
+    PresentationAssetView? Asset,
+    PresentationQuickCheckView? QuickCheck);
 
 public sealed record PresentationAssetView(
     Guid Id,
@@ -213,3 +244,15 @@ public sealed record PresentationAssetView(
     string MediaType,
     long SizeBytes,
     string ReadPath);
+
+public sealed record PresentationQuickCheckView(
+    Guid AssessableTaskVersionId,
+    string Prompt,
+    IReadOnlyList<QuickCheckOptionView> Options,
+    string CorrectOptionKey,
+    int Difficulty,
+    EvidenceType EvidenceType,
+    decimal MaxPoints,
+    bool KnowledgeMappingPending);
+
+public sealed record QuickCheckOptionView(string Key, string Text);

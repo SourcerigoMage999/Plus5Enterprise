@@ -19,6 +19,8 @@ namespace Plus5.Api.Tests.Materials;
 
 public sealed class PresentationEditorApiTests
 {
+    private static readonly string[] QuickCheckOptions = ["Prvi", "Drugi"];
+
     [Fact]
     public async Task EditorRequiresTeacherAuthenticationAndCsrfForWrites()
     {
@@ -175,6 +177,42 @@ public sealed class PresentationEditorApiTests
         Assert.Equal(HttpStatusCode.OK, accepted.StatusCode);
     }
 
+    [Fact]
+    public async Task QuickCheckWriteUsesTheExistingTeacherAndCsrfBoundary()
+    {
+        var teacherId = Guid.NewGuid();
+        var materialId = Guid.NewGuid();
+        var slideId = Guid.NewGuid();
+        await using var app = await StartApplicationAsync(new CapturingQuery(materialId));
+        using var client = app.GetTestClient();
+        var csrf = await SignInAndGetCsrfAsync(client, teacherId);
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/v1/materials/{materialId:D}/presentation/slides/{slideId:D}/quick-checks")
+        {
+            Content = JsonContent.Create(new
+            {
+                expectedDocumentRowVersion = "AAAAAAAAAAA=",
+                zIndex = 0,
+                x = 100,
+                y = 100,
+                width = 700,
+                height = 350,
+                prompt = "Odaberite točan odgovor.",
+                options = QuickCheckOptions,
+                correctOptionIndex = 1,
+                difficulty = 2,
+                evidenceType = 1,
+            }),
+        };
+        request.Headers.Add("Cookie", csrf.Cookie);
+        request.Headers.Add(IdentityServiceExtensions.CsrfHeaderName, csrf.Token);
+
+        using var response = await client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     private static async Task<WebApplication> StartApplicationAsync(CapturingQuery query)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -292,6 +330,8 @@ public sealed class PresentationEditorApiTests
         public Task<PresentationMutationResult> UploadImageAsync(Guid teacherAccountId, Guid materialId, Guid slideId, UploadPresentationImageCommand command, CancellationToken cancellationToken) => Success();
 
         public Task<PresentationMutationResult> UploadMediaAsync(Guid teacherAccountId, Guid materialId, Guid slideId, UploadPresentationMediaCommand command, CancellationToken cancellationToken) => Success();
+        public Task<PresentationMutationResult> CreateQuickCheckAsync(Guid teacherAccountId, Guid materialId, Guid slideId, UpsertPresentationQuickCheckCommand command, CancellationToken cancellationToken) => Success();
+        public Task<PresentationMutationResult> UpdateQuickCheckAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, UpsertPresentationQuickCheckCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> UpdateAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, UpdatePresentationElementCommand command, CancellationToken cancellationToken) => Success();
         public Task<PresentationMutationResult> DeleteAsync(Guid teacherAccountId, Guid materialId, Guid slideId, Guid elementId, PresentationConcurrencyCommand command, CancellationToken cancellationToken) => Success();
 

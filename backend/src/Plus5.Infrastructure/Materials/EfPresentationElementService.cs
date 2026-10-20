@@ -60,6 +60,7 @@ public sealed class EfPresentationElementService(
         if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
             || slideId == Guid.Empty
             || PresentationElement.RequiresAsset(command.ElementTypeCode)
+            || PresentationElement.RequiresAssessment(command.ElementTypeCode)
             || !PresentationElementPayloadRegistry.TryNormalize(
                 command.ElementTypeCode,
                 command.PayloadJson,
@@ -169,6 +170,228 @@ public sealed class EfPresentationElementService(
             slideId,
             command,
             cancellationToken);
+    }
+
+    public async Task<PresentationMutationResult> CreateQuickCheckAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        UpsertPresentationQuickCheckCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
+            || slideId == Guid.Empty
+            || !QuickCheckAuthoringPayloadRegistry.TryCreate(
+                command.Options,
+                command.CorrectOptionIndex,
+                out var authoringPayload,
+                out var correctOptionKey))
+        {
+            return Invalid();
+        }
+
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var state = await LoadMutableAsync(
+            teacherAccountId,
+            materialId,
+            slideId,
+            expected,
+            cancellationToken);
+        if (state.Result is not null)
+        {
+            return state.Result;
+        }
+
+        if (state.Elements!.Count >= PresentationElement.MaximumElementsPerSlide)
+        {
+            return new(PresentationMutationOutcome.ElementLimitReached);
+        }
+
+        var presentationPayload = PresentationElementPayloadRegistry.QuickCheck();
+        if (!WithinDocumentPayloadLimit(
+                state.Document!.MaterialVersionId,
+                null,
+                presentationPayload))
+        {
+            return new(PresentationMutationOutcome.PayloadLimitReached);
+        }
+
+        var material = await db.Materials.SingleAsync(
+            candidate => candidate.Id == materialId,
+            cancellationToken);
+        var version = await db.MaterialVersions.SingleAsync(
+            candidate => candidate.Id == state.Document.MaterialVersionId,
+            cancellationToken);
+        var maximumSortOrder = await db.AssessableTaskVersions
+            .Where(candidate => candidate.MaterialVersionId == version.Id)
+            .Select(candidate => (int?)candidate.SortOrder)
+            .MaxAsync(cancellationToken);
+        var sortOrder = (maximumSortOrder ?? -1) + 1;
+        var now = timeProvider.GetUtcNow();
+
+        AssessableTask task;
+        AssessableTaskVersion taskVersion;
+        PresentationElement element;
+        try
+        {
+            task = new AssessableTask(Guid.NewGuid(), material, now);
+            taskVersion = new AssessableTaskVersion(
+                Guid.NewGuid(),
+                task,
+                version,
+                1,
+                sortOrder,
+                command.Prompt,
+                AssessableTaskVersion.SingleChoiceQuickCheckTypeCode,
+                command.Difficulty,
+                command.EvidenceType,
+                1m,
+                now,
+                correctOptionKey,
+                authoringPayloadJson: authoringPayload);
+            element = new PresentationElement(
+                Guid.NewGuid(),
+                state.Slide!,
+                "QUICK_CHECK",
+                state.Elements.Count,
+                command.X,
+                command.Y,
+                command.Width,
+                command.Height,
+                presentationPayload,
+                assessableTaskVersionId: taskVersion.Id);
+
+        }
+        catch (ArgumentException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return Invalid();
+        }
+
+        db.AssessableTasks.Add(task);
+        db.AssessableTaskVersions.Add(taskVersion);
+        db.PresentationElements.Add(element);
+        state.Document.RecordChange(now);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return Success(element.Id);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return Conflict();
+        }
+    }
+
+    public async Task<PresentationMutationResult> UpdateQuickCheckAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        Guid slideId,
+        Guid elementId,
+        UpsertPresentationQuickCheckCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
+            || slideId == Guid.Empty
+            || elementId == Guid.Empty
+            || !QuickCheckAuthoringPayloadRegistry.TryCreate(
+                command.Options,
+                command.CorrectOptionIndex,
+                out var authoringPayload,
+                out var correctOptionKey))
+        {
+            return Invalid();
+        }
+
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var state = await LoadMutableAsync(
+            teacherAccountId,
+            materialId,
+            slideId,
+            expected,
+            cancellationToken);
+        if (state.Result is not null)
+        {
+            return state.Result;
+        }
+
+        var elements = state.Elements!;
+        var element = elements.SingleOrDefault(candidate => candidate.Id == elementId);
+        if (element is not { ElementTypeCode: "QUICK_CHECK", AssessableTaskVersionId: not null })
+        {
+            return element is null ? NotFound() : Invalid();
+        }
+
+        if (command.ZIndex < 0 || command.ZIndex >= elements.Count)
+        {
+            return Invalid();
+        }
+
+        var version = await db.MaterialVersions.SingleAsync(
+            candidate => candidate.Id == state.Document!.MaterialVersionId,
+            cancellationToken);
+        var taskVersion = await db.AssessableTaskVersions.SingleOrDefaultAsync(
+            candidate => candidate.Id == element.AssessableTaskVersionId.Value
+                && candidate.MaterialVersionId == version.Id,
+            cancellationToken);
+        if (taskVersion is null)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            taskVersion.UpdateSingleChoiceQuickCheck(
+                version,
+                command.Prompt,
+                command.Difficulty,
+                command.EvidenceType,
+                correctOptionKey,
+                authoringPayload);
+            var ordered = elements.OrderBy(candidate => candidate.ZIndex).ToList();
+            ordered.Remove(element);
+            ordered.Insert(command.ZIndex, element);
+            foreach (var candidate in ordered)
+            {
+                candidate.Update(
+                    TemporaryZIndexOffset + candidate.ZIndex,
+                    candidate.X,
+                    candidate.Y,
+                    candidate.Width,
+                    candidate.Height,
+                    candidate.PayloadJson);
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
+            for (var index = 0; index < ordered.Count; index++)
+            {
+                var candidate = ordered[index];
+                candidate.Update(
+                    index,
+                    candidate.Id == element.Id ? command.X : candidate.X,
+                    candidate.Id == element.Id ? command.Y : candidate.Y,
+                    candidate.Id == element.Id ? command.Width : candidate.Width,
+                    candidate.Id == element.Id ? command.Height : candidate.Height,
+                    candidate.PayloadJson);
+            }
+
+            state.Document!.RecordChange(timeProvider.GetUtcNow());
+            await db.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return Success(element.Id);
+        }
+        catch (ArgumentException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return Invalid();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return Conflict();
+        }
     }
 
     private async Task<PresentationMutationResult> UploadAssetAsync(
@@ -387,6 +610,7 @@ public sealed class EfPresentationElementService(
         var elements = state.Elements!;
         var element = elements.SingleOrDefault(candidate => candidate.Id == elementId);
         if (element is null
+            || element.ElementTypeCode == "QUICK_CHECK"
             || !PresentationElementPayloadRegistry.TryNormalize(
                 element.ElementTypeCode,
                 command.PayloadJson,
@@ -483,7 +707,34 @@ public sealed class EfPresentationElementService(
             return NotFound();
         }
 
+        AssessableTask? orphanedTask = null;
+        if (element.AssessableTaskVersionId.HasValue)
+        {
+            var taskVersion = await db.AssessableTaskVersions.SingleAsync(
+                candidate => candidate.Id == element.AssessableTaskVersionId.Value,
+                cancellationToken);
+            var mappings = await db.AssessableTaskVersionKnowledgeComponents
+                .Where(candidate => candidate.AssessableTaskVersionId == taskVersion.Id)
+                .ToListAsync(cancellationToken);
+            db.AssessableTaskVersionKnowledgeComponents.RemoveRange(mappings);
+            db.AssessableTaskVersions.Remove(taskVersion);
+            var hasOtherVersions = await db.AssessableTaskVersions.AnyAsync(
+                candidate => candidate.AssessableTaskId == taskVersion.AssessableTaskId
+                    && candidate.Id != taskVersion.Id,
+                cancellationToken);
+            if (!hasOtherVersions)
+            {
+                orphanedTask = await db.AssessableTasks.SingleAsync(
+                    candidate => candidate.Id == taskVersion.AssessableTaskId,
+                    cancellationToken);
+            }
+        }
+
         db.PresentationElements.Remove(element);
+        if (orphanedTask is not null)
+        {
+            db.AssessableTasks.Remove(orphanedTask);
+        }
         var remaining = elements
             .Where(candidate => candidate.Id != element.Id)
             .OrderBy(candidate => candidate.ZIndex)

@@ -4,7 +4,23 @@ import { environment } from '../config/environment.ts'
 export type PresentationElementType =
   | 'TEXT' | 'IMAGE' | 'SHAPE' | 'TABLE'
   | 'RULE' | 'EXAMPLE' | 'VOCABULARY' | 'QUESTION'
-  | 'VIDEO' | 'AUDIO'
+  | 'VIDEO' | 'AUDIO' | 'QUICK_CHECK'
+
+export interface PresentationQuickCheckOption {
+  readonly key: string
+  readonly text: string
+}
+
+export interface PresentationQuickCheck {
+  readonly assessableTaskVersionId: string
+  readonly prompt: string
+  readonly options: readonly PresentationQuickCheckOption[]
+  readonly correctOptionKey: string
+  readonly difficulty: number
+  readonly evidenceType: number
+  readonly maxPoints: number
+  readonly knowledgeMappingPending: boolean
+}
 
 export interface PresentationAsset {
   readonly id: string
@@ -26,6 +42,7 @@ export interface PresentationElement {
   readonly height: number
   readonly payloadJson: string
   readonly asset: PresentationAsset | null
+  readonly quickCheck: PresentationQuickCheck | null
 }
 
 export interface PresentationSlide {
@@ -121,7 +138,7 @@ export function createPresentationElement(
   slideId: string,
   body: {
     readonly expectedDocumentRowVersion: string
-    readonly elementTypeCode: Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO'>
+    readonly elementTypeCode: Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO' | 'QUICK_CHECK'>
     readonly x: number
     readonly y: number
     readonly width: number
@@ -130,6 +147,37 @@ export function createPresentationElement(
   },
 ): Promise<PresentationMutationResponse> {
   return postJson(`${path(materialId)}/slides/${slideId}/elements`, body)
+}
+
+export interface PresentationQuickCheckMutation {
+  readonly expectedDocumentRowVersion: string
+  readonly zIndex: number
+  readonly x: number
+  readonly y: number
+  readonly width: number
+  readonly height: number
+  readonly prompt: string
+  readonly options: readonly string[]
+  readonly correctOptionIndex: number
+  readonly difficulty: number
+  readonly evidenceType: number
+}
+
+export function createPresentationQuickCheck(
+  materialId: string,
+  slideId: string,
+  body: PresentationQuickCheckMutation,
+): Promise<PresentationMutationResponse> {
+  return postJson(`${path(materialId)}/slides/${slideId}/quick-checks`, body)
+}
+
+export function updatePresentationQuickCheck(
+  materialId: string,
+  slideId: string,
+  elementId: string,
+  body: PresentationQuickCheckMutation,
+): Promise<PresentationMutationResponse> {
+  return putJson(`${path(materialId)}/slides/${slideId}/quick-checks/${elementId}`, body)
 }
 
 export function updatePresentationElement(

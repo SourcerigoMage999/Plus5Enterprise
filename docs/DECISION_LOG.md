@@ -34,6 +34,13 @@
   obavezni `autoplay = false`. VIDEO ostaje na postojećem MP4 contractu. Media elementi imaju
   same-version Clean asset istog kind codea; SQL error `51245` štiti granicu. Instructional
   pitanje nije AssessableTask, Attempt ni Evidence.
+- **Phase 7.5 primjena:** `QUICK_CHECK` je single-choice assessable element koji atomski
+  stvara/referencira exact same-MaterialVersion `AssessableTaskVersion` tipa
+  `SINGLE_CHOICE_QUICK_CHECK`. TaskVersion je jedini authority za prompt, 2–8 server-keyed
+  opcija, jedan correct answer, Difficulty, EvidenceType i `MaxPoints = 1`; bounded element
+  payload sadrži samo `schemaVersion = 1`. Draft bez mappinga je dopušten tijekom authoringa,
+  ali postojeći activation invariant i dalje zahtijeva leaf Knowledge target prije aktivacije.
+  Attempt, Evidence, student response runtime i mapping UI nisu uvedeni.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04

@@ -25,6 +25,9 @@ public static class PresentationEditorEndpoints
         ConfigureWrite(group.MapPost("/slides/{slideId:guid}/duplicate", DuplicateAsync));
         ConfigureWrite(group.MapPut("/slides/order", ReorderAsync));
         ConfigureWrite(group.MapPost("/slides/{slideId:guid}/elements", CreateElementAsync));
+        ConfigureWrite(group.MapPost(
+            "/slides/{slideId:guid}/quick-checks",
+            CreateQuickCheckAsync));
         ConfigureImageWrite(group.MapPost("/slides/{slideId:guid}/images", UploadImageAsync));
         ConfigureAssetWrite(
             group.MapPost("/slides/{slideId:guid}/videos", UploadVideoAsync),
@@ -35,6 +38,9 @@ public static class PresentationEditorEndpoints
         ConfigureWrite(group.MapPut(
             "/slides/{slideId:guid}/elements/{elementId:guid}",
             UpdateElementAsync));
+        ConfigureWrite(group.MapPut(
+            "/slides/{slideId:guid}/quick-checks/{elementId:guid}",
+            UpdateQuickCheckAsync));
         ConfigureWrite(group.MapDelete(
             "/slides/{slideId:guid}/elements/{elementId:guid}",
             DeleteElementAsync));
@@ -205,6 +211,27 @@ public static class PresentationEditorEndpoints
             cancellationToken));
     }
 
+    private static async Task<IResult> CreateQuickCheckAsync(
+        Guid materialId,
+        Guid slideId,
+        UpsertPresentationQuickCheckCommand request,
+        HttpContext context,
+        IPresentationElementService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        return Map(await service.CreateQuickCheckAsync(
+            teacherId,
+            materialId,
+            slideId,
+            request,
+            cancellationToken));
+    }
+
     private static async Task<IResult> UploadImageAsync(
         Guid materialId,
         Guid slideId,
@@ -368,6 +395,29 @@ public static class PresentationEditorEndpoints
         }
 
         return Map(await service.UpdateAsync(
+            teacherId,
+            materialId,
+            slideId,
+            elementId,
+            request,
+            cancellationToken));
+    }
+
+    private static async Task<IResult> UpdateQuickCheckAsync(
+        Guid materialId,
+        Guid slideId,
+        Guid elementId,
+        UpsertPresentationQuickCheckCommand request,
+        HttpContext context,
+        IPresentationElementService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        return Map(await service.UpdateQuickCheckAsync(
             teacherId,
             materialId,
             slideId,

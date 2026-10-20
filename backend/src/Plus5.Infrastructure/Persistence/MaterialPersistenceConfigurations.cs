@@ -498,7 +498,7 @@ internal sealed class PresentationElementConfiguration
         {
             table.HasCheckConstraint(
                 "CK_PresentationElements_Type",
-                "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE', 'RULE', 'EXAMPLE', 'VOCABULARY', 'QUESTION', 'VIDEO', 'AUDIO')");
+                "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE', 'RULE', 'EXAMPLE', 'VOCABULARY', 'QUESTION', 'VIDEO', 'AUDIO', 'QUICK_CHECK')");
             table.HasCheckConstraint(
                 "CK_PresentationElements_Schema",
                 "[ElementSchemaVersion] = 1");
@@ -514,6 +514,9 @@ internal sealed class PresentationElementConfiguration
             table.HasCheckConstraint(
                 "CK_PresentationElements_Asset",
                 "([ElementTypeCode] IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] NOT IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NULL)");
+            table.HasCheckConstraint(
+                "CK_PresentationElements_AssessableTask",
+                "([ElementTypeCode] = 'QUICK_CHECK' AND [AssessableTaskVersionId] IS NOT NULL) OR ([ElementTypeCode] <> 'QUICK_CHECK' AND [AssessableTaskVersionId] IS NULL)");
             table.HasTrigger("TR_PresentationElements_ProtectSnapshot");
         });
 
@@ -559,6 +562,23 @@ internal sealed class PresentationElementConfiguration
                 asset.Id,
             })
             .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<AssessableTaskVersion>()
+            .WithMany()
+            .HasForeignKey(element => new
+            {
+                element.MaterialVersionId,
+                element.AssessableTaskVersionId,
+            })
+            .HasPrincipalKey(version => new
+            {
+                version.MaterialVersionId,
+                version.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(element => element.AssessableTaskVersionId)
+            .IsUnique()
+            .HasFilter("[AssessableTaskVersionId] IS NOT NULL")
+            .HasDatabaseName("UX_PresentationElements_AssessableTaskVersion");
         builder.HasIndex(element => new
         {
             element.PresentationSlideId,
@@ -616,6 +636,9 @@ internal sealed class AssessableTaskVersionConfiguration
             table.HasCheckConstraint(
                 "CK_AssessableTaskVersions_Evaluation",
                 "[CorrectAnswer] IS NOT NULL OR [EvaluationCriterion] IS NOT NULL");
+            table.HasCheckConstraint(
+                "CK_AssessableTaskVersions_AuthoringPayload",
+                $"([TaskTypeCode] <> '{AssessableTaskVersion.SingleChoiceQuickCheckTypeCode}' AND [AuthoringPayloadJson] IS NULL) OR ([TaskTypeCode] = '{AssessableTaskVersion.SingleChoiceQuickCheckTypeCode}' AND [AuthoringPayloadJson] IS NOT NULL AND ISJSON([AuthoringPayloadJson]) = 1 AND DATALENGTH([AuthoringPayloadJson]) <= {AssessableTaskVersion.AuthoringPayloadMaxBytes})");
             table.HasTrigger("TR_AssessableTaskVersions_ProtectSnapshot");
         });
 
@@ -640,6 +663,8 @@ internal sealed class AssessableTaskVersionConfiguration
         builder.Property(version => version.MaxPoints)
             .HasPrecision(18, 4)
             .IsRequired();
+        builder.Property(version => version.AuthoringPayloadJson)
+            .HasColumnType("nvarchar(max)");
         builder.Property(version => version.CreatedAtUtc).HasPrecision(7).IsRequired();
 
         builder.HasOne<AssessableTask>()

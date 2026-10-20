@@ -1,0 +1,60 @@
+{
+  "realApi": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "4.3 P4.png",
+  "screens": [
+    {
+      "name": "quick-check",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1686
+    },
+    {
+      "name": "quick-check",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2670
+    }
+  ],
+  "checks": [
+    "runtime: real single-choice Quick Check with server keys A–C and one correct answer",
+    "runtime: exact TaskVersion link, MaxPoints 1 and Knowledge mapping pending",
+    "desktop: real Quick Check card, selected layer, property panel and no document overflow",
+    "mobile: real Quick Check card, selected layer, property panel and no document overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": [],
+  "runtimeQuickCheck": {
+    "assessableTaskVersionId": "e7a0f842-a58a-4b56-ac08-23f7f3150dbd",
+    "prompt": "Koje vrijeme koristimo za radnje koje se događaju upravo sada?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Present Simple"
+      },
+      {
+        "key": "B",
+        "text": "Present Continuous"
+      },
+      {
+        "key": "C",
+        "text": "Past Simple"
+      }
+    ],
+    "correctOptionKey": "B",
+    "difficulty": 2,
+    "evidenceType": 1,
+    "maxPoints": 1,
+    "knowledgeMappingPending": true
+  }
+}

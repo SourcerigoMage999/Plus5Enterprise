@@ -462,6 +462,9 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("AssessableTaskId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AuthoringPayloadJson")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CorrectAnswer")
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
@@ -529,6 +532,8 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.ToTable("AssessableTaskVersions", null, t =>
                         {
                             t.HasTrigger("TR_AssessableTaskVersions_ProtectSnapshot");
+
+                            t.HasCheckConstraint("CK_AssessableTaskVersions_AuthoringPayload", "([TaskTypeCode] <> 'SINGLE_CHOICE_QUICK_CHECK' AND [AuthoringPayloadJson] IS NULL) OR ([TaskTypeCode] = 'SINGLE_CHOICE_QUICK_CHECK' AND [AuthoringPayloadJson] IS NOT NULL AND ISJSON([AuthoringPayloadJson]) = 1 AND DATALENGTH([AuthoringPayloadJson]) <= 16384)");
 
                             t.HasCheckConstraint("CK_AssessableTaskVersions_Difficulty", "[Difficulty] >= 1 AND [Difficulty] <= 5");
 
@@ -1075,6 +1080,9 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AssessableTaskVersionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("ElementSchemaVersion")
                         .HasColumnType("int");
 
@@ -1120,6 +1128,13 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasAlternateKey("MaterialVersionId", "Id")
                         .HasName("AK_PresentationElements_MaterialVersion_Id");
 
+                    b.HasIndex("AssessableTaskVersionId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PresentationElements_AssessableTaskVersion")
+                        .HasFilter("[AssessableTaskVersionId] IS NOT NULL");
+
+                    b.HasIndex("MaterialVersionId", "AssessableTaskVersionId");
+
                     b.HasIndex("MaterialVersionId", "PresentationAssetId");
 
                     b.HasIndex("MaterialVersionId", "PresentationSlideId");
@@ -1132,6 +1147,8 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         {
                             t.HasTrigger("TR_PresentationElements_ProtectSnapshot");
 
+                            t.HasCheckConstraint("CK_PresentationElements_AssessableTask", "([ElementTypeCode] = 'QUICK_CHECK' AND [AssessableTaskVersionId] IS NOT NULL) OR ([ElementTypeCode] <> 'QUICK_CHECK' AND [AssessableTaskVersionId] IS NULL)");
+
                             t.HasCheckConstraint("CK_PresentationElements_Asset", "([ElementTypeCode] IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NOT NULL) OR ([ElementTypeCode] NOT IN ('IMAGE', 'VIDEO', 'AUDIO') AND [PresentationAssetId] IS NULL)");
 
                             t.HasCheckConstraint("CK_PresentationElements_Bounds", "[X] >= 0 AND [Y] >= 0 AND [Width] > 0 AND [Height] > 0 AND [X] + [Width] <= 1600 AND [Y] + [Height] <= 900");
@@ -1140,7 +1157,7 @@ namespace Plus5.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_PresentationElements_Schema", "[ElementSchemaVersion] = 1");
 
-                            t.HasCheckConstraint("CK_PresentationElements_Type", "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE', 'RULE', 'EXAMPLE', 'VOCABULARY', 'QUESTION', 'VIDEO', 'AUDIO')");
+                            t.HasCheckConstraint("CK_PresentationElements_Type", "[ElementTypeCode] IN ('TEXT', 'IMAGE', 'SHAPE', 'TABLE', 'RULE', 'EXAMPLE', 'VOCABULARY', 'QUESTION', 'VIDEO', 'AUDIO', 'QUICK_CHECK')");
 
                             t.HasCheckConstraint("CK_PresentationElements_ZIndex", "[ZIndex] >= 0");
                         });
@@ -2472,6 +2489,12 @@ namespace Plus5.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Plus5.Domain.Materials.PresentationElement", b =>
                 {
+                    b.HasOne("Plus5.Domain.Materials.AssessableTaskVersion", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId", "AssessableTaskVersionId")
+                        .HasPrincipalKey("MaterialVersionId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Plus5.Domain.Materials.PresentationAsset", null)
                         .WithMany()
                         .HasForeignKey("MaterialVersionId", "PresentationAssetId")

@@ -21,6 +21,7 @@ public sealed class PresentationElement
         "QUESTION",
         "VIDEO",
         "AUDIO",
+        "QUICK_CHECK",
     };
 
     private PresentationElement()
@@ -37,7 +38,8 @@ public sealed class PresentationElement
         decimal width,
         decimal height,
         string payloadJson,
-        Guid? presentationAssetId = null)
+        Guid? presentationAssetId = null,
+        Guid? assessableTaskVersionId = null)
     {
         ArgumentNullException.ThrowIfNull(slide);
         MaterialGuard.Identifier(id, nameof(id));
@@ -46,7 +48,11 @@ public sealed class PresentationElement
         MaterialVersionId = slide.MaterialVersionId;
         PresentationSlideId = slide.Id;
         ElementSchemaVersion = CurrentSchemaVersion;
-        SetTypeAndPayload(elementTypeCode, payloadJson, presentationAssetId);
+        SetTypeAndPayload(
+            elementTypeCode,
+            payloadJson,
+            presentationAssetId,
+            assessableTaskVersionId);
         SetLayout(zIndex, x, y, width, height);
     }
 
@@ -74,6 +80,8 @@ public sealed class PresentationElement
 
     public Guid? PresentationAssetId { get; private set; }
 
+    public Guid? AssessableTaskVersionId { get; private set; }
+
     public void Update(
         int zIndex,
         decimal x,
@@ -82,7 +90,11 @@ public sealed class PresentationElement
         decimal height,
         string payloadJson)
     {
-        SetTypeAndPayload(ElementTypeCode, payloadJson, PresentationAssetId);
+        SetTypeAndPayload(
+            ElementTypeCode,
+            payloadJson,
+            PresentationAssetId,
+            AssessableTaskVersionId);
         SetLayout(zIndex, x, y, width, height);
     }
 
@@ -92,10 +104,13 @@ public sealed class PresentationElement
     public static bool RequiresAsset(string? value) =>
         value is "IMAGE" or "VIDEO" or "AUDIO";
 
+    public static bool RequiresAssessment(string? value) => value == "QUICK_CHECK";
+
     private void SetTypeAndPayload(
         string elementTypeCode,
         string payloadJson,
-        Guid? presentationAssetId)
+        Guid? presentationAssetId,
+        Guid? assessableTaskVersionId)
     {
         var normalizedType = MaterialGuard.Code(
             elementTypeCode,
@@ -118,6 +133,20 @@ public sealed class PresentationElement
             MaterialGuard.Identifier(presentationAssetId.Value, nameof(presentationAssetId));
         }
 
+        if (RequiresAssessment(normalizedType) != assessableTaskVersionId.HasValue)
+        {
+            throw new ArgumentException(
+                "QUICK_CHECK elements require an assessable task version.",
+                nameof(assessableTaskVersionId));
+        }
+
+        if (assessableTaskVersionId.HasValue)
+        {
+            MaterialGuard.Identifier(
+                assessableTaskVersionId.Value,
+                nameof(assessableTaskVersionId));
+        }
+
         ArgumentException.ThrowIfNullOrWhiteSpace(payloadJson);
         if (Encoding.UTF8.GetByteCount(payloadJson) > MaximumPayloadBytes)
         {
@@ -129,6 +158,7 @@ public sealed class PresentationElement
         ElementTypeCode = normalizedType;
         PayloadJson = payloadJson;
         PresentationAssetId = presentationAssetId;
+        AssessableTaskVersionId = assessableTaskVersionId;
     }
 
     private void SetLayout(

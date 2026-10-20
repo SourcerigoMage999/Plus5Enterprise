@@ -775,7 +775,19 @@ SQL integrity testovi, frontend lint/typecheck/build/test te minimalni desktop/m
 gate dokumentirani su u Phase 7.4 summaryju. Full regression, dependency audit i Docker
 infrastructure validation su N/A jer Phase 7.4 ne mijenja njihove zaključane granice.
 Quick Check, Knowledge mapping, autosave i preview/publish nisu dio ove faze.
-## 7.5 Interactive question / Quick Check — TODO
+## 7.5 Interactive question / Quick Check — FINAL LOCKED
+
+**Implementirano 2026-10-20:** Presentation Editor podržava atomski version-bound
+single-choice `QUICK_CHECK`: stabilni AssessableTask, exact same-MaterialVersion
+`AssessableTaskVersion`, 2–8 server-keyed odgovora, jedan correct answer, Difficulty 1–5,
+EvidenceType i fiksni `MaxPoints = 1`. Teacher-only create/update koriste CSRF, postojeći
+rate limit, owner scope i document rowversion. SQL `51246/51247` štiti authoring snapshot i
+element/task podudaranje. Contract: `PRESENTATION_QUICK_CHECK.md`.
+
+**Acceptance 7.5: FINAL LOCKED — odobreno 2026-10-20.** Targeted domain/API/security, stvarni SQL
+migration/integrity, frontend i minimalni canonical desktop/mobile gate dokumentirani su u
+Phase 7.5 summaryju. Knowledge mapping, autosave, preview/publish, StudentAttempt i Evidence
+nisu dio ove faze.
 ## 7.6 Knowledge Component mapping per question — TODO
 ## 7.7 Autosave/version safety — TODO
 ## 7.8 Preview & save flow — TODO

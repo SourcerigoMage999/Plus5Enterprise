@@ -103,6 +103,57 @@ public sealed class PresentationElementModelTests
             out _));
     }
 
+    [Fact]
+    public void QuickCheckRegistryCreatesCanonicalBoundedSingleChoicePayload()
+    {
+        Assert.True(QuickCheckAuthoringPayloadRegistry.TryCreate(
+            ["  Present Simple  ", "Present Continuous", "Past Simple"],
+            1,
+            out var authoringPayload,
+            out var correctKey));
+        Assert.Equal("B", correctKey);
+        Assert.Equal(
+            ["A", "B", "C"],
+            QuickCheckAuthoringPayloadRegistry.ReadOptions(authoringPayload)
+                .Select(option => option.Key));
+        Assert.Contains("Present Simple", authoringPayload, StringComparison.Ordinal);
+        Assert.False(QuickCheckAuthoringPayloadRegistry.TryCreate(
+            ["Samo jedan"],
+            0,
+            out _,
+            out _));
+        Assert.False(QuickCheckAuthoringPayloadRegistry.TryCreate(
+            Enumerable.Repeat("Odgovor", 9).ToList(),
+            0,
+            out _,
+            out _));
+    }
+
+    [Fact]
+    public void QuickCheckElementRequiresTaskVersionAndNoAsset()
+    {
+        var (_, _, slide) = CreatePresentation();
+        var taskVersionId = Guid.NewGuid();
+        var quickCheck = new PresentationElement(
+            Guid.NewGuid(),
+            slide,
+            "QUICK_CHECK",
+            0,
+            100,
+            100,
+            700,
+            350,
+            PresentationElementPayloadRegistry.QuickCheck(),
+            assessableTaskVersionId: taskVersionId);
+
+        Assert.Equal(taskVersionId, quickCheck.AssessableTaskVersionId);
+        Assert.Throws<ArgumentException>(() => new PresentationElement(
+            Guid.NewGuid(), slide, "QUICK_CHECK", 0, 0, 0, 100, 100, "{}"));
+        Assert.Throws<ArgumentException>(() => new PresentationElement(
+            Guid.NewGuid(), slide, "TEXT", 0, 0, 0, 100, 100, "{}",
+            assessableTaskVersionId: taskVersionId));
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

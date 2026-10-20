@@ -30,6 +30,7 @@ public static partial class PresentationElementPayloadRegistry
                 "QUESTION" => TryQuestion(document.RootElement, out normalized),
                 "VIDEO" => TryVideo(document.RootElement, out normalized),
                 "AUDIO" => TryAudio(document.RootElement, out normalized),
+                "QUICK_CHECK" => TryQuickCheck(document.RootElement, out normalized),
                 _ => false,
             };
         }
@@ -49,6 +50,10 @@ public static partial class PresentationElementPayloadRegistry
 
     public static string Audio() => JsonSerializer.Serialize(
         new AudioPayload(1, false, true),
+        JsonOptions);
+
+    public static string QuickCheck() => JsonSerializer.Serialize(
+        new QuickCheckPayload(1),
         JsonOptions);
 
     private static bool TryText(JsonElement root, out string normalized)
@@ -250,6 +255,19 @@ public static partial class PresentationElementPayloadRegistry
         return true;
     }
 
+    private static bool TryQuickCheck(JsonElement root, out string normalized)
+    {
+        normalized = string.Empty;
+        if (!HasOnly(root, "schemaVersion")
+            || !TryInt(root, "schemaVersion", 1, 1, out var schemaVersion))
+        {
+            return false;
+        }
+
+        normalized = JsonSerializer.Serialize(new QuickCheckPayload(schemaVersion), JsonOptions);
+        return true;
+    }
+
     private static bool HasOnly(JsonElement root, params string[] allowed)
     {
         var names = root.EnumerateObject().Select(property => property.Name).ToList();
@@ -347,4 +365,6 @@ public static partial class PresentationElementPayloadRegistry
     private sealed record VideoPayload(string Title, bool ShowControls);
 
     private sealed record AudioPayload(int SchemaVersion, bool Autoplay, bool ShowControls);
+
+    private sealed record QuickCheckPayload(int SchemaVersion);
 }

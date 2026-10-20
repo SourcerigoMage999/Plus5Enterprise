@@ -28,6 +28,7 @@ import { ApiError } from '../api/apiClient.ts'
 import {
   addPresentationSlide,
   createPresentationElement,
+  createPresentationQuickCheck,
   deletePresentationElement,
   deletePresentationSlide,
   duplicatePresentationSlide,
@@ -36,16 +37,18 @@ import {
   presentationAssetUrl,
   reorderPresentationSlides,
   updatePresentationElement,
+  updatePresentationQuickCheck,
   uploadPresentationImage,
   uploadPresentationAudio,
   uploadPresentationVideo,
   type PresentationEditorWorkspace,
   type PresentationElement,
   type PresentationElementType,
+  type PresentationQuickCheck,
 } from './presentationApi.ts'
 import './PresentationEditorPage.css'
 
-type StructuredElementType = Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO'>
+type StructuredElementType = Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO' | 'QUICK_CHECK'>
 
 export function PresentationEditorPage() {
   const { materialId = '' } = useParams()
@@ -205,8 +208,54 @@ export function PresentationEditorPage() {
     )
   }
 
+  function addQuickCheck() {
+    if (!document || !selectedSlide) return
+    void mutate(
+      async () => {
+        const result = await createPresentationQuickCheck(materialId, selectedSlide.id, {
+          expectedDocumentRowVersion: document.rowVersion,
+          zIndex: selectedSlide.elements.length,
+          x: 430,
+          y: 260,
+          width: 740,
+          height: 390,
+          prompt: 'Koje vrijeme koristimo za radnje koje se događaju upravo sada?',
+          options: ['Present Simple', 'Present Continuous', 'Past Simple'],
+          correctOptionIndex: 1,
+          difficulty: 2,
+          evidenceType: 1,
+        })
+        setSelectedElementId(result.elementId)
+      },
+      'Quick Check je dodan na slajd.',
+    )
+  }
+
   function saveElement(element: PresentationElement, values: ElementFormValues) {
     if (!document || !selectedSlide) return
+    if (element.elementTypeCode === 'QUICK_CHECK' && values.quickCheck) {
+      const quickCheck = values.quickCheck
+      const correctOptionIndex = quickCheck.options.findIndex(
+        option => option.key === quickCheck.correctOptionKey,
+      )
+      void mutate(
+        () => updatePresentationQuickCheck(materialId, selectedSlide.id, element.id, {
+          expectedDocumentRowVersion: document.rowVersion,
+          zIndex: values.zIndex,
+          x: values.x,
+          y: values.y,
+          width: values.width,
+          height: values.height,
+          prompt: quickCheck.prompt,
+          options: quickCheck.options.map(option => option.text),
+          correctOptionIndex,
+          difficulty: quickCheck.difficulty,
+          evidenceType: quickCheck.evidenceType,
+        }),
+        'Quick Check je spremljen.',
+      )
+      return
+    }
     void mutate(
       () => updatePresentationElement(materialId, selectedSlide.id, element.id, {
         expectedDocumentRowVersion: document.rowVersion,
@@ -277,6 +326,7 @@ export function PresentationEditorPage() {
         <button disabled={busy} onClick={() => addElement('EXAMPLE')} type="button"><Quote size={18} /> Primjer</button>
         <button disabled={busy} onClick={() => addElement('VOCABULARY')} type="button"><Type size={18} /> Vokabular</button>
         <button disabled={busy} onClick={() => addElement('QUESTION')} type="button"><CircleHelp size={18} /> Pitanje</button>
+        <button disabled={busy} onClick={addQuickCheck} type="button"><CircleHelp size={18} /> Quick Check</button>
         <button disabled={busy} onClick={() => videoInput.current?.click()} type="button"><Film size={18} /> Video</button>
         <input ref={videoInput} accept="video/mp4,.mp4" hidden type="file" onChange={event => { uploadMedia(event.target.files?.[0], 'VIDEO'); event.target.value = '' }} />
         <button disabled={busy} onClick={() => audioInput.current?.click()} type="button"><Headphones size={18} /> Audio</button>
@@ -326,7 +376,7 @@ export function PresentationEditorPage() {
         </nav>}
         {selectedElement
           ? <ElementProperties key={`${selectedElement.id}-${document.rowVersion}`} element={selectedElement} busy={busy} count={selectedSlide?.elements.length ?? 0} onDelete={removeElement} onSave={saveElement} />
-          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.4</strong> Nastavni elementi i privatni MP4/MP3 mediji spremaju se strukturirano. Audio se uvijek pokreće ručno. Quick Check, autosave i objava dolaze kasnije.</p></>}
+          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.5</strong> Quick Check je strukturirani zadatak s jednim točnim odgovorom. Knowledge mapping dolazi u Phase 7.6; autosave i objava dolaze kasnije.</p></>}
       </aside>
     </div>
 
@@ -344,6 +394,7 @@ interface ElementFormValues {
   readonly width: number
   readonly height: number
   readonly payload: Record<string, unknown>
+  readonly quickCheck: PresentationQuickCheck | null
 }
 
 function ElementProperties({ element, busy, count, onDelete, onSave }: {
@@ -360,9 +411,14 @@ function ElementProperties({ element, busy, count, onDelete, onSave }: {
     width: element.width,
     height: element.height,
     payload: parsePayload(element.payloadJson),
+    quickCheck: element.quickCheck,
   })
   const updateNumber = (name: keyof Omit<ElementFormValues, 'payload'>, value: string) => setValues(current => ({ ...current, [name]: Number(value) }))
   const updatePayload = (name: string, value: unknown) => setValues(current => ({ ...current, payload: { ...current.payload, [name]: value } }))
+  const updateQuickCheck = (changes: Partial<PresentationQuickCheck>) => setValues(current => ({
+    ...current,
+    quickCheck: current.quickCheck ? { ...current.quickCheck, ...changes } : null,
+  }))
 
   return <form className="presentation-element-form" onSubmit={event => { event.preventDefault(); onSave(element, values) }}>
     <header><div><small>Odabrani element</small><h2>{elementName(element.elementTypeCode)}</h2></div><button aria-label="Obriši element" disabled={busy} onClick={onDelete} type="button"><Trash2 size={17} /></button></header>
@@ -415,6 +471,10 @@ function ElementProperties({ element, busy, count, onDelete, onSave }: {
       <label className="presentation-element-form__check"><input checked={false} disabled type="checkbox" /> Automatska reprodukcija</label>
       <p className="presentation-element-form__asset">{element.asset?.originalFileName}<small>Privatni MP3 · ručno pokretanje · {element.asset ? formatBytes(element.asset.sizeBytes) : 'Datoteka nije dostupna'}</small></p>
     </>}
+    {element.elementTypeCode === 'QUICK_CHECK' && values.quickCheck && <QuickCheckFields
+      quickCheck={values.quickCheck}
+      onChange={updateQuickCheck}
+    />}
     <fieldset><legend>Položaj i veličina</legend>
       <label>X<input min="0" max="1599" step="1" type="number" value={values.x} onChange={event => updateNumber('x', event.target.value)} /></label>
       <label>Y<input min="0" max="899" step="1" type="number" value={values.y} onChange={event => updateNumber('y', event.target.value)} /></label>
@@ -433,6 +493,79 @@ function TableFields({ payload, onChange }: { readonly payload: Record<string, u
     <label>Ćelije<textarea value={text} onChange={event => onChange('cells', event.target.value.split('\n').filter(Boolean).slice(0, 20).map(row => row.split('|').slice(0, 10).map(cell => cell.trim().slice(0, 500))))} /><small>Redovi su u novom retku, ćelije odvojite znakom |.</small></label>
     <label className="presentation-element-form__check"><input type="checkbox" checked={Boolean(payload.headerRow)} onChange={event => onChange('headerRow', event.target.checked)} /> Prvi red je zaglavlje</label>
   </>
+}
+
+function QuickCheckFields({ quickCheck, onChange }: {
+  readonly quickCheck: PresentationQuickCheck
+  readonly onChange: (changes: Partial<PresentationQuickCheck>) => void
+}) {
+  const updateOption = (index: number, text: string) => onChange({
+    options: quickCheck.options.map((option, optionIndex) => optionIndex === index
+      ? { ...option, text }
+      : option),
+  })
+  const addOption = () => {
+    if (quickCheck.options.length >= 8) return
+    onChange({
+      options: [...quickCheck.options, {
+        key: String.fromCharCode(65 + quickCheck.options.length),
+        text: 'Novi odgovor',
+      }],
+    })
+  }
+  const removeOption = (index: number) => {
+    if (quickCheck.options.length <= 2) return
+    const correctIndex = quickCheck.options.findIndex(
+      option => option.key === quickCheck.correctOptionKey,
+    )
+    const options = quickCheck.options
+      .filter((_, optionIndex) => optionIndex !== index)
+      .map((option, optionIndex) => ({
+        ...option,
+        key: String.fromCharCode(65 + optionIndex),
+      }))
+    const nextCorrectIndex = correctIndex === index
+      ? 0
+      : correctIndex > index ? correctIndex - 1 : Math.max(0, correctIndex)
+    onChange({
+      options,
+      correctOptionKey: options[nextCorrectIndex]?.key ?? 'A',
+    })
+  }
+
+  return <section className="presentation-quick-check-fields" aria-label="Postavke Quick Checka">
+    <label>Pitanje<textarea maxLength={4000} required value={quickCheck.prompt} onChange={event => onChange({ prompt: event.target.value })} /></label>
+    <fieldset>
+      <legend>Odgovori · označite jedan točan</legend>
+      {quickCheck.options.map((option, index) => <label className="presentation-quick-check-fields__option" key={option.key}>
+        <input
+          checked={option.key === quickCheck.correctOptionKey}
+          name="quick-check-correct-answer"
+          onChange={() => onChange({ correctOptionKey: option.key })}
+          type="radio"
+        />
+        <input
+          aria-label={`Odgovor ${option.key}`}
+          maxLength={1000}
+          required
+          value={option.text}
+          onChange={event => updateOption(index, event.target.value)}
+        />
+        <button aria-label={`Ukloni odgovor ${option.key}`} disabled={quickCheck.options.length <= 2} onClick={() => removeOption(index)} type="button"><Trash2 size={15} /></button>
+      </label>)}
+      <button disabled={quickCheck.options.length >= 8} onClick={addOption} type="button"><Plus size={15} /> Dodaj odgovor</button>
+    </fieldset>
+    <label>Težina<select value={quickCheck.difficulty} onChange={event => onChange({ difficulty: Number(event.target.value) })}>
+      {[1, 2, 3, 4, 5].map(value => <option key={value} value={value}>{value}</option>)}
+    </select></label>
+    <label>Vrsta dokaza<select value={quickCheck.evidenceType} onChange={event => onChange({ evidenceType: Number(event.target.value) })}>
+      <option value="1">Prepoznavanje</option>
+      <option value="2">Razumijevanje</option>
+      <option value="3">Primjena</option>
+      <option value="4">Produkcija</option>
+    </select></label>
+    <p className="presentation-quick-check-fields__mapping"><strong>Povezanost sa znanjem</strong><br />Odabir Knowledge Componenta bit će omogućen u Phase 7.6.</p>
+  </section>
 }
 
 function CanvasElement({ element, selected, onSelect }: { readonly element: PresentationElement; readonly selected: boolean; readonly onSelect: () => void }) {
@@ -455,6 +588,11 @@ function CanvasElement({ element, selected, onSelect }: { readonly element: Pres
     {element.elementTypeCode === 'QUESTION' && <article className="presentation-teaching-card presentation-teaching-card--question"><small>PITANJE ZA RASPRAVU</small><strong>{String(payload.prompt ?? '')}</strong><p>{String(payload.discussionNote ?? '')}</p></article>}
     {element.elementTypeCode === 'VIDEO' && element.asset && <video controls preload="metadata" src={presentationAssetUrl(element.asset)} />}
     {element.elementTypeCode === 'AUDIO' && element.asset && <div className="presentation-audio"><Headphones aria-hidden="true" /><strong>{element.asset.originalFileName}</strong><audio controls preload="metadata" src={presentationAssetUrl(element.asset)} /></div>}
+    {element.elementTypeCode === 'QUICK_CHECK' && element.quickCheck && <article className="presentation-quick-check">
+      <small>QUICK CHECK · 1 BOD</small>
+      <strong>{element.quickCheck.prompt}</strong>
+      <ol>{element.quickCheck.options.map(option => <li className={option.key === element.quickCheck?.correctOptionKey ? 'is-correct' : ''} key={option.key}><span>{option.key}</span>{option.text}</li>)}</ol>
+    </article>}
   </div>
 }
 
@@ -490,7 +628,7 @@ function parsePayload(payloadJson: string): Record<string, unknown> {
 }
 
 function elementName(type: PresentationElementType): string {
-  return ({ TEXT: 'Tekst', IMAGE: 'Slika', SHAPE: 'Oblik', TABLE: 'Tablica', RULE: 'Pravilo', EXAMPLE: 'Primjer', VOCABULARY: 'Vokabular', QUESTION: 'Pitanje', VIDEO: 'Video', AUDIO: 'Audio' })[type]
+  return ({ TEXT: 'Tekst', IMAGE: 'Slika', SHAPE: 'Oblik', TABLE: 'Tablica', RULE: 'Pravilo', EXAMPLE: 'Primjer', VOCABULARY: 'Vokabular', QUESTION: 'Pitanje', VIDEO: 'Video', AUDIO: 'Audio', QUICK_CHECK: 'Quick Check' })[type]
 }
 
 function formatBytes(bytes: number): string {

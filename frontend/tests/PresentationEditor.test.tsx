@@ -215,4 +215,87 @@ describe('presentation slide editor', () => {
     expect(audio).toHaveAttribute('controls')
     expect(audio).not.toHaveAttribute('autoplay')
   })
+
+  it('creates and edits a version-bound single-choice Quick Check', async () => {
+    const quickCheckElement = {
+      id: '40000000-0000-0000-0000-000000000075',
+      elementTypeCode: 'QUICK_CHECK',
+      elementSchemaVersion: 1,
+      zIndex: 0,
+      x: 430,
+      y: 260,
+      width: 740,
+      height: 390,
+      payloadJson: JSON.stringify({ schemaVersion: 1 }),
+      asset: null,
+      quickCheck: {
+        assessableTaskVersionId: '60000000-0000-0000-0000-000000000075',
+        prompt: 'Koje vrijeme koristimo za radnje koje se događaju upravo sada?',
+        options: [
+          { key: 'A', text: 'Present Simple' },
+          { key: 'B', text: 'Present Continuous' },
+          { key: 'C', text: 'Past Simple' },
+        ],
+        correctOptionKey: 'B',
+        difficulty: 2,
+        evidenceType: 1,
+        maxPoints: 1,
+        knowledgeMappingPending: true,
+      },
+    }
+    const createdWorkspace = {
+      ...workspace,
+      document: {
+        ...workspace.document,
+        rowVersion: 'CQgHBgUEAwI=',
+        slides: [{ ...slideOne, elements: [quickCheckElement] }, slideTwo],
+      },
+    }
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(workspace))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ elementId: quickCheckElement.id }))
+      .mockResolvedValueOnce(json(createdWorkspace))
+      .mockResolvedValueOnce(json({ elementId: quickCheckElement.id }))
+      .mockResolvedValueOnce(json({
+        ...createdWorkspace,
+        document: {
+          ...createdWorkspace.document,
+          rowVersion: 'DQoJCAcGBQQ=',
+        },
+      }))
+
+    renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: 'Quick Check' }))
+
+    const prompt = await screen.findByDisplayValue(
+      'Koje vrijeme koristimo za radnje koje se događaju upravo sada?',
+    )
+    expect(screen.getByDisplayValue('Present Continuous')).toBeInTheDocument()
+    expect(screen.getByText(/Odabir Knowledge Componenta/)).toBeInTheDocument()
+    const createCall = vi.mocked(fetch).mock.calls.find(([url, init]) =>
+      init?.method === 'POST' && String(url).endsWith('/quick-checks'))
+    const createBody = JSON.parse(String(createCall?.[1]?.body))
+    expect(createBody).toMatchObject({
+      expectedDocumentRowVersion: workspace.document.rowVersion,
+      correctOptionIndex: 1,
+      difficulty: 2,
+      evidenceType: 1,
+      options: ['Present Simple', 'Present Continuous', 'Past Simple'],
+    })
+
+    fireEvent.change(prompt, { target: { value: 'Odaberite ispravno glagolsko vrijeme.' } })
+    fireEvent.click(screen.getByRole('button', { name: /Spremi element/ }))
+
+    await waitFor(() => expect(vi.mocked(fetch).mock.calls.some(([url, init]) =>
+      init?.method === 'PUT' && String(url).endsWith(`/quick-checks/${quickCheckElement.id}`))).toBe(true))
+    const updateCall = vi.mocked(fetch).mock.calls.find(([url, init]) =>
+      init?.method === 'PUT' && String(url).endsWith(`/quick-checks/${quickCheckElement.id}`))
+    expect(JSON.parse(String(updateCall?.[1]?.body))).toMatchObject({
+      expectedDocumentRowVersion: createdWorkspace.document.rowVersion,
+      prompt: 'Odaberite ispravno glagolsko vrijeme.',
+      correctOptionIndex: 1,
+    })
+  })
 })

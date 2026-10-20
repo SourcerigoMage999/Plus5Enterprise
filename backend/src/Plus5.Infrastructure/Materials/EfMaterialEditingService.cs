@@ -152,8 +152,17 @@ public sealed class EfMaterialEditingService(
                                   where mapping.MaterialVersionId == source.Id
                                   select outcome).ToListAsync(cancellationToken);
             db.MaterialVersionCurriculumOutcomes.AddRange(outcomes.Select(outcome => new MaterialVersionCurriculumOutcome(draft, outcome)));
-            await CloneTasksAsync(source.Id, draft, now, cancellationToken);
-            await ClonePresentationAsync(source.Id, draft, now, cancellationToken);
+            var taskVersionMap = await CloneTasksAsync(
+                source.Id,
+                draft,
+                now,
+                cancellationToken);
+            await ClonePresentationAsync(
+                source.Id,
+                draft,
+                now,
+                taskVersionMap,
+                cancellationToken);
             return draft;
         }
         catch
@@ -163,16 +172,23 @@ public sealed class EfMaterialEditingService(
         }
     }
 
-    private async Task CloneTasksAsync(Guid sourceVersionId, MaterialVersion draft, DateTimeOffset now, CancellationToken cancellationToken)
+    private async Task<IReadOnlyDictionary<Guid, AssessableTaskVersion>> CloneTasksAsync(
+        Guid sourceVersionId,
+        MaterialVersion draft,
+        DateTimeOffset now,
+        CancellationToken cancellationToken)
     {
+        var result = new Dictionary<Guid, AssessableTaskVersion>();
         var sources = await db.AssessableTaskVersions.AsNoTracking().Where(version => version.MaterialVersionId == sourceVersionId).OrderBy(version => version.SortOrder).ToListAsync(cancellationToken);
         foreach (var source in sources)
         {
             var task = await db.AssessableTasks.SingleAsync(candidate => candidate.Id == source.AssessableTaskId, cancellationToken);
             var next = await db.AssessableTaskVersions.Where(version => version.AssessableTaskId == task.Id).MaxAsync(version => version.VersionNumber, cancellationToken) + 1;
             var clone = new AssessableTaskVersion(Guid.NewGuid(), task, draft, next, source.SortOrder, source.Prompt,
-                source.TaskTypeCode, source.Difficulty, source.EvidenceType, source.MaxPoints, now, source.CorrectAnswer, source.EvaluationCriterion);
+                source.TaskTypeCode, source.Difficulty, source.EvidenceType, source.MaxPoints, now,
+                source.CorrectAnswer, source.EvaluationCriterion, source.AuthoringPayloadJson);
             db.AssessableTaskVersions.Add(clone);
+            result.Add(source.Id, clone);
             var targets = await (from mapping in db.AssessableTaskVersionKnowledgeComponents.AsNoTracking()
                                  join component in db.KnowledgeComponents on mapping.KnowledgeComponentId equals component.Id
                                  join model in db.KnowledgeModels on component.KnowledgeModelId equals model.Id
@@ -180,12 +196,15 @@ public sealed class EfMaterialEditingService(
                                  select new { component, model, IsLeaf = !db.KnowledgeComponents.Any(child => child.ParentComponentId == component.Id) }).ToListAsync(cancellationToken);
             db.AssessableTaskVersionKnowledgeComponents.AddRange(targets.Select(target => new AssessableTaskVersionKnowledgeComponent(clone, draft, target.component, target.model, target.IsLeaf)));
         }
+
+        return result;
     }
 
     private async Task ClonePresentationAsync(
         Guid sourceVersionId,
         MaterialVersion draft,
         DateTimeOffset now,
+        IReadOnlyDictionary<Guid, AssessableTaskVersion> taskVersionMap,
         CancellationToken cancellationToken)
     {
         var sourceDocument = await db.PresentationDocuments
@@ -271,6 +290,9 @@ public sealed class EfMaterialEditingService(
                     element.PayloadJson,
                     element.PresentationAssetId.HasValue
                         ? assetMap[element.PresentationAssetId.Value].Id
+                        : null,
+                    element.AssessableTaskVersionId.HasValue
+                        ? taskVersionMap[element.AssessableTaskVersionId.Value].Id
                         : null)));
         }
         catch

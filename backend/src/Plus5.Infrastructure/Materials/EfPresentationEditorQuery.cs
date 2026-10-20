@@ -68,6 +68,22 @@ public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentation
                 .Where(asset => assetIds.Contains(asset.Id)
                     && asset.Status == PresentationAssetStatus.Clean)
                 .ToDictionaryAsync(asset => asset.Id, cancellationToken);
+            var taskVersionIds = elements
+                .Where(element => element.AssessableTaskVersionId.HasValue)
+                .Select(element => element.AssessableTaskVersionId!.Value)
+                .Distinct()
+                .ToList();
+            var taskVersions = await db.AssessableTaskVersions
+                .AsNoTracking()
+                .Where(version => taskVersionIds.Contains(version.Id))
+                .ToDictionaryAsync(version => version.Id, cancellationToken);
+            var mappedTaskVersionIds = await db.AssessableTaskVersionKnowledgeComponents
+                .AsNoTracking()
+                .Where(mapping => taskVersionIds.Contains(mapping.AssessableTaskVersionId))
+                .Select(mapping => mapping.AssessableTaskVersionId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+            var mappedTaskVersions = mappedTaskVersionIds.ToHashSet();
             var slideViews = slides.Select(slide => new PresentationSlideView(
                 slide.Id,
                 slide.SortOrder,
@@ -92,7 +108,22 @@ public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentation
                                     asset.MediaType,
                                     asset.SizeBytes,
                                     $"/materials/{candidate.Id}/presentation/assets/{asset.Id}")
-                                : null))
+                                : null,
+                        element.AssessableTaskVersionId.HasValue
+                            && taskVersions.TryGetValue(
+                                element.AssessableTaskVersionId.Value,
+                                out var taskVersion)
+                            ? new PresentationQuickCheckView(
+                                taskVersion.Id,
+                                taskVersion.Prompt,
+                                QuickCheckAuthoringPayloadRegistry.ReadOptions(
+                                    taskVersion.AuthoringPayloadJson ?? string.Empty),
+                                taskVersion.CorrectAnswer ?? string.Empty,
+                                taskVersion.Difficulty,
+                                taskVersion.EvidenceType,
+                                taskVersion.MaxPoints,
+                                !mappedTaskVersions.Contains(taskVersion.Id))
+                            : null))
                     .ToList()))
                 .ToList();
             documentView = new PresentationDocumentView(
