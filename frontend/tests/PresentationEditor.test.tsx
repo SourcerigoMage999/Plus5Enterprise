@@ -241,6 +241,7 @@ describe('presentation slide editor', () => {
         evidenceType: 1,
         maxPoints: 1,
         knowledgeMappingPending: true,
+        knowledgeComponents: [],
       },
     }
     const createdWorkspace = {
@@ -257,6 +258,20 @@ describe('presentation slide editor', () => {
       .mockResolvedValueOnce(json({ token: 'csrf-token' }))
       .mockResolvedValueOnce(json({ elementId: quickCheckElement.id }))
       .mockResolvedValueOnce(json(createdWorkspace))
+      .mockResolvedValueOnce(json({
+        items: [{
+          id: '70000000-0000-0000-0000-000000000076',
+          name: 'Present Continuous',
+          knowledgeAreaName: 'Grammar',
+          knowledgeModelCode: 'ENG-7',
+          knowledgeModelVersion: '2026',
+          knowledgeModelStatus: 'Published',
+          knowledgeComponentStatus: 'Active',
+        }],
+        page: 1,
+        pageSize: 20,
+        totalCount: 1,
+      }))
       .mockResolvedValueOnce(json({ elementId: quickCheckElement.id }))
       .mockResolvedValueOnce(json({
         ...createdWorkspace,
@@ -273,7 +288,7 @@ describe('presentation slide editor', () => {
       'Koje vrijeme koristimo za radnje koje se događaju upravo sada?',
     )
     expect(screen.getByDisplayValue('Present Continuous')).toBeInTheDocument()
-    expect(screen.getByText(/Odabir Knowledge Componenta/)).toBeInTheDocument()
+    expect(screen.getByText('Potrebno prije objave')).toBeInTheDocument()
     const createCall = vi.mocked(fetch).mock.calls.find(([url, init]) =>
       init?.method === 'POST' && String(url).endsWith('/quick-checks'))
     const createBody = JSON.parse(String(createCall?.[1]?.body))
@@ -283,8 +298,12 @@ describe('presentation slide editor', () => {
       difficulty: 2,
       evidenceType: 1,
       options: ['Present Simple', 'Present Continuous', 'Past Simple'],
+      knowledgeComponentIds: [],
     })
 
+    fireEvent.click(screen.getByRole('button', { name: /Odaberi komponentu/ }))
+    fireEvent.click(await screen.findByRole('button', { name: /Present Continuous.*Grammar/ }))
+    expect(screen.getByText('1 odabrano')).toBeInTheDocument()
     fireEvent.change(prompt, { target: { value: 'Odaberite ispravno glagolsko vrijeme.' } })
     fireEvent.click(screen.getByRole('button', { name: /Spremi element/ }))
 
@@ -296,6 +315,7 @@ describe('presentation slide editor', () => {
       expectedDocumentRowVersion: createdWorkspace.document.rowVersion,
       prompt: 'Odaberite ispravno glagolsko vrijeme.',
       correctOptionIndex: 1,
+      knowledgeComponentIds: ['70000000-0000-0000-0000-000000000076'],
     })
   })
 })

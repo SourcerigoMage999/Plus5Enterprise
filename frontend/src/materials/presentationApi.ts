@@ -20,6 +20,24 @@ export interface PresentationQuickCheck {
   readonly evidenceType: number
   readonly maxPoints: number
   readonly knowledgeMappingPending: boolean
+  readonly knowledgeComponents: readonly PresentationKnowledgeComponent[]
+}
+
+export interface PresentationKnowledgeComponent {
+  readonly id: string
+  readonly name: string
+  readonly knowledgeAreaName: string
+  readonly knowledgeModelCode: string
+  readonly knowledgeModelVersion: string
+  readonly knowledgeModelStatus: string
+  readonly knowledgeComponentStatus: string
+}
+
+export interface PresentationKnowledgeComponentPage {
+  readonly items: readonly PresentationKnowledgeComponent[]
+  readonly page: number
+  readonly pageSize: number
+  readonly totalCount: number
 }
 
 export interface PresentationAsset {
@@ -81,6 +99,19 @@ export function getPresentationEditor(
   signal?: AbortSignal,
 ): Promise<PresentationEditorWorkspace> {
   return getJson<PresentationEditorWorkspace>(path(materialId), signal)
+}
+
+export function searchPresentationKnowledgeComponents(
+  materialId: string,
+  search: string,
+  signal?: AbortSignal,
+): Promise<PresentationKnowledgeComponentPage> {
+  const parameters = new URLSearchParams({ page: '1', pageSize: '20' })
+  if (search.trim()) parameters.set('search', search.trim())
+  return getJson<PresentationKnowledgeComponentPage>(
+    `${path(materialId)}/knowledge-components?${parameters.toString()}`,
+    signal,
+  )
 }
 
 export function initializePresentation(
@@ -161,6 +192,7 @@ export interface PresentationQuickCheckMutation {
   readonly correctOptionIndex: number
   readonly difficulty: number
   readonly evidenceType: number
+  readonly knowledgeComponentIds: readonly string[]
 }
 
 export function createPresentationQuickCheck(

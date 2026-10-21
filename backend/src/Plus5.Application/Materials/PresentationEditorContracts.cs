@@ -8,6 +8,14 @@ public interface IPresentationEditorQuery
         Guid teacherAccountId,
         Guid materialId,
         CancellationToken cancellationToken);
+
+    Task<PresentationKnowledgeComponentPage?> SearchKnowledgeComponentsAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        string? search,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken);
 }
 
 public interface IPresentationSlideService
@@ -180,12 +188,14 @@ public sealed record UpsertPresentationQuickCheckCommand(
     IReadOnlyList<string> Options,
     int CorrectOptionIndex,
     int Difficulty,
-    EvidenceType EvidenceType);
+    EvidenceType EvidenceType,
+    IReadOnlyList<Guid> KnowledgeComponentIds);
 
 public enum PresentationMutationOutcome
 {
     Success,
     InvalidInput,
+    InvalidKnowledgeTarget,
     NotFound,
     Conflict,
     SlideLimitReached,
@@ -253,6 +263,22 @@ public sealed record PresentationQuickCheckView(
     int Difficulty,
     EvidenceType EvidenceType,
     decimal MaxPoints,
-    bool KnowledgeMappingPending);
+    bool KnowledgeMappingPending,
+    IReadOnlyList<PresentationKnowledgeComponentView> KnowledgeComponents);
 
 public sealed record QuickCheckOptionView(string Key, string Text);
+
+public sealed record PresentationKnowledgeComponentView(
+    Guid Id,
+    string Name,
+    string KnowledgeAreaName,
+    string KnowledgeModelCode,
+    string KnowledgeModelVersion,
+    string KnowledgeModelStatus,
+    string KnowledgeComponentStatus);
+
+public sealed record PresentationKnowledgeComponentPage(
+    IReadOnlyList<PresentationKnowledgeComponentView> Items,
+    int Page,
+    int PageSize,
+    int TotalCount);

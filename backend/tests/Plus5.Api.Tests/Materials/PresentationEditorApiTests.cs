@@ -203,6 +203,7 @@ public sealed class PresentationEditorApiTests
                 correctOptionIndex = 1,
                 difficulty = 2,
                 evidenceType = 1,
+                knowledgeComponentIds = Array.Empty<Guid>(),
             }),
         };
         request.Headers.Add("Cookie", csrf.Cookie);
@@ -211,6 +212,53 @@ public sealed class PresentationEditorApiTests
         using var response = await client.SendAsync(request);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task KnowledgeComponentSearchRequiresTeacherAndPreservesOwnerScope()
+    {
+        var teacherId = Guid.NewGuid();
+        var materialId = Guid.NewGuid();
+        var componentId = Guid.NewGuid();
+        var query = new CapturingQuery(materialId)
+        {
+            KnowledgePage = new PresentationKnowledgeComponentPage(
+                [new PresentationKnowledgeComponentView(
+                    componentId,
+                    "Present Continuous",
+                    "Grammar",
+                    "ENG-7",
+                    "2026",
+                    "Published",
+                    "Active")],
+                1,
+                20,
+                1),
+        };
+        await using var app = await StartApplicationAsync(query);
+        using var client = app.GetTestClient();
+        var path = $"/api/v1/materials/{materialId:D}/presentation/knowledge-components?search=Present&page=1&pageSize=20";
+
+        using var anonymous = await client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+
+        var csrf = await SignInAndGetCsrfAsync(client, teacherId);
+        using var request = new HttpRequestMessage(HttpMethod.Get, path);
+        request.Headers.Add("Cookie", csrf.Cookie);
+        using var response = await client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<PresentationKnowledgeComponentPage>();
+        Assert.Equal(componentId, Assert.Single(body!.Items).Id);
+        Assert.Equal(teacherId, query.LastTeacherId);
+        Assert.Equal("Present", query.LastSearch);
+
+        using var invalid = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"/api/v1/materials/{materialId:D}/presentation/knowledge-components?pageSize=51");
+        invalid.Headers.Add("Cookie", csrf.Cookie);
+        using var invalidResponse = await client.SendAsync(invalid);
+        Assert.Equal(HttpStatusCode.BadRequest, invalidResponse.StatusCode);
     }
 
     private static async Task<WebApplication> StartApplicationAsync(CapturingQuery query)
@@ -292,6 +340,8 @@ public sealed class PresentationEditorApiTests
     private sealed class CapturingQuery(Guid materialId) : IPresentationEditorQuery
     {
         public Guid? LastTeacherId { get; private set; }
+        public string? LastSearch { get; private set; }
+        public PresentationKnowledgeComponentPage? KnowledgePage { get; init; }
 
         public Task<PresentationEditorWorkspace?> GetAsync(
             Guid teacherAccountId,
@@ -307,6 +357,21 @@ public sealed class PresentationEditorApiTests
                     "Presentation",
                     "AAAAAAAAAAA=",
                     null)
+                : null);
+        }
+
+        public Task<PresentationKnowledgeComponentPage?> SearchKnowledgeComponentsAsync(
+            Guid teacherAccountId,
+            Guid requestedMaterialId,
+            string? search,
+            int page,
+            int pageSize,
+            CancellationToken cancellationToken)
+        {
+            LastTeacherId = teacherAccountId;
+            LastSearch = search;
+            return Task.FromResult(requestedMaterialId == materialId
+                ? KnowledgePage ?? new PresentationKnowledgeComponentPage([], page, pageSize, 0)
                 : null);
         }
     }

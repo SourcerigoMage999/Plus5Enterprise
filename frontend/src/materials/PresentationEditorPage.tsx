@@ -36,6 +36,7 @@ import {
   initializePresentation,
   presentationAssetUrl,
   reorderPresentationSlides,
+  searchPresentationKnowledgeComponents,
   updatePresentationElement,
   updatePresentationQuickCheck,
   uploadPresentationImage,
@@ -44,6 +45,7 @@ import {
   type PresentationEditorWorkspace,
   type PresentationElement,
   type PresentationElementType,
+  type PresentationKnowledgeComponent,
   type PresentationQuickCheck,
 } from './presentationApi.ts'
 import './PresentationEditorPage.css'
@@ -224,6 +226,7 @@ export function PresentationEditorPage() {
           correctOptionIndex: 1,
           difficulty: 2,
           evidenceType: 1,
+          knowledgeComponentIds: [],
         })
         setSelectedElementId(result.elementId)
       },
@@ -251,6 +254,7 @@ export function PresentationEditorPage() {
           correctOptionIndex,
           difficulty: quickCheck.difficulty,
           evidenceType: quickCheck.evidenceType,
+          knowledgeComponentIds: quickCheck.knowledgeComponents.map(component => component.id),
         }),
         'Quick Check je spremljen.',
       )
@@ -375,8 +379,8 @@ export function PresentationEditorPage() {
           {[...selectedSlide.elements].reverse().map(element => <button className={element.id === selectedElementId ? 'is-selected' : ''} key={element.id} onClick={() => setSelectedElementId(element.id)} type="button"><span>{element.zIndex + 1}</span>{elementName(element.elementTypeCode)}</button>)}
         </nav>}
         {selectedElement
-          ? <ElementProperties key={`${selectedElement.id}-${document.rowVersion}`} element={selectedElement} busy={busy} count={selectedSlide?.elements.length ?? 0} onDelete={removeElement} onSave={saveElement} />
-          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.5</strong> Quick Check je strukturirani zadatak s jednim točnim odgovorom. Knowledge mapping dolazi u Phase 7.6; autosave i objava dolaze kasnije.</p></>}
+          ? <ElementProperties key={`${selectedElement.id}-${document.rowVersion}`} materialId={materialId} element={selectedElement} busy={busy} count={selectedSlide?.elements.length ?? 0} onDelete={removeElement} onSave={saveElement} />
+          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.6</strong> Quick Check možete povezati s objavljenim aktivnim leaf Knowledge Componentima. Autosave i objava dolaze kasnije.</p></>}
       </aside>
     </div>
 
@@ -397,7 +401,8 @@ interface ElementFormValues {
   readonly quickCheck: PresentationQuickCheck | null
 }
 
-function ElementProperties({ element, busy, count, onDelete, onSave }: {
+function ElementProperties({ materialId, element, busy, count, onDelete, onSave }: {
+  readonly materialId: string
   readonly element: PresentationElement
   readonly busy: boolean
   readonly count: number
@@ -472,6 +477,7 @@ function ElementProperties({ element, busy, count, onDelete, onSave }: {
       <p className="presentation-element-form__asset">{element.asset?.originalFileName}<small>Privatni MP3 · ručno pokretanje · {element.asset ? formatBytes(element.asset.sizeBytes) : 'Datoteka nije dostupna'}</small></p>
     </>}
     {element.elementTypeCode === 'QUICK_CHECK' && values.quickCheck && <QuickCheckFields
+      materialId={materialId}
       quickCheck={values.quickCheck}
       onChange={updateQuickCheck}
     />}
@@ -495,10 +501,51 @@ function TableFields({ payload, onChange }: { readonly payload: Record<string, u
   </>
 }
 
-function QuickCheckFields({ quickCheck, onChange }: {
+function QuickCheckFields({ materialId, quickCheck, onChange }: {
+  readonly materialId: string
   readonly quickCheck: PresentationQuickCheck
   readonly onChange: (changes: Partial<PresentationQuickCheck>) => void
 }) {
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const [candidates, setCandidates] = useState<readonly PresentationKnowledgeComponent[]>([])
+  const [catalogLoading, setCatalogLoading] = useState(false)
+  const [catalogError, setCatalogError] = useState('')
+  const [catalogRevision, setCatalogRevision] = useState(0)
+
+  useEffect(() => {
+    if (!pickerOpen) return
+    const controller = new AbortController()
+    const delay = window.setTimeout(() => {
+      setCatalogLoading(true)
+      setCatalogError('')
+      searchPresentationKnowledgeComponents(materialId, search, controller.signal)
+        .then(result => setCandidates(result.items))
+        .catch((requestError: unknown) => {
+          if (requestError instanceof DOMException && requestError.name === 'AbortError') return
+          setCandidates([])
+          setCatalogError('Katalog Knowledge Componenta trenutačno nije moguće učitati.')
+        })
+        .finally(() => { if (!controller.signal.aborted) setCatalogLoading(false) })
+    }, 200)
+    return () => { window.clearTimeout(delay); controller.abort() }
+  }, [materialId, pickerOpen, search, catalogRevision])
+
+  const selectedIds = new Set(quickCheck.knowledgeComponents.map(component => component.id))
+  const availableCandidates = candidates.filter(component => !selectedIds.has(component.id))
+  const addKnowledgeComponent = (component: PresentationKnowledgeComponent) => onChange({
+    knowledgeComponents: [...quickCheck.knowledgeComponents, component],
+    knowledgeMappingPending: false,
+  })
+  const removeKnowledgeComponent = (componentId: string) => {
+    const knowledgeComponents = quickCheck.knowledgeComponents.filter(
+      component => component.id !== componentId,
+    )
+    onChange({
+      knowledgeComponents,
+      knowledgeMappingPending: knowledgeComponents.length === 0,
+    })
+  }
   const updateOption = (index: number, text: string) => onChange({
     options: quickCheck.options.map((option, optionIndex) => optionIndex === index
       ? { ...option, text }
@@ -564,7 +611,27 @@ function QuickCheckFields({ quickCheck, onChange }: {
       <option value="3">Primjena</option>
       <option value="4">Produkcija</option>
     </select></label>
-    <p className="presentation-quick-check-fields__mapping"><strong>Povezanost sa znanjem</strong><br />Odabir Knowledge Componenta bit će omogućen u Phase 7.6.</p>
+    <section className="presentation-knowledge-mapping" aria-label="Povezanost sa znanjem">
+      <header>
+        <div><strong>Povezanost sa znanjem</strong><small>{quickCheck.knowledgeComponents.length === 0 ? 'Potrebno prije objave' : `${quickCheck.knowledgeComponents.length} odabrano`}</small></div>
+        <button onClick={() => setPickerOpen(value => !value)} type="button"><Plus size={15} /> Odaberi komponentu</button>
+      </header>
+      {quickCheck.knowledgeComponents.length === 0
+        ? <p className="presentation-knowledge-mapping__empty">Quick Check još nije povezan s Knowledge Componentom.</p>
+        : <ul className="presentation-knowledge-mapping__selected">{quickCheck.knowledgeComponents.map(component => <li key={component.id}>
+          <span><strong>{component.name}</strong><small>{component.knowledgeAreaName} · {component.knowledgeModelCode} {component.knowledgeModelVersion}{component.knowledgeModelStatus !== 'Published' || component.knowledgeComponentStatus !== 'Active' ? ` · ${component.knowledgeModelStatus}/${component.knowledgeComponentStatus}` : ''}</small></span>
+          <button aria-label={`Ukloni ${component.name}`} onClick={() => removeKnowledgeComponent(component.id)} type="button"><Trash2 size={14} /></button>
+        </li>)}</ul>}
+      {pickerOpen && <div className="presentation-knowledge-picker">
+        <label>Pretraži objavljene komponente<input maxLength={200} placeholder="Naziv, područje ili model" value={search} onChange={event => setSearch(event.target.value)} /></label>
+        {catalogLoading && <p>Učitavanje kataloga…</p>}
+        {catalogError && <div role="alert"><p>{catalogError}</p><button onClick={() => setCatalogRevision(value => value + 1)} type="button">Pokušaj ponovno</button></div>}
+        {!catalogLoading && !catalogError && availableCandidates.length === 0 && <p>Nema dostupnih aktivnih leaf komponenti.</p>}
+        {!catalogLoading && !catalogError && availableCandidates.length > 0 && <ul>{availableCandidates.map(component => <li key={component.id}>
+          <button onClick={() => addKnowledgeComponent(component)} type="button"><strong>{component.name}</strong><small>{component.knowledgeAreaName} · {component.knowledgeModelCode} {component.knowledgeModelVersion}</small></button>
+        </li>)}</ul>}
+      </div>}
+    </section>
   </section>
 }
 

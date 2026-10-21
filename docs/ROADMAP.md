@@ -788,7 +788,20 @@ element/task podudaranje. Contract: `PRESENTATION_QUICK_CHECK.md`.
 migration/integrity, frontend i minimalni canonical desktop/mobile gate dokumentirani su u
 Phase 7.5 summaryju. Knowledge mapping, autosave, preview/publish, StudentAttempt i Evidence
 nisu dio ove faze.
-## 7.6 Knowledge Component mapping per question — TODO
+## 7.6 Knowledge Component mapping per question — FINAL LOCKED
+
+**Implementirano 2026-10-21:** Quick Check property panel sada uređuje exact
+`AssessableTaskVersionKnowledgeComponent` mapping. Novi owner-scoped katalog vraća samo
+`Published + Active + leaf` kandidate uz bounded search/pagination; selected zapisi prikazuju
+KnowledgeArea i exact KnowledgeModel code/version. Backend ponovno provjerava leaf/status,
+čuva postojeće Retired/Deprecated povijesne reference i atomski sprema cijeli mapping set pod
+document rowversionom. Contract: `PRESENTATION_KNOWLEDGE_MAPPING.md`.
+
+**Acceptance 7.6: FINAL LOCKED — odobreno 2026-10-21.** Release build, targeted API/security,
+stvarni SQL query/atomic mapping, frontend i minimalni canonical desktop/mobile gateovi
+prolaze. Full regression, dependency audit i Docker infrastructure validation su N/A prema
+STRICT VALIDATION BUDGET-u jer shared granice, dependency graph i infrastruktura nisu
+promijenjeni. Autosave, preview/publish, AI mapping, Attempt i Evidence nisu dio ove faze.
 ## 7.7 Autosave/version safety — TODO
 ## 7.8 Preview & save flow — TODO
 ## 7.9 AI assistance — BLOCKED

@@ -8,6 +8,8 @@ namespace Plus5.Api.Materials;
 public static class PresentationEditorEndpoints
 {
     private const long CommandBodyLimit = 16 * 1024;
+    private const int KnowledgeSearchMaxLength = 200;
+    private const int KnowledgePageSizeLimit = 50;
     private const long ImageBodyLimit = 11 * 1024 * 1024;
     private const long AudioBodyLimit = 26 * 1024 * 1024;
     private const long VideoBodyLimit = 251 * 1024 * 1024;
@@ -19,6 +21,7 @@ public static class PresentationEditorEndpoints
             .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
 
         group.MapGet("", GetAsync);
+        group.MapGet("/knowledge-components", SearchKnowledgeComponentsAsync);
         ConfigureWrite(group.MapPost("", InitializeAsync));
         ConfigureWrite(group.MapPost("/slides", AddAsync));
         ConfigureWrite(group.MapDelete("/slides/{slideId:guid}", DeleteAsync));
@@ -87,6 +90,37 @@ public static class PresentationEditorEndpoints
         var result = await query.GetAsync(
             teacherId,
             materialId,
+            cancellationToken);
+        return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+    }
+
+    private static async Task<IResult> SearchKnowledgeComponentsAsync(
+        Guid materialId,
+        HttpContext context,
+        IPresentationEditorQuery query,
+        CancellationToken cancellationToken,
+        [FromQuery] string? search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        if (page < 1
+            || pageSize is < 1 or > KnowledgePageSizeLimit
+            || search?.Length > KnowledgeSearchMaxLength)
+        {
+            return Problem(400, "presentation_invalid_request");
+        }
+
+        var result = await query.SearchKnowledgeComponentsAsync(
+            teacherId,
+            materialId,
+            search,
+            page,
+            pageSize,
             cancellationToken);
         return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
     }
@@ -516,6 +550,9 @@ public static class PresentationEditorEndpoints
         PresentationMutationOutcome.InvalidInput => Problem(
             400,
             "presentation_invalid_request"),
+        PresentationMutationOutcome.InvalidKnowledgeTarget => Problem(
+            400,
+            "presentation_invalid_knowledge_target"),
         PresentationMutationOutcome.NotFound => Problem(404, "material_not_found"),
         PresentationMutationOutcome.Conflict => Problem(409, "concurrency_conflict"),
         PresentationMutationOutcome.SlideLimitReached => Problem(

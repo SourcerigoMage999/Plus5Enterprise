@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Plus5.Application.Materials;
 using Plus5.Domain.Materials;
+using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Persistence;
 
 namespace Plus5.Infrastructure.Materials;
@@ -181,6 +182,8 @@ public sealed class EfPresentationElementService(
     {
         if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
             || slideId == Guid.Empty
+            || command.KnowledgeComponentIds is null
+            || command.KnowledgeComponentIds.Any(id => id == Guid.Empty)
             || !QuickCheckAuthoringPayloadRegistry.TryCreate(
                 command.Options,
                 command.CorrectOptionIndex,
@@ -228,6 +231,15 @@ public sealed class EfPresentationElementService(
             .MaxAsync(cancellationToken);
         var sortOrder = (maximumSortOrder ?? -1) + 1;
         var now = timeProvider.GetUtcNow();
+        var knowledgeTargets = await LoadKnowledgeTargetsAsync(
+            command.KnowledgeComponentIds,
+            new HashSet<Guid>(),
+            cancellationToken);
+        if (knowledgeTargets is null)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return new(PresentationMutationOutcome.InvalidKnowledgeTarget);
+        }
 
         AssessableTask task;
         AssessableTaskVersion taskVersion;
@@ -270,6 +282,14 @@ public sealed class EfPresentationElementService(
 
         db.AssessableTasks.Add(task);
         db.AssessableTaskVersions.Add(taskVersion);
+        db.AssessableTaskVersionKnowledgeComponents.AddRange(
+            knowledgeTargets.Select(target =>
+                new AssessableTaskVersionKnowledgeComponent(
+                    taskVersion,
+                    version,
+                    target.Component,
+                    target.Model,
+                    target.IsLeaf)));
         db.PresentationElements.Add(element);
         state.Document.RecordChange(now);
         try
@@ -296,6 +316,8 @@ public sealed class EfPresentationElementService(
         if (!TryRowVersion(command.ExpectedDocumentRowVersion, out var expected)
             || slideId == Guid.Empty
             || elementId == Guid.Empty
+            || command.KnowledgeComponentIds is null
+            || command.KnowledgeComponentIds.Any(id => id == Guid.Empty)
             || !QuickCheckAuthoringPayloadRegistry.TryCreate(
                 command.Options,
                 command.CorrectOptionIndex,
@@ -341,6 +363,22 @@ public sealed class EfPresentationElementService(
             return NotFound();
         }
 
+        var existingMappings = await db.AssessableTaskVersionKnowledgeComponents
+            .Where(mapping => mapping.AssessableTaskVersionId == taskVersion.Id)
+            .ToListAsync(cancellationToken);
+        var existingTargetIds = existingMappings
+            .Select(mapping => mapping.KnowledgeComponentId)
+            .ToHashSet();
+        var knowledgeTargets = await LoadKnowledgeTargetsAsync(
+            command.KnowledgeComponentIds,
+            existingTargetIds,
+            cancellationToken);
+        if (knowledgeTargets is null)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return new(PresentationMutationOutcome.InvalidKnowledgeTarget);
+        }
+
         try
         {
             taskVersion.UpdateSingleChoiceQuickCheck(
@@ -350,6 +388,21 @@ public sealed class EfPresentationElementService(
                 command.EvidenceType,
                 correctOptionKey,
                 authoringPayload);
+            var selectedTargetIds = knowledgeTargets
+                .Select(target => target.Component.Id)
+                .ToHashSet();
+            db.AssessableTaskVersionKnowledgeComponents.RemoveRange(
+                existingMappings.Where(mapping =>
+                    !selectedTargetIds.Contains(mapping.KnowledgeComponentId)));
+            db.AssessableTaskVersionKnowledgeComponents.AddRange(
+                knowledgeTargets
+                    .Where(target => !existingTargetIds.Contains(target.Component.Id))
+                    .Select(target => new AssessableTaskVersionKnowledgeComponent(
+                        taskVersion,
+                        version,
+                        target.Component,
+                        target.Model,
+                        target.IsLeaf)));
             var ordered = elements.OrderBy(candidate => candidate.ZIndex).ToList();
             ordered.Remove(element);
             ordered.Insert(command.ZIndex, element);
@@ -392,6 +445,41 @@ public sealed class EfPresentationElementService(
             await transaction.RollbackAsync(cancellationToken);
             return Conflict();
         }
+    }
+
+    private async Task<IReadOnlyList<KnowledgeTarget>?> LoadKnowledgeTargetsAsync(
+        IReadOnlyList<Guid> requestedIds,
+        HashSet<Guid> existingTargetIds,
+        CancellationToken cancellationToken)
+    {
+        var ids = requestedIds.Distinct().ToList();
+        if (ids.Count == 0)
+        {
+            return [];
+        }
+
+        var rows = await (
+            from component in db.KnowledgeComponents
+            join model in db.KnowledgeModels
+                on component.KnowledgeModelId equals model.Id
+            where ids.Contains(component.Id)
+            select new KnowledgeTarget(
+                component,
+                model,
+                !db.KnowledgeComponents.Any(child =>
+                    child.ParentComponentId == component.Id)))
+            .ToListAsync(cancellationToken);
+        if (rows.Count != ids.Count
+            || rows.Any(target => !target.IsLeaf
+                || target.Model.Status == KnowledgeModelStatus.Draft
+                || (!existingTargetIds.Contains(target.Component.Id)
+                    && (target.Model.Status != KnowledgeModelStatus.Published
+                        || target.Component.Status != KnowledgeComponentStatus.Active))))
+        {
+            return null;
+        }
+
+        return rows;
     }
 
     private async Task<PresentationMutationResult> UploadAssetAsync(
@@ -890,6 +978,11 @@ public sealed class EfPresentationElementService(
 
     private static PresentationMutationResult Conflict() =>
         new(PresentationMutationOutcome.Conflict);
+
+    private sealed record KnowledgeTarget(
+        KnowledgeComponent Component,
+        KnowledgeModel Model,
+        bool IsLeaf);
 
     private sealed record MutableState(
         PresentationDocument? Document,

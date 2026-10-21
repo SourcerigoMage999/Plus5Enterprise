@@ -1,0 +1,68 @@
+{
+  "capturedAtUtc": "2026-10-21T15:21:16.587Z",
+  "route": "/materials/76000000-0000-0000-0000-000000000010/presentation",
+  "auth": "real Teacher cookie session",
+  "api": "real local Presentation API and SQL fixture",
+  "captures": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "clientHeight": 1024,
+      "scrollHeight": 2210,
+      "overflowPass": true,
+      "selectedMapping": 1,
+      "pickerVisible": true,
+      "browserErrors": [],
+      "presentationWrites": [],
+      "presentationResponses": [
+        {
+          "url": "http://127.0.0.1:5173/materials/76000000-0000-0000-0000-000000000010/presentation",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5270/api/v1/materials/76000000-0000-0000-0000-000000000010/presentation",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5270/api/v1/materials/76000000-0000-0000-0000-000000000010/presentation/knowledge-components?page=1&pageSize=20",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "clientHeight": 844,
+      "scrollHeight": 3194,
+      "overflowPass": true,
+      "selectedMapping": 1,
+      "pickerVisible": true,
+      "browserErrors": [],
+      "presentationWrites": [],
+      "presentationResponses": [
+        {
+          "url": "http://127.0.0.1:5173/materials/76000000-0000-0000-0000-000000000010/presentation",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5270/api/v1/materials/76000000-0000-0000-0000-000000000010/presentation",
+          "status": 200
+        },
+        {
+          "url": "http://127.0.0.1:5270/api/v1/materials/76000000-0000-0000-0000-000000000010/presentation/knowledge-components?page=1&pageSize=20",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

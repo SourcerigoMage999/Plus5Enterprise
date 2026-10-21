@@ -41,6 +41,12 @@
   payload sadrži samo `schemaVersion = 1`. Draft bez mappinga je dopušten tijekom authoringa,
   ali postojeći activation invariant i dalje zahtijeva leaf Knowledge target prije aktivacije.
   Attempt, Evidence, student response runtime i mapping UI nisu uvedeni.
+- **Phase 7.6 primjena:** Quick Check ponovno koristi exact
+  `AssessableTaskVersionKnowledgeComponent` junction. Novi izbori ograničeni su na
+  Published/Active leaf targete, dok postojeći Retired/Deprecated target ostaje
+  version-explicit, čitljiv i uklonjiv. Mapping set sprema se atomski s TaskVersion writeom
+  pod document rowversionom; nema automatskog mapiranja, weighta, parent expansiona, Attempta
+  ni Evidence emissiona.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04

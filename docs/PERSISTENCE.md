@@ -309,3 +309,16 @@ Difficulty postojeće tablice, `MaxPoints = 1` i absence evaluation criteriona. 
 `SINGLE_CHOICE_QUICK_CHECK` TaskVersionom. Draft-only `51231/51244` snapshot zaštita i Phase
 6.5 activation mapping invariant ostaju authority. Detalji su u
 `PRESENTATION_QUICK_CHECK.md`.
+
+## Phase 7.6 presentation knowledge mapping
+
+Phase 7.6 nema novu migraciju ni tablicu. Quick Check authoring ponovno koristi postojeći
+`AssessableTaskVersionKnowledgeComponents` junction iz Phase 6.5. Composite PK/FK, Draft-only
+snapshot trigger, Published/Retired leaf integrity i activation minimum-target invariant ostaju
+SQL authority.
+
+Aplikacijski candidate query za nove izbore dodatno ograničava katalog na
+`Published + Active + leaf`, dok postojeći Retired/Deprecated exact target ostaje čitljiv i
+uklonjiv radi povijesne/recovery semantike. Create/update Quick Checka i mapping set izvršavaju
+se u istoj transakciji pod PresentationDocument rowversionom. Detalji su u
+`PRESENTATION_KNOWLEDGE_MAPPING.md`.

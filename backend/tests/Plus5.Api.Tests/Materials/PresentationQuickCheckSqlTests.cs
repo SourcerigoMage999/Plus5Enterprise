@@ -7,6 +7,7 @@ using Plus5.Application.Materials;
 using Plus5.Domain.Evidence;
 using Plus5.Domain.Identity;
 using Plus5.Domain.Materials;
+using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Materials;
 using Plus5.Infrastructure.Persistence;
 
@@ -56,12 +57,56 @@ public sealed class PresentationQuickCheckSqlTests
             await db.SaveChangesAsync();
             db.ChangeTracker.Clear();
 
+            var model = new KnowledgeModel(Guid.NewGuid(), "ENG-7", "2026");
+            var area = new KnowledgeArea(Guid.NewGuid(), model, "Grammar", 0);
+            var parent = new KnowledgeComponent(
+                Guid.NewGuid(),
+                model,
+                area,
+                "Verb tenses",
+                0);
+            var firstLeaf = new KnowledgeComponent(
+                Guid.NewGuid(),
+                model,
+                area,
+                "Present Continuous",
+                0,
+                parent);
+            var secondLeaf = new KnowledgeComponent(
+                Guid.NewGuid(),
+                model,
+                area,
+                "Present Simple",
+                1,
+                parent);
+            db.AddRange(model, area, parent, firstLeaf, secondLeaf);
+            await db.SaveChangesAsync();
+            model.Publish();
+            await db.SaveChangesAsync();
+            db.ChangeTracker.Clear();
+
             var query = new EfPresentationEditorQuery(db);
             var initialWorkspace = await query.GetAsync(
                 owner.Id,
                 material.Id,
                 CancellationToken.None);
             Assert.NotNull(initialWorkspace?.Document);
+            var candidates = await query.SearchKnowledgeComponentsAsync(
+                owner.Id,
+                material.Id,
+                "Present",
+                1,
+                20,
+                CancellationToken.None);
+            Assert.Equal(2, candidates!.TotalCount);
+            Assert.DoesNotContain(candidates.Items, item => item.Id == parent.Id);
+            Assert.Null(await query.SearchKnowledgeComponentsAsync(
+                foreign.Id,
+                material.Id,
+                null,
+                1,
+                20,
+                CancellationToken.None));
 
             var service = new EfPresentationElementService(
                 db,
@@ -81,7 +126,8 @@ public sealed class PresentationQuickCheckSqlTests
                 ["Present Simple", "Present Continuous", "Past Simple"],
                 1,
                 2,
-                EvidenceType.Recognition);
+                EvidenceType.Recognition,
+                [firstLeaf.Id]);
 
             var created = await service.CreateQuickCheckAsync(
                 owner.Id,
@@ -111,9 +157,53 @@ public sealed class PresentationQuickCheckSqlTests
             Assert.Equal("Present Continuous", Assert.Single(
                 view.QuickCheck!.Options,
                 option => option.Key == view.QuickCheck.CorrectOptionKey).Text);
-            Assert.True(view.QuickCheck.KnowledgeMappingPending);
+            Assert.False(view.QuickCheck.KnowledgeMappingPending);
+            Assert.Equal(firstLeaf.Id, Assert.Single(view.QuickCheck.KnowledgeComponents).Id);
 
-            var latestRowVersion = workspace.Document.RowVersion;
+            var updated = await service.UpdateQuickCheckAsync(
+                owner.Id,
+                material.Id,
+                slide.Id,
+                element.Id,
+                command with
+                {
+                    ExpectedDocumentRowVersion = workspace.Document.RowVersion,
+                    KnowledgeComponentIds = [secondLeaf.Id],
+                },
+                CancellationToken.None);
+            Assert.Equal(PresentationMutationOutcome.Success, updated.Outcome);
+
+            db.ChangeTracker.Clear();
+            var updatedWorkspace = await query.GetAsync(
+                owner.Id,
+                material.Id,
+                CancellationToken.None);
+            var updatedView = Assert.Single(
+                Assert.Single(updatedWorkspace!.Document!.Slides).Elements);
+            Assert.Equal(
+                secondLeaf.Id,
+                Assert.Single(updatedView.QuickCheck!.KnowledgeComponents).Id);
+
+            var invalidParent = await service.UpdateQuickCheckAsync(
+                owner.Id,
+                material.Id,
+                slide.Id,
+                element.Id,
+                command with
+                {
+                    ExpectedDocumentRowVersion = updatedWorkspace.Document.RowVersion,
+                    KnowledgeComponentIds = [parent.Id],
+                },
+                CancellationToken.None);
+            Assert.Equal(
+                PresentationMutationOutcome.InvalidKnowledgeTarget,
+                invalidParent.Outcome);
+            Assert.Equal(secondLeaf.Id, await db.AssessableTaskVersionKnowledgeComponents
+                .Where(mapping => mapping.AssessableTaskVersionId == taskVersion.Id)
+                .Select(mapping => mapping.KnowledgeComponentId)
+                .SingleAsync());
+
+            var latestRowVersion = updatedWorkspace.Document.RowVersion;
             var foreignWrite = await service.CreateQuickCheckAsync(
                 foreign.Id,
                 material.Id,

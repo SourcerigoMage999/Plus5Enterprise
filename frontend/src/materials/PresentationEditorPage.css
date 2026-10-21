@@ -104,7 +104,22 @@
 .presentation-quick-check-fields__option { display: grid; grid-template-columns: auto 1fr auto; gap: .4rem; align-items: center; }
 .presentation-quick-check-fields__option input[type='radio'] { width: auto; }
 .presentation-quick-check-fields__option button { min-width: 2.4rem; padding: .4rem; color: #a02236; border-color: #efc1c8; }
-.presentation-quick-check-fields__mapping { margin: 0; padding: .7rem; color: #6a5411; border: 1px solid #f2d283; border-radius: .55rem; background: #fff9e8; font-size: .78rem; }
+.presentation-knowledge-mapping { display: grid !important; grid-template-columns: 1fr !important; gap: .65rem !important; padding: .75rem !important; border: 1px solid #f2d283 !important; border-radius: .65rem !important; background: #fff9e8 !important; }
+.presentation-knowledge-mapping > header { display: flex; align-items: flex-start; justify-content: space-between; gap: .6rem; }
+.presentation-knowledge-mapping > header div { display: grid; gap: .15rem; color: #173e67; }
+.presentation-knowledge-mapping > header small { color: #715b1b; font-size: .7rem; }
+.presentation-knowledge-mapping button { display: inline-flex; align-items: center; justify-content: center; gap: .3rem; min-height: 2rem; padding: .4rem .55rem; color: #173e67; border: 1px solid #d5ad37; border-radius: .45rem; background: #fff; font: inherit; font-size: .72rem; font-weight: 800; cursor: pointer; }
+.presentation-knowledge-mapping__empty { margin: 0; color: #715b1b; font-size: .75rem; line-height: 1.4; }
+.presentation-knowledge-mapping__selected, .presentation-knowledge-picker ul { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.presentation-knowledge-mapping__selected li { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .55rem; border: 1px solid #b8cee9; border-radius: .5rem; background: #fff; }
+.presentation-knowledge-mapping__selected li > span { display: grid; min-width: 0; gap: .15rem; }
+.presentation-knowledge-mapping__selected strong, .presentation-knowledge-picker strong { overflow-wrap: anywhere; color: #173e67; font-size: .76rem; }
+.presentation-knowledge-mapping__selected small, .presentation-knowledge-picker small { color: #60718a; font-size: .67rem; line-height: 1.35; }
+.presentation-knowledge-mapping__selected li > button { min-width: 2rem; padding: .35rem; color: #a02236; border-color: #efc1c8; }
+.presentation-knowledge-picker { display: grid !important; grid-template-columns: 1fr !important; align-items: stretch !important; gap: .55rem; width: 100%; min-width: 0; padding-top: .2rem; }
+.presentation-knowledge-picker > p, .presentation-knowledge-picker > div p { margin: 0; color: #60718a; font-size: .73rem; }
+.presentation-knowledge-picker > div { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.presentation-knowledge-picker li button { display: grid; width: 100%; justify-items: start; gap: .15rem; text-align: left; }
 .presentation-editor__slide-actions { display: flex; justify-content: flex-end; gap: .6rem; }
 .presentation-editor__slide-actions button { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem .75rem; color: #183c74; border: 1px solid var(--color-border); border-radius: .5rem; background: #fff; font: inherit; font-size: .82rem; font-weight: 750; }
 .presentation-editor__slide-actions button:last-child { color: #a02236; }
