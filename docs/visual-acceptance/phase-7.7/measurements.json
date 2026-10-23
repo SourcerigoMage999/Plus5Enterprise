@@ -1,0 +1,41 @@
+{
+  "realApi": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "4.3 P4.png",
+  "screens": [
+    {
+      "name": "autosave-saved",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1829
+    },
+    {
+      "name": "autosave-saved",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2860
+    }
+  ],
+  "checks": [
+    "runtime: 800 ms autosave completed through the real typed element endpoint",
+    "runtime: original Quick Check prompt restored after the reversible autosave proof",
+    "desktop: saved status, selected Quick Check properties and no document overflow",
+    "mobile: saved status, selected Quick Check properties and no document overflow"
+  ],
+  "errors": [],
+  "businessWritesDuringSetup": [
+    "PUT /api/v1/materials/76000000-0000-0000-0000-000000000010/presentation/slides/76000000-0000-0000-0000-000000000012/quick-checks/76000000-0000-0000-0000-000000000015",
+    "PUT /api/v1/materials/76000000-0000-0000-0000-000000000010/presentation/slides/76000000-0000-0000-0000-000000000012/quick-checks/76000000-0000-0000-0000-000000000015"
+  ],
+  "businessWritesDuringCapture": []
+}

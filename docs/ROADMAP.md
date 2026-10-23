@@ -802,7 +802,21 @@ stvarni SQL query/atomic mapping, frontend i minimalni canonical desktop/mobile 
 prolaze. Full regression, dependency audit i Docker infrastructure validation su N/A prema
 STRICT VALIDATION BUDGET-u jer shared granice, dependency graph i infrastruktura nisu
 promijenjeni. Autosave, preview/publish, AI mapping, Attempt i Evidence nisu dio ove faze.
-## 7.7 Autosave/version safety — TODO
+## 7.7 Autosave/version safety — FINAL LOCKED
+
+**Implementirano 2026-10-23:** valjane element promjene automatski se spremaju nakon 800 ms
+debouncea kroz postojeće typed write endpointove i aktualni document rowversion. Manualni
+`Spremi nacrt` koristi isti flow. Editor prikazuje saved/dirty/saving/error/conflict stanje,
+čuva tab-scoped recovery snapshot, upozorava pri napuštanju s nespremljenim unosom i pri
+`409` sukobu ne radi last-write-wins nego zadržava lokalni unos do eksplicitnog reloada.
+Contract: `PRESENTATION_AUTOSAVE_VERSION_SAFETY.md`.
+
+**Acceptance 7.7: FINAL LOCKED.** Targeted frontend 9/9, lint, TypeScript i
+production build prolaze. Minimalni stvarni visual gate prolazi s jednim desktop
+1536×1024 i jednim mobile 390×844 viewportom, stvarnim Teacher loginom, aktualnim API-jem i
+Docker SQL-om, vidljivim spremljenim autosave statusom, bez document overflowa, capture
+writeova ili browser/page grešaka. Full regression, dependency audit, backend/SQL i Docker
+infrastructure gateovi su N/A jer faza ne mijenja njihove zaključane granice.
 ## 7.8 Preview & save flow — TODO
 ## 7.9 AI assistance — BLOCKED
 **Gate:** definirati AI provider, privacy, prompt/data boundary, confirmation behavior i failure fallback prije implementacije.

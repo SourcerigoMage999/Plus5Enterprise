@@ -81,7 +81,7 @@ describe('presentation slide editor', () => {
     expect(await screen.findByRole('heading', { level: 1, name: '4.3 Novi materijal – Prezentacija' })).toBeInTheDocument()
     const slideList = screen.getByRole('complementary', { name: 'Slajdovi prezentacije' })
     expect(within(slideList).getAllByText('Prazan slajd')).toHaveLength(2)
-    expect(screen.getByRole('button', { name: /Spremi nacrt/ })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Spremi nacrt/ })).toBeEnabled()
     expect(screen.getByRole('button', { name: /Tema/ })).toBeDisabled()
 
     fireEvent.click(screen.getAllByRole('button', { name: /Dodaj slajd/ })[0])
@@ -305,7 +305,7 @@ describe('presentation slide editor', () => {
     fireEvent.click(await screen.findByRole('button', { name: /Present Continuous.*Grammar/ }))
     expect(screen.getByText('1 odabrano')).toBeInTheDocument()
     fireEvent.change(prompt, { target: { value: 'Odaberite ispravno glagolsko vrijeme.' } })
-    fireEvent.click(screen.getByRole('button', { name: /Spremi element/ }))
+    fireEvent.click(screen.getByRole('button', { name: /Spremi sada/ }))
 
     await waitFor(() => expect(vi.mocked(fetch).mock.calls.some(([url, init]) =>
       init?.method === 'PUT' && String(url).endsWith(`/quick-checks/${quickCheckElement.id}`))).toBe(true))
@@ -317,5 +317,108 @@ describe('presentation slide editor', () => {
       correctOptionIndex: 1,
       knowledgeComponentIds: ['70000000-0000-0000-0000-000000000076'],
     })
+  })
+
+  it('autosaves a valid element after the bounded debounce with the current document revision', async () => {
+    const textElement = {
+      id: '40000000-0000-0000-0000-000000000081',
+      elementTypeCode: 'TEXT',
+      elementSchemaVersion: 1,
+      zIndex: 0,
+      x: 120,
+      y: 70,
+      width: 1360,
+      height: 140,
+      payloadJson: JSON.stringify({ text: 'Početni tekst', fontSize: 52, fontWeight: 'bold', color: '#173E67', align: 'left' }),
+      asset: null,
+      quickCheck: null,
+    }
+    const editorWorkspace = {
+      ...workspace,
+      document: {
+        ...workspace.document,
+        slides: [{ ...slideOne, elements: [textElement] }, slideTwo],
+      },
+    }
+    const savedWorkspace = {
+      ...editorWorkspace,
+      document: {
+        ...editorWorkspace.document,
+        rowVersion: 'DQoJCAcGBQQ=',
+        slides: [{ ...slideOne, elements: [{
+          ...textElement,
+          payloadJson: JSON.stringify({ text: 'Automatski spremljeno', fontSize: 52, fontWeight: 'bold', color: '#173E67', align: 'left' }),
+        }] }, slideTwo],
+      },
+    }
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(editorWorkspace))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ elementId: textElement.id }))
+      .mockResolvedValueOnce(json(savedWorkspace))
+
+    renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: /Početni tekst/ }))
+    fireEvent.change(screen.getByLabelText('Sadržaj'), { target: { value: 'Automatski spremljeno' } })
+
+    expect(screen.getAllByText(/Nespremljene promjene/).length).toBeGreaterThan(0)
+    await waitFor(() => expect(vi.mocked(fetch).mock.calls.some(([url, init]) =>
+      init?.method === 'PUT' && String(url).endsWith(`/elements/${textElement.id}`))).toBe(true), { timeout: 2500 })
+
+    const updateCall = vi.mocked(fetch).mock.calls.find(([url, init]) =>
+      init?.method === 'PUT' && String(url).endsWith(`/elements/${textElement.id}`))
+    const body = JSON.parse(String(updateCall?.[1]?.body))
+    expect(body.expectedDocumentRowVersion).toBe(workspace.document.rowVersion)
+    expect(JSON.parse(body.payloadJson).text).toBe('Automatski spremljeno')
+    await waitFor(() => expect(screen.getAllByText('Sve promjene spremljene').length).toBeGreaterThan(0))
+  })
+
+  it('keeps a conflict draft in session recovery and never overwrites the newer revision', async () => {
+    window.sessionStorage.clear()
+    const textElement = {
+      id: '40000000-0000-0000-0000-000000000082',
+      elementTypeCode: 'TEXT',
+      elementSchemaVersion: 1,
+      zIndex: 0,
+      x: 120,
+      y: 70,
+      width: 1360,
+      height: 140,
+      payloadJson: JSON.stringify({ text: 'Server tekst', fontSize: 52, fontWeight: 'bold', color: '#173E67', align: 'left' }),
+      asset: null,
+      quickCheck: null,
+    }
+    const editorWorkspace = {
+      ...workspace,
+      document: {
+        ...workspace.document,
+        slides: [{ ...slideOne, elements: [textElement] }, slideTwo],
+      },
+    }
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(editorWorkspace))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ title: 'Conflict', code: 'concurrency_conflict' }, 409))
+
+    const view = renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: /Server tekst/ }))
+    fireEvent.change(screen.getByLabelText('Sadržaj'), { target: { value: 'Lokalni nespremljeni tekst' } })
+
+    expect(await screen.findByText('Sukob verzija', {}, { timeout: 2500 })).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Lokalni nespremljeni tekst')).toBeInTheDocument()
+    const recoveryKey = `plus5:presentation-draft:${workspace.materialVersionId}:${textElement.id}`
+    expect(window.sessionStorage.getItem(recoveryKey)).toContain('Lokalni nespremljeni tekst')
+    expect(vi.mocked(fetch).mock.calls.filter(([, init]) => init?.method === 'PUT')).toHaveLength(1)
+
+    view.unmount()
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(editorWorkspace))
+    renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: /Server tekst/ }))
+    expect(screen.getByDisplayValue('Lokalni nespremljeni tekst')).toBeInTheDocument()
+    expect(screen.getByText('Vraćen je nespremljeni unos iz ove kartice.')).toBeInTheDocument()
   })
 })

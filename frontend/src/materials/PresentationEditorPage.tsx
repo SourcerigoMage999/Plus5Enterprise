@@ -51,6 +51,15 @@ import {
 import './PresentationEditorPage.css'
 
 type StructuredElementType = Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO' | 'QUICK_CHECK'>
+type AutosaveStatus = 'saved' | 'dirty' | 'saving' | 'error' | 'conflict'
+
+interface ElementSaveResult {
+  readonly outcome: 'saved' | 'error' | 'conflict'
+  readonly message?: string
+}
+
+const AUTOSAVE_DELAY_MS = 800
+const ELEMENT_FORM_ID = 'presentation-element-properties-form'
 
 export function PresentationEditorPage() {
   const { materialId = '' } = useParams()
@@ -65,6 +74,7 @@ export function PresentationEditorPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [revision, setRevision] = useState(0)
+  const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>('saved')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -234,15 +244,20 @@ export function PresentationEditorPage() {
     )
   }
 
-  function saveElement(element: PresentationElement, values: ElementFormValues) {
-    if (!document || !selectedSlide) return
-    if (element.elementTypeCode === 'QUICK_CHECK' && values.quickCheck) {
-      const quickCheck = values.quickCheck
-      const correctOptionIndex = quickCheck.options.findIndex(
-        option => option.key === quickCheck.correctOptionKey,
-      )
-      void mutate(
-        () => updatePresentationQuickCheck(materialId, selectedSlide.id, element.id, {
+  async function saveElement(element: PresentationElement, values: ElementFormValues): Promise<ElementSaveResult> {
+    if (!document || !selectedSlide) {
+      return { outcome: 'error', message: 'Odabrani element više nije dostupan.' }
+    }
+
+    setError('')
+    setNotice('')
+    try {
+      if (element.elementTypeCode === 'QUICK_CHECK' && values.quickCheck) {
+        const quickCheck = values.quickCheck
+        const correctOptionIndex = quickCheck.options.findIndex(
+          option => option.key === quickCheck.correctOptionKey,
+        )
+        await updatePresentationQuickCheck(materialId, selectedSlide.id, element.id, {
           expectedDocumentRowVersion: document.rowVersion,
           zIndex: values.zIndex,
           x: values.x,
@@ -255,23 +270,37 @@ export function PresentationEditorPage() {
           difficulty: quickCheck.difficulty,
           evidenceType: quickCheck.evidenceType,
           knowledgeComponentIds: quickCheck.knowledgeComponents.map(component => component.id),
-        }),
-        'Quick Check je spremljen.',
-      )
-      return
+        })
+      } else {
+        await updatePresentationElement(materialId, selectedSlide.id, element.id, {
+          expectedDocumentRowVersion: document.rowVersion,
+          zIndex: values.zIndex,
+          x: values.x,
+          y: values.y,
+          width: values.width,
+          height: values.height,
+          payloadJson: JSON.stringify(values.payload),
+        })
+      }
+
+      const refreshed = await getPresentationEditor(materialId)
+      setWorkspace(refreshed)
+      setNotice('Sve promjene su spremljene.')
+      return { outcome: 'saved' }
+    } catch (requestError) {
+      if (requestError instanceof ApiError && requestError.code === 'concurrency_conflict') {
+        return {
+          outcome: 'conflict',
+          message: 'Prezentacija je promijenjena u drugoj kartici. Vaš unos je sačuvan lokalno i nije prepisao noviju verziju.',
+        }
+      }
+      return {
+        outcome: 'error',
+        message: requestError instanceof ApiError
+          ? requestError.message
+          : 'Automatsko spremanje trenutačno nije uspjelo. Vaš unos je sačuvan u ovoj kartici.',
+      }
     }
-    void mutate(
-      () => updatePresentationElement(materialId, selectedSlide.id, element.id, {
-        expectedDocumentRowVersion: document.rowVersion,
-        zIndex: values.zIndex,
-        x: values.x,
-        y: values.y,
-        width: values.width,
-        height: values.height,
-        payloadJson: JSON.stringify(values.payload),
-      }),
-      'Element je spremljen.',
-    )
   }
 
   function removeElement() {
@@ -308,11 +337,25 @@ export function PresentationEditorPage() {
     </section>
   }
 
+  const editorWriteLocked = busy || autosaveStatus !== 'saved'
+  const autosaveLabel = ({
+    saved: 'Sve promjene spremljene',
+    dirty: 'Čeka automatsko spremanje…',
+    saving: 'Spremanje…',
+    error: 'Promjene nisu spremljene',
+    conflict: 'Otkriven je sukob verzija',
+  } satisfies Record<AutosaveStatus, string>)[autosaveStatus]
+
   return <section className="presentation-editor" aria-labelledby="presentation-editor-title">
     <nav className="presentation-editor__breadcrumb"><Link to="/materials">Materijali</Link><span>›</span><Link to={`/materials/${materialId}/edit`}>Uredi materijal</Link><span>›</span><strong>Prezentacija</strong></nav>
     <header className="presentation-editor__hero">
       <div><h1 id="presentation-editor-title">4.3 Novi materijal – Prezentacija</h1><p>{workspace.title} · skica v{workspace.materialVersionNumber}</p></div>
-      <div><Link className="ds-action ds-action--secondary" to={`/materials/${materialId}/edit`}>Odustani</Link><button className="ds-action ds-action--secondary" disabled type="button"><Save size={17} /> Spremi nacrt</button><button className="ds-action" disabled type="button">Nastavi <ArrowRight size={17} /></button></div>
+      <div>
+        <span className={`presentation-editor__save-state is-${autosaveStatus}`} role="status"><span aria-hidden="true" />{autosaveLabel}</span>
+        <Link className="ds-action ds-action--secondary" to={`/materials/${materialId}/edit`}>Odustani</Link>
+        <button className="ds-action ds-action--secondary" disabled={busy || autosaveStatus === 'saving'} form={selectedElement ? ELEMENT_FORM_ID : undefined} onClick={() => { if (!selectedElement) setNotice('Sve promjene su spremljene.') }} type={selectedElement ? 'submit' : 'button'}><Save size={17} /> Spremi nacrt</button>
+        <button className="ds-action" disabled type="button">Nastavi <ArrowRight size={17} /></button>
+      </div>
     </header>
 
     <ol className="presentation-editor__steps"><li className="is-done"><span>✓</span> Vrsta i osnovni podaci</li><li className="is-done"><span>✓</span> Ciljevi i povezanost</li><li className="is-active"><span>3</span> Izrada prezentacije</li><li><span>4</span> Pregled i spremanje</li></ol>
@@ -321,23 +364,23 @@ export function PresentationEditorPage() {
 
     <div className="presentation-editor__workspace" aria-busy={busy}>
       <div className="presentation-editor__toolbar" role="toolbar" aria-label="Alati prezentacije">
-        <button disabled={busy} onClick={() => addElement('TEXT')} type="button"><Type size={18} /> Tekst</button>
-        <button disabled={busy} onClick={() => imageInput.current?.click()} type="button"><ImageIcon size={18} /> Slika</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('TEXT')} type="button"><Type size={18} /> Tekst</button>
+        <button disabled={editorWriteLocked} onClick={() => imageInput.current?.click()} type="button"><ImageIcon size={18} /> Slika</button>
         <input ref={imageInput} accept="image/png,image/jpeg,image/webp" hidden type="file" onChange={event => { uploadImage(event.target.files?.[0]); event.target.value = '' }} />
-        <button disabled={busy} onClick={() => addElement('SHAPE')} type="button"><Shapes size={18} /> Oblik</button>
-        <button disabled={busy} onClick={() => addElement('TABLE')} type="button"><Table2 size={18} /> Tablica</button>
-        <button disabled={busy} onClick={() => addElement('RULE')} type="button"><BookOpen size={18} /> Pravilo</button>
-        <button disabled={busy} onClick={() => addElement('EXAMPLE')} type="button"><Quote size={18} /> Primjer</button>
-        <button disabled={busy} onClick={() => addElement('VOCABULARY')} type="button"><Type size={18} /> Vokabular</button>
-        <button disabled={busy} onClick={() => addElement('QUESTION')} type="button"><CircleHelp size={18} /> Pitanje</button>
-        <button disabled={busy} onClick={addQuickCheck} type="button"><CircleHelp size={18} /> Quick Check</button>
-        <button disabled={busy} onClick={() => videoInput.current?.click()} type="button"><Film size={18} /> Video</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('SHAPE')} type="button"><Shapes size={18} /> Oblik</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('TABLE')} type="button"><Table2 size={18} /> Tablica</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('RULE')} type="button"><BookOpen size={18} /> Pravilo</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('EXAMPLE')} type="button"><Quote size={18} /> Primjer</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('VOCABULARY')} type="button"><Type size={18} /> Vokabular</button>
+        <button disabled={editorWriteLocked} onClick={() => addElement('QUESTION')} type="button"><CircleHelp size={18} /> Pitanje</button>
+        <button disabled={editorWriteLocked} onClick={addQuickCheck} type="button"><CircleHelp size={18} /> Quick Check</button>
+        <button disabled={editorWriteLocked} onClick={() => videoInput.current?.click()} type="button"><Film size={18} /> Video</button>
         <input ref={videoInput} accept="video/mp4,.mp4" hidden type="file" onChange={event => { uploadMedia(event.target.files?.[0], 'VIDEO'); event.target.value = '' }} />
-        <button disabled={busy} onClick={() => audioInput.current?.click()} type="button"><Headphones size={18} /> Audio</button>
+        <button disabled={editorWriteLocked} onClick={() => audioInput.current?.click()} type="button"><Headphones size={18} /> Audio</button>
         <input ref={audioInput} accept="audio/mpeg,.mp3" hidden type="file" onChange={event => { uploadMedia(event.target.files?.[0], 'AUDIO'); event.target.value = '' }} />
         <span />
-        <button disabled title="Undo dolazi s autosave/version safety fazom." type="button"><Undo2 size={17} /> Poništi</button>
-        <button disabled title="Redo dolazi s autosave/version safety fazom." type="button"><Redo2 size={17} /> Ponovi</button>
+        <button disabled title="Povijest poništavanja nije dio autosave contracta." type="button"><Undo2 size={17} /> Poništi</button>
+        <button disabled title="Povijest ponavljanja nije dio autosave contracta." type="button"><Redo2 size={17} /> Ponovi</button>
         <button disabled title="Tema nije dio core element contracta." type="button"><Palette size={17} /> Tema</button>
         <button disabled title="Predlošci rasporeda nisu dio ove faze." type="button"><LayoutTemplate size={17} /> Raspored</button>
       </div>
@@ -352,7 +395,7 @@ export function PresentationEditorPage() {
           <button aria-label="Pomakni slajd gore" disabled={busy || selectedIndex <= 0} onClick={() => moveSlide(-1)} type="button"><ArrowUp /></button>
           <button aria-label="Pomakni slajd dolje" disabled={busy || selectedIndex < 0 || selectedIndex === slides.length - 1} onClick={() => moveSlide(1)} type="button"><ArrowDown /></button>
         </div>
-        <button className="presentation-editor__add" disabled={busy || slides.length >= 200} onClick={addSlide} type="button"><Plus size={17} /> Dodaj slajd</button>
+        <button className="presentation-editor__add" disabled={editorWriteLocked || slides.length >= 200} onClick={addSlide} type="button"><Plus size={17} /> Dodaj slajd</button>
       </aside>
 
       <main className="presentation-editor__stage">
@@ -379,14 +422,14 @@ export function PresentationEditorPage() {
           {[...selectedSlide.elements].reverse().map(element => <button className={element.id === selectedElementId ? 'is-selected' : ''} key={element.id} onClick={() => setSelectedElementId(element.id)} type="button"><span>{element.zIndex + 1}</span>{elementName(element.elementTypeCode)}</button>)}
         </nav>}
         {selectedElement
-          ? <ElementProperties key={`${selectedElement.id}-${document.rowVersion}`} materialId={materialId} element={selectedElement} busy={busy} count={selectedSlide?.elements.length ?? 0} onDelete={removeElement} onSave={saveElement} />
-          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.6</strong> Quick Check možete povezati s objavljenim aktivnim leaf Knowledge Componentima. Autosave i objava dolaze kasnije.</p></>}
+          ? <ElementProperties key={`${selectedElement.id}-${document.rowVersion}`} materialId={materialId} materialVersionId={workspace.materialVersionId} element={selectedElement} busy={busy} count={selectedSlide?.elements.length ?? 0} onDelete={removeElement} onReload={reload} onSave={saveElement} onStatusChange={setAutosaveStatus} />
+          : <><section><h2>Raspored slajda</h2><select aria-label="Raspored slajda" disabled><option>Prazan slajd</option></select><button disabled type="button">Promijeni raspored</button></section><section><h2>Pozadina</h2><div><span /><code>#FFFFFF</code><button disabled type="button">Promijeni</button></div></section><p><strong>Phase 7.7</strong> Strukturne promjene spremaju se odmah, a uređivanje elementa automatski nakon kratke stanke.</p></>}
       </aside>
     </div>
 
     <div className="presentation-editor__slide-actions">
-      <button disabled={busy || slides.length >= 200} onClick={duplicateSlide} type="button"><Copy size={17} /> Dupliciraj odabrani slajd</button>
-      <button disabled={busy || slides.length <= 1} onClick={removeSlide} type="button"><Trash2 size={17} /> Obriši odabrani slajd</button>
+      <button disabled={editorWriteLocked || slides.length >= 200} onClick={duplicateSlide} type="button"><Copy size={17} /> Dupliciraj odabrani slajd</button>
+      <button disabled={editorWriteLocked || slides.length <= 1} onClick={removeSlide} type="button"><Trash2 size={17} /> Obriši odabrani slajd</button>
     </div>
   </section>
 }
@@ -401,15 +444,25 @@ interface ElementFormValues {
   readonly quickCheck: PresentationQuickCheck | null
 }
 
-function ElementProperties({ materialId, element, busy, count, onDelete, onSave }: {
+interface ElementRecoverySnapshot {
+  readonly schemaVersion: 1
+  readonly baseElementSignature: string
+  readonly values: ElementFormValues
+}
+
+function ElementProperties({ materialId, materialVersionId, element, busy, count, onDelete, onReload, onSave, onStatusChange }: {
   readonly materialId: string
+  readonly materialVersionId: string
   readonly element: PresentationElement
   readonly busy: boolean
   readonly count: number
   readonly onDelete: () => void
-  readonly onSave: (element: PresentationElement, values: ElementFormValues) => void
+  readonly onReload: () => void
+  readonly onSave: (element: PresentationElement, values: ElementFormValues) => Promise<ElementSaveResult>
+  readonly onStatusChange: (status: AutosaveStatus) => void
 }) {
-  const [values, setValues] = useState<ElementFormValues>({
+  const formRef = useRef<HTMLFormElement>(null)
+  const serverValues: ElementFormValues = {
     zIndex: element.zIndex,
     x: element.x,
     y: element.y,
@@ -417,15 +470,107 @@ function ElementProperties({ materialId, element, busy, count, onDelete, onSave 
     height: element.height,
     payload: parsePayload(element.payloadJson),
     quickCheck: element.quickCheck,
-  })
-  const updateNumber = (name: keyof Omit<ElementFormValues, 'payload'>, value: string) => setValues(current => ({ ...current, [name]: Number(value) }))
-  const updatePayload = (name: string, value: unknown) => setValues(current => ({ ...current, payload: { ...current.payload, [name]: value } }))
-  const updateQuickCheck = (changes: Partial<PresentationQuickCheck>) => setValues(current => ({
+  }
+  const baseElementSignature = serializeElementForm(serverValues)
+  const recoveryKey = `plus5:presentation-draft:${materialVersionId}:${element.id}`
+  const recoveredValues = readElementRecovery(recoveryKey, baseElementSignature)
+  const [values, setValues] = useState<ElementFormValues>(recoveredValues ?? serverValues)
+  const [status, setStatus] = useState<AutosaveStatus>(recoveredValues ? 'dirty' : 'saved')
+  const [statusMessage, setStatusMessage] = useState(recoveredValues
+    ? 'Vraćen je nespremljeni unos iz ove kartice.'
+    : 'Sve promjene su spremljene.')
+  const lastSavedSignature = useRef(baseElementSignature)
+  const saving = useRef(false)
+
+  useEffect(() => onStatusChange(status), [onStatusChange, status])
+
+  useEffect(() => {
+    const currentSignature = serializeElementForm(values)
+    if (currentSignature === lastSavedSignature.current) {
+      try { window.sessionStorage.removeItem(recoveryKey) } catch { /* storage is best effort */ }
+      return
+    }
+
+    const snapshot: ElementRecoverySnapshot = {
+      schemaVersion: 1,
+      baseElementSignature,
+      values,
+    }
+    try { window.sessionStorage.setItem(recoveryKey, JSON.stringify(snapshot)) } catch { /* storage is best effort */ }
+  }, [baseElementSignature, recoveryKey, values])
+
+  const persist = useCallback(async (snapshot: ElementFormValues) => {
+    if (saving.current || serializeElementForm(snapshot) === lastSavedSignature.current) {
+      setStatus('saved')
+      setStatusMessage('Sve promjene su spremljene.')
+      return
+    }
+    if (!formRef.current?.checkValidity()) {
+      setStatus('dirty')
+      setStatusMessage('Dovršite obavezna polja prije spremanja.')
+      return
+    }
+
+    saving.current = true
+    setStatus('saving')
+    setStatusMessage('Spremanje promjena…')
+    const result = await onSave(element, snapshot)
+    saving.current = false
+
+    if (result.outcome === 'saved') {
+      lastSavedSignature.current = serializeElementForm(snapshot)
+      try { window.sessionStorage.removeItem(recoveryKey) } catch { /* storage is best effort */ }
+      setStatus('saved')
+      setStatusMessage('Sve promjene su spremljene.')
+      return
+    }
+
+    setStatus(result.outcome)
+    setStatusMessage(result.message ?? 'Promjene nije moguće spremiti.')
+  }, [element, onSave, recoveryKey])
+
+  useEffect(() => {
+    if (status !== 'dirty') return
+    const timer = window.setTimeout(() => { void persist(values) }, AUTOSAVE_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [persist, status, values])
+
+  useEffect(() => {
+    if (status === 'saved') return
+    const warn = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [status])
+
+  const markDirty = (update: (current: ElementFormValues) => ElementFormValues) => {
+    setValues(update)
+    setStatus('dirty')
+    setStatusMessage('Nespremljene promjene. Automatsko spremanje uskoro počinje.')
+  }
+  const updateNumber = (name: keyof Omit<ElementFormValues, 'payload'>, value: string) => markDirty(current => ({ ...current, [name]: Number(value) }))
+  const updatePayload = (name: string, value: unknown) => markDirty(current => ({ ...current, payload: { ...current.payload, [name]: value } }))
+  const updateQuickCheck = (changes: Partial<PresentationQuickCheck>) => markDirty(current => ({
     ...current,
     quickCheck: current.quickCheck ? { ...current.quickCheck, ...changes } : null,
   }))
 
-  return <form className="presentation-element-form" onSubmit={event => { event.preventDefault(); onSave(element, values) }}>
+  const retry = () => { void persist(values) }
+  const reloadLatest = () => {
+    try { window.sessionStorage.removeItem(recoveryKey) } catch { /* storage is best effort */ }
+    onReload()
+  }
+
+  return <form className="presentation-element-form" id={ELEMENT_FORM_ID} ref={formRef} onSubmit={event => { event.preventDefault(); void persist(values) }}>
+    <div className={`presentation-element-form__save-state is-${status}`} role={status === 'error' || status === 'conflict' ? 'alert' : 'status'}>
+      <span aria-hidden="true" />
+      <div><strong>{status === 'conflict' ? 'Sukob verzija' : status === 'error' ? 'Spremanje nije uspjelo' : status === 'saving' ? 'Automatsko spremanje' : status === 'dirty' ? 'Nespremljene promjene' : 'Spremljeno'}</strong><small>{statusMessage}</small></div>
+      {status === 'error' && <button onClick={retry} type="button">Pokušaj ponovno</button>}
+      {status === 'conflict' && <button onClick={reloadLatest} type="button">Učitaj noviju verziju</button>}
+    </div>
+    <fieldset className="presentation-element-form__fields" disabled={busy || status === 'saving'}>
     <header><div><small>Odabrani element</small><h2>{elementName(element.elementTypeCode)}</h2></div><button aria-label="Obriši element" disabled={busy} onClick={onDelete} type="button"><Trash2 size={17} /></button></header>
     {element.elementTypeCode === 'TEXT' && <>
       <label>Sadržaj<textarea maxLength={4000} required value={String(values.payload.text ?? '')} onChange={event => updatePayload('text', event.target.value)} /></label>
@@ -488,8 +633,31 @@ function ElementProperties({ materialId, element, busy, count, onDelete, onSave 
       <label>Visina<input min="1" max="900" step="1" type="number" value={values.height} onChange={event => updateNumber('height', event.target.value)} /></label>
       <label>Sloj<input min="0" max={Math.max(0, count - 1)} type="number" value={values.zIndex} onChange={event => updateNumber('zIndex', event.target.value)} /></label>
     </fieldset>
-    <button className="ds-action" disabled={busy} type="submit"><Save size={17} /> Spremi element</button>
+    </fieldset>
+    <button className="ds-action" disabled={busy || status === 'saving'} type="submit"><Save size={17} /> Spremi sada</button>
   </form>
+}
+
+function serializeElementForm(values: ElementFormValues): string {
+  return JSON.stringify(values)
+}
+
+function readElementRecovery(key: string, baseElementSignature: string): ElementFormValues | null {
+  try {
+    const raw = window.sessionStorage.getItem(key)
+    if (!raw) return null
+    const snapshot = JSON.parse(raw) as Partial<ElementRecoverySnapshot>
+    if (snapshot.schemaVersion !== 1
+      || snapshot.baseElementSignature !== baseElementSignature
+      || !snapshot.values) {
+      window.sessionStorage.removeItem(key)
+      return null
+    }
+    return serializeElementForm(snapshot.values) === baseElementSignature ? null : snapshot.values
+  } catch {
+    try { window.sessionStorage.removeItem(key) } catch { /* storage is best effort */ }
+    return null
+  }
 }
 
 function TableFields({ payload, onChange }: { readonly payload: Record<string, unknown>; readonly onChange: (name: string, value: unknown) => void }) {

@@ -47,6 +47,11 @@
   version-explicit, čitljiv i uklonjiv. Mapping set sprema se atomski s TaskVersion writeom
   pod document rowversionom; nema automatskog mapiranja, weighta, parent expansiona, Attempta
   ni Evidence emissiona.
+- **Phase 7.7 primjena:** valjane element promjene spremaju se nakon 800 ms debouncea ili
+  manualnog flusha kroz postojeće typed writeove i aktualni document rowversion. Tab-scoped
+  `sessionStorage` recovery vrijedi samo dok se bazni element nije promijenio. Stale write
+  zaustavlja autosave, čuva lokalni unos i traži eksplicitni reload; nema last-write-wins,
+  field-level mergea, offline queuea ni nove persistence/API granice.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04
