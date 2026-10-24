@@ -3,10 +3,12 @@
 ## Security maintenance — existing .NET transitive advisory
 
 Tijekom Phase 7.5 restorea NuGet je prijavio postojeće advisoryje za transitive
-`System.Security.Cryptography.Pkcs 10.0.11` i `System.Security.Cryptography.Xml 10.0.11`.
-Phase 7.5 ne mijenja dependency graph i ne uvodi te pakete, pa upgrade nije dio feature
-scopea. Solution Architect treba zasebno odrediti maintenance termin i usklađeni .NET package
-patch; finding ne mijenja Phase 7.5 business acceptance.
+`System.Security.Cryptography.Pkcs 10.0.11` i `System.Security.Cryptography.Xml 10.0.11`;
+Phase 7.8 Docker restore dodatno ih je potvrdio te prijavio i transitive
+`System.Security.Cryptography.Pkcs 9.0.11` u postojećem grafu. Phase 7.5/7.8 ne mijenjaju
+dependency graph i ne uvode te pakete, pa upgrade nije dio feature scopea. Solution Architect
+treba zasebno odrediti maintenance termin i usklađeni .NET package patch; finding ne mijenja
+njihov business acceptance.
 
 Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje utječe na trajni business contract mora dobiti odluku prije odgovarajuće implementacijske faze.
 

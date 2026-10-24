@@ -142,6 +142,29 @@ public sealed class MaterialFile
         Status = MaterialFileStatus.Clean;
     }
 
+    public void MarkServerGenerated(
+        long actualSizeBytes,
+        string sha256Checksum,
+        DateTimeOffset generatedAtUtc)
+    {
+        EnsureStatus(MaterialFileStatus.PendingUpload);
+        EnsureTimestamp(generatedAtUtc, nameof(generatedAtUtc));
+        EnsureSize(Format, actualSizeBytes, nameof(actualSizeBytes));
+        if (actualSizeBytes != DeclaredSizeBytes)
+        {
+            throw new InvalidOperationException(
+                "Generated size must match the declared size.");
+        }
+
+        ActualSizeBytes = actualSizeBytes;
+        Sha256Checksum = NormalizeSha256(sha256Checksum);
+        UploadedAtUtc = generatedAtUtc;
+        ScannedAtUtc = generatedAtUtc;
+        LastScanResultCategory = "SERVER_GENERATED";
+        UpdatedAtUtc = generatedAtUtc;
+        Status = MaterialFileStatus.Clean;
+    }
+
     public void StartScanning(DateTimeOffset startedAtUtc)
     {
         if (Status is not (MaterialFileStatus.Uploaded or MaterialFileStatus.Failed))

@@ -87,6 +87,34 @@ export interface PresentationEditorWorkspace {
   readonly document: PresentationDocument | null
 }
 
+export interface PresentationCurriculumOutcome {
+  readonly id: string
+  readonly officialCode: string | null
+  readonly title: string
+}
+
+export interface PresentationReviewWorkspace {
+  readonly materialId: string
+  readonly materialVersionId: string
+  readonly materialVersionNumber: number
+  readonly materialRowVersion: string
+  readonly title: string
+  readonly description: string | null
+  readonly subject: string | null
+  readonly languageCode: string | null
+  readonly visibility: string
+  readonly programName: string | null
+  readonly schoolGradeName: string | null
+  readonly proficiencyLevelName: string | null
+  readonly learningGoal: string | null
+  readonly tags: readonly string[]
+  readonly knowledgeComponents: readonly PresentationKnowledgeComponent[]
+  readonly curriculumOutcomes: readonly PresentationCurriculumOutcome[]
+  readonly quickCheckCount: number
+  readonly document: PresentationDocument
+  readonly publishBlockers: readonly string[]
+}
+
 interface PresentationMutationResponse {
   readonly slideId: string | null
   readonly elementId: string | null
@@ -99,6 +127,24 @@ export function getPresentationEditor(
   signal?: AbortSignal,
 ): Promise<PresentationEditorWorkspace> {
   return getJson<PresentationEditorWorkspace>(path(materialId), signal)
+}
+
+export function getPresentationReview(
+  materialId: string,
+  signal?: AbortSignal,
+): Promise<PresentationReviewWorkspace> {
+  return getJson<PresentationReviewWorkspace>(`${path(materialId)}/review`, signal)
+}
+
+export function publishPresentation(
+  materialId: string,
+  workspace: PresentationReviewWorkspace,
+): Promise<{ readonly published: boolean }> {
+  return postJson(`${path(materialId)}/publish`, {
+    materialVersionId: workspace.materialVersionId,
+    expectedMaterialRowVersion: workspace.materialRowVersion,
+    expectedDocumentRowVersion: workspace.document.rowVersion,
+  })
 }
 
 export function searchPresentationKnowledgeComponents(

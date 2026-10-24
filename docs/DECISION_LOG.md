@@ -52,6 +52,13 @@
   `sessionStorage` recovery vrijedi samo dok se bazni element nije promijenio. Stale write
   zaustavlja autosave, čuva lokalni unos i traži eksplicitni reload; nema last-write-wins,
   field-level mergea, offline queuea ni nove persistence/API granice.
+- **Phase 7.8 primjena:** owner-scoped review čita stvarni Draft graph. Publish pod oba
+  Material/Document rowversion authorityja ponovno validira slajdove, typed payload, Clean
+  same-version assete i Quick Check mapping, deterministički generira private
+  `application/vnd.plus5.presentation+zip` s fiksnim entry timestampom i SHA-256 te nakon
+  storage staginga u serializable SQL transakciji supersedea prethodnu Active verziju i
+  aktivira Draft. Relacijski graph ostaje canonical, package derived; concurrency/failure
+  kompenzira novi object, nema public URL-a, client exporta, Attempta ni Evidencea.
 
 ### ADR-0025 — Version-bound assessable Task metadata and leaf Evidence targets
 - **Datum:** 2026-10-04

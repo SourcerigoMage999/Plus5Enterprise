@@ -21,6 +21,7 @@ public static class PresentationEditorEndpoints
             .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
 
         group.MapGet("", GetAsync);
+        group.MapGet("/review", GetReviewAsync);
         group.MapGet("/knowledge-components", SearchKnowledgeComponentsAsync);
         ConfigureWrite(group.MapPost("", InitializeAsync));
         ConfigureWrite(group.MapPost("/slides", AddAsync));
@@ -47,6 +48,7 @@ public static class PresentationEditorEndpoints
         ConfigureWrite(group.MapDelete(
             "/slides/{slideId:guid}/elements/{elementId:guid}",
             DeleteElementAsync));
+        ConfigureWrite(group.MapPost("/publish", PublishAsync));
         group.MapGet("/assets/{assetId:guid}", OpenAssetAsync);
         return endpoints;
     }
@@ -123,6 +125,60 @@ public static class PresentationEditorEndpoints
             pageSize,
             cancellationToken);
         return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+    }
+
+    private static async Task<IResult> GetReviewAsync(
+        Guid materialId,
+        HttpContext context,
+        IPresentationEditorQuery query,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await query.GetReviewAsync(
+            teacherId,
+            materialId,
+            cancellationToken);
+        return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
+    }
+
+    private static async Task<IResult> PublishAsync(
+        Guid materialId,
+        PublishPresentationCommand request,
+        HttpContext context,
+        IPresentationPublishService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var result = await service.PublishAsync(
+            teacherId,
+            materialId,
+            request,
+            cancellationToken);
+        return result.Outcome switch
+        {
+            PresentationPublishOutcome.Success => TypedResults.Ok(new { published = true }),
+            PresentationPublishOutcome.InvalidInput => Problem(400, "presentation_invalid_request"),
+            PresentationPublishOutcome.NotFound => Problem(404, "material_not_found"),
+            PresentationPublishOutcome.Conflict => Problem(409, "concurrency_conflict"),
+            PresentationPublishOutcome.ValidationFailed => Results.Problem(
+                statusCode: 422,
+                title: "Presentation is not ready to publish.",
+                extensions: new Dictionary<string, object?>
+                {
+                    ["code"] = "presentation_publish_validation_failed",
+                    ["errors"] = result.ValidationErrors,
+                }),
+            PresentationPublishOutcome.StorageFailure => Problem(503, "material_storage_unavailable"),
+            _ => Problem(500, "presentation_publish_failed"),
+        };
     }
 
     private static async Task<IResult> InitializeAsync(

@@ -2,6 +2,7 @@ namespace Plus5.Domain.Materials;
 
 public static class MaterialFilePolicy
 {
+    public const string PresentationPackageMediaType = "application/vnd.plus5.presentation+zip";
     public const long Megabyte = 1024 * 1024;
     public const int OriginalFileNameMaxLength = 255;
     public const int MediaTypeMaxLength = 160;
@@ -49,7 +50,8 @@ public static class MaterialFilePolicy
                 == "application/vnd.openxmlformats-officedocument.presentationml.presentation",
             MaterialFileFormat.Mp4 => normalized == "video/mp4",
             MaterialFileFormat.Zip => normalized is "application/zip"
-                or "application/x-zip-compressed",
+                or "application/x-zip-compressed"
+                or PresentationPackageMediaType,
             _ => false,
         };
     }

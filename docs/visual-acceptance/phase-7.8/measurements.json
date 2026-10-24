@@ -1,0 +1,47 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "realObjectStorage": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "4.3 P6.png",
+  "screens": [
+    {
+      "name": "review-and-save",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1579
+    },
+    {
+      "name": "review-and-save",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2565
+    }
+  ],
+  "checks": [
+    "desktop: real review API, metadata, pedagogical summary, persisted slide preview and no document overflow",
+    "mobile: real review API, metadata, pedagogical summary, persisted slide preview and no document overflow",
+    "runtime: review → deterministic private package → atomic publish → material detail"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": [],
+  "runtimePublish": {
+    "materialId": "68e5ea57-a6fc-4d3f-8bae-30bb6c5c056e",
+    "materialVersionId": "7b06e968-7f08-474d-87ea-3aef4fe25af3",
+    "publishStatus": 200,
+    "detailStatus": 200,
+    "formerDraftReviewStatus": 404,
+    "packageMediaType": "application/vnd.plus5.presentation+zip",
+    "packageFileName": "plus5-presentation.zip"
+  }
+}

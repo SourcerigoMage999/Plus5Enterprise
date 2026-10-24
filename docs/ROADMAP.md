@@ -817,7 +817,21 @@ production build prolaze. Minimalni stvarni visual gate prolazi s jednim desktop
 Docker SQL-om, vidljivim spremljenim autosave statusom, bez document overflowa, capture
 writeova ili browser/page grešaka. Full regression, dependency audit, backend/SQL i Docker
 infrastructure gateovi su N/A jer faza ne mijenja njihove zaključane granice.
-## 7.8 Preview & save flow — TODO
+## 7.8 Preview & save flow — FINAL LOCKED
+
+**Implementirano 2026-10-24:** owner-scoped review prikazuje stvarne version-bound metadata,
+pedagoške reference, spremljene slajdove i content counts. Publish ponovno provjerava graph,
+oba rowversion authorityja, Quick Check mapping i Clean assete, generira deterministički
+private `application/vnd.plus5.presentation+zip` package te u serializable transakciji
+supersedea prethodnu Active verziju i aktivira Draft. Contract:
+`PRESENTATION_PREVIEW_SAVE.md`.
+
+**Acceptance 7.8: FINAL LOCKED — odobreno 2026-10-24.** Backend/API/storage targeted 21/21,
+frontend 2/2, Release build, targeted format, lint, TypeScript i production build prolaze.
+Stvarni review → package → publish runtime i minimalni canonical desktop/mobile gate prolaze
+bez globalnog overflowa, capture writeova ili browser/page grešaka. Full regression,
+dependency audit, SQL/migration/architecture i Docker infrastructure validacija su N/A prema
+STRICT VALIDATION BUDGET-u; dependency graph, schema i infrastruktura nisu promijenjeni.
 ## 7.9 AI assistance — BLOCKED
 **Gate:** definirati AI provider, privacy, prompt/data boundary, confirmation behavior i failure fallback prije implementacije.
 

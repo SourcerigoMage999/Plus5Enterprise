@@ -9,6 +9,11 @@ public interface IMaterialObjectStorage
         Stream content,
         CancellationToken cancellationToken);
 
+    Task PutCleanAsync(
+        MaterialObjectWrite request,
+        Stream content,
+        CancellationToken cancellationToken);
+
     Task<Stream> OpenQuarantineReadAsync(
         MaterialObjectReference reference,
         CancellationToken cancellationToken);

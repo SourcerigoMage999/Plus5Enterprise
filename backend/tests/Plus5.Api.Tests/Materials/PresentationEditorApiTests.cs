@@ -261,7 +261,92 @@ public sealed class PresentationEditorApiTests
         Assert.Equal(HttpStatusCode.BadRequest, invalidResponse.StatusCode);
     }
 
-    private static async Task<WebApplication> StartApplicationAsync(CapturingQuery query)
+    [Fact]
+    public async Task ReviewAndPublishUseTheTeacherCsrfBoundary()
+    {
+        var teacherId = Guid.NewGuid();
+        var materialId = Guid.NewGuid();
+        var versionId = Guid.NewGuid();
+        var document = new PresentationDocumentView(
+            1,
+            1600,
+            900,
+            "CAcGBQQDAgE=",
+            new DateTimeOffset(2026, 10, 23, 8, 0, 0, TimeSpan.Zero),
+            [new PresentationSlideView(Guid.NewGuid(), 0, [])]);
+        var query = new CapturingQuery(materialId)
+        {
+            Review = new PresentationReviewWorkspace(
+                materialId,
+                versionId,
+                2,
+                "AQIDBAUGBwg=",
+                "Present Continuous",
+                null,
+                "Engleski jezik",
+                "hr",
+                "Private",
+                null,
+                "7. razred",
+                "A2",
+                "Razlikovati vremena.",
+                ["gramatika"],
+                [],
+                [],
+                0,
+                document,
+                []),
+        };
+        var publisher = new CapturingPublishService();
+        await using var app = await StartApplicationAsync(query, publisher);
+        using var client = app.GetTestClient();
+
+        using var anonymous = await client.GetAsync(
+            $"/api/v1/materials/{materialId:D}/presentation/review");
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+
+        var csrf = await SignInAndGetCsrfAsync(client, teacherId);
+        using var reviewRequest = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"/api/v1/materials/{materialId:D}/presentation/review");
+        reviewRequest.Headers.Add("Cookie", csrf.Cookie);
+        using var reviewResponse = await client.SendAsync(reviewRequest);
+        Assert.Equal(HttpStatusCode.OK, reviewResponse.StatusCode);
+
+        using var missingCsrf = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/v1/materials/{materialId:D}/presentation/publish")
+        {
+            Content = JsonContent.Create(new PublishPresentationCommand(
+                versionId,
+                "AQIDBAUGBwg=",
+                document.RowVersion)),
+        };
+        missingCsrf.Headers.Add("Cookie", csrf.Cookie);
+        using var rejected = await client.SendAsync(missingCsrf);
+        Assert.Equal(HttpStatusCode.BadRequest, rejected.StatusCode);
+
+        using var publishRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/v1/materials/{materialId:D}/presentation/publish")
+        {
+            Content = JsonContent.Create(new PublishPresentationCommand(
+                versionId,
+                "AQIDBAUGBwg=",
+                document.RowVersion)),
+        };
+        publishRequest.Headers.Add("Cookie", csrf.Cookie);
+        publishRequest.Headers.Add(IdentityServiceExtensions.CsrfHeaderName, csrf.Token);
+        using var published = await client.SendAsync(publishRequest);
+
+        Assert.Equal(HttpStatusCode.OK, published.StatusCode);
+        Assert.Equal(teacherId, publisher.TeacherId);
+        Assert.Equal(materialId, publisher.MaterialId);
+    }
+
+    private static async Task<WebApplication> StartApplicationAsync(
+        CapturingQuery query,
+        IPresentationPublishService? publisher = null)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -278,6 +363,8 @@ public sealed class PresentationEditorApiTests
         builder.Services.AddSingleton<IPresentationEditorQuery>(query);
         builder.Services.AddSingleton<IPresentationSlideService, SuccessfulSlideService>();
         builder.Services.AddSingleton<IPresentationElementService, SuccessfulElementService>();
+        builder.Services.AddSingleton<IPresentationPublishService>(
+            publisher ?? new CapturingPublishService());
 
         var app = builder.Build();
         app.UseAuthentication();
@@ -342,6 +429,7 @@ public sealed class PresentationEditorApiTests
         public Guid? LastTeacherId { get; private set; }
         public string? LastSearch { get; private set; }
         public PresentationKnowledgeComponentPage? KnowledgePage { get; init; }
+        public PresentationReviewWorkspace? Review { get; init; }
 
         public Task<PresentationEditorWorkspace?> GetAsync(
             Guid teacherAccountId,
@@ -373,6 +461,33 @@ public sealed class PresentationEditorApiTests
             return Task.FromResult(requestedMaterialId == materialId
                 ? KnowledgePage ?? new PresentationKnowledgeComponentPage([], page, pageSize, 0)
                 : null);
+        }
+
+        public Task<PresentationReviewWorkspace?> GetReviewAsync(
+            Guid teacherAccountId,
+            Guid requestedMaterialId,
+            CancellationToken cancellationToken)
+        {
+            LastTeacherId = teacherAccountId;
+            return Task.FromResult(requestedMaterialId == materialId ? Review : null);
+        }
+    }
+
+    private sealed class CapturingPublishService : IPresentationPublishService
+    {
+        public Guid? TeacherId { get; private set; }
+        public Guid? MaterialId { get; private set; }
+
+        public Task<PresentationPublishResult> PublishAsync(
+            Guid teacherAccountId,
+            Guid materialId,
+            PublishPresentationCommand command,
+            CancellationToken cancellationToken)
+        {
+            TeacherId = teacherAccountId;
+            MaterialId = materialId;
+            return Task.FromResult(new PresentationPublishResult(
+                PresentationPublishOutcome.Success));
         }
     }
 

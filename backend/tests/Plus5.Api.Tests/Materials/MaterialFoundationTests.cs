@@ -208,6 +208,42 @@ public sealed class MaterialFoundationTests
     }
 
     [Fact]
+    public void ServerGeneratedPresentationPackageBecomesCleanWithoutMalwareScanPretence()
+    {
+        var material = CreateMaterial();
+        var version = new MaterialVersion(
+            Guid.NewGuid(),
+            material,
+            1,
+            "Native presentation",
+            "PRESENTATION",
+            CreatedAt);
+        var file = new MaterialFile(
+            Guid.NewGuid(),
+            material,
+            version,
+            MaterialFileFormat.Zip,
+            "plus5-presentation.zip",
+            MaterialFilePolicy.PresentationPackageMediaType,
+            256,
+            "R2",
+            "clean",
+            CreatedAt);
+
+        file.MarkServerGenerated(
+            256,
+            new string('D', MaterialFilePolicy.ChecksumMaxLength),
+            CreatedAt.AddMinutes(1));
+
+        Assert.Equal(MaterialFileStatus.Clean, file.Status);
+        Assert.Equal("SERVER_GENERATED", file.LastScanResultCategory);
+        Assert.Equal(0, file.ScanAttemptCount);
+        Assert.Equal(256, file.ActualSizeBytes);
+        version.Activate(file, CreatedAt.AddMinutes(2));
+        Assert.Equal(MaterialVersionStatus.Active, version.Status);
+    }
+
+    [Fact]
     public void ShareSupportsOnlyViewOrUseAndNeverTransfersOwnership()
     {
         var material = CreateMaterial();

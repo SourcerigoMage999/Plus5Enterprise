@@ -47,6 +47,29 @@ public sealed class S3MaterialObjectStorage : IMaterialObjectStorage, IDisposabl
         }, cancellationToken);
     }
 
+    public async Task PutCleanAsync(
+        MaterialObjectWrite request,
+        Stream content,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(content);
+        EnsureReference(request.Reference, options.CleanBucket);
+
+        await client.PutObjectAsync(new PutObjectRequest
+        {
+            BucketName = options.CleanBucket,
+            Key = request.Reference.ObjectKey,
+            InputStream = content,
+            AutoCloseStream = false,
+            ContentType = request.MediaType,
+            Metadata =
+            {
+                ["sha256"] = request.Sha256Checksum,
+            },
+        }, cancellationToken);
+    }
+
     public async Task<Stream> OpenQuarantineReadAsync(
         MaterialObjectReference reference,
         CancellationToken cancellationToken)

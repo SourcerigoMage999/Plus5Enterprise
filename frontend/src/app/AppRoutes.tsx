@@ -24,6 +24,7 @@ import { MaterialImportPage } from '../materials/MaterialImportPage.tsx'
 import { MaterialEditPage } from '../materials/MaterialEditPage.tsx'
 import { MaterialSharingPage } from '../materials/MaterialSharingPage.tsx'
 import { PresentationEditorPage } from '../materials/PresentationEditorPage.tsx'
+import { PresentationReviewPage } from '../materials/PresentationReviewPage.tsx'
 
 const dashboard = navigationItems[0]
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials')
@@ -60,6 +61,7 @@ export function AppRoutes() {
           <Route path="materials/:materialId/edit" element={<MaterialEditPage />} />
           <Route path="materials/:materialId/sharing" element={<MaterialSharingPage />} />
           <Route path="materials/:materialId/presentation" element={<PresentationEditorPage />} />
+          <Route path="materials/:materialId/presentation/review" element={<PresentationReviewPage />} />
           <Route path="materials/:materialId" element={<MaterialDetailPage />} />
           {moduleItems.map((item) => (
             <Route

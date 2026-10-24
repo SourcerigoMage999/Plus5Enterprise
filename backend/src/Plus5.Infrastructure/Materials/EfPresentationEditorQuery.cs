@@ -8,6 +8,8 @@ namespace Plus5.Infrastructure.Materials;
 
 public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentationEditorQuery
 {
+    private static readonly string[] AssetElementTypes = ["IMAGE", "VIDEO", "AUDIO"];
+
     public async Task<PresentationEditorWorkspace?> GetAsync(
         Guid teacherAccountId,
         Guid materialId,
@@ -245,5 +247,138 @@ public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentation
             page,
             pageSize,
             totalCount);
+    }
+
+    public async Task<PresentationReviewWorkspace?> GetReviewAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        CancellationToken cancellationToken)
+    {
+        var editor = await GetAsync(teacherAccountId, materialId, cancellationToken);
+        if (editor?.Document is null)
+        {
+            return null;
+        }
+
+        var metadata = await (
+            from material in db.Materials.AsNoTracking()
+            join version in db.MaterialVersions.AsNoTracking()
+                on material.Id equals version.MaterialId
+            where material.Id == materialId
+                && material.OwnerTeacherId == teacherAccountId
+                && version.Id == editor.MaterialVersionId
+                && version.Status == MaterialVersionStatus.Draft
+            select new
+            {
+                material.Visibility,
+                version.Description,
+                version.Subject,
+                version.LanguageCode,
+                version.ProgramId,
+                version.SchoolGradeId,
+                version.ProficiencyLevelId,
+                version.LearningGoal,
+            })
+            .SingleOrDefaultAsync(cancellationToken);
+        if (metadata is null)
+        {
+            return null;
+        }
+
+        var programName = metadata.ProgramId.HasValue
+            ? await db.Programs.AsNoTracking()
+                .Where(program => program.Id == metadata.ProgramId)
+                .Select(program => program.Name)
+                .SingleOrDefaultAsync(cancellationToken)
+            : null;
+        var gradeName = metadata.SchoolGradeId.HasValue
+            ? await db.SchoolGrades.AsNoTracking()
+                .Where(grade => grade.Id == metadata.SchoolGradeId)
+                .Select(grade => grade.Name)
+                .SingleOrDefaultAsync(cancellationToken)
+            : null;
+        var levelName = metadata.ProficiencyLevelId.HasValue
+            ? await db.ProficiencyLevels.AsNoTracking()
+                .Where(level => level.Id == metadata.ProficiencyLevelId)
+                .Select(level => level.Name)
+                .SingleOrDefaultAsync(cancellationToken)
+            : null;
+        var tags = await db.MaterialVersionTags.AsNoTracking()
+            .Where(tag => tag.MaterialVersionId == editor.MaterialVersionId)
+            .OrderBy(tag => tag.Name)
+            .Select(tag => tag.Name)
+            .ToListAsync(cancellationToken);
+        var components = await (
+            from mapping in db.MaterialVersionKnowledgeComponents.AsNoTracking()
+            join component in db.KnowledgeComponents.AsNoTracking()
+                on mapping.KnowledgeComponentId equals component.Id
+            join area in db.KnowledgeAreas.AsNoTracking()
+                on component.KnowledgeAreaId equals area.Id
+            join model in db.KnowledgeModels.AsNoTracking()
+                on component.KnowledgeModelId equals model.Id
+            where mapping.MaterialVersionId == editor.MaterialVersionId
+            orderby model.Code, model.Version, area.SortOrder, component.SortOrder
+            select new PresentationKnowledgeComponentView(
+                component.Id,
+                component.Name,
+                area.Name,
+                model.Code,
+                model.Version,
+                model.Status.ToString(),
+                component.Status.ToString()))
+            .ToListAsync(cancellationToken);
+        var outcomes = await (
+            from mapping in db.MaterialVersionCurriculumOutcomes.AsNoTracking()
+            join outcome in db.CurriculumOutcomes.AsNoTracking()
+                on mapping.CurriculumOutcomeId equals outcome.Id
+            where mapping.MaterialVersionId == editor.MaterialVersionId
+            orderby outcome.SortOrder, outcome.Title
+            select new PresentationCurriculumOutcomeView(
+                outcome.Id,
+                outcome.OfficialCode,
+                outcome.Title))
+            .ToListAsync(cancellationToken);
+
+        var quickChecks = editor.Document.Slides
+            .SelectMany(slide => slide.Elements)
+            .Where(element => element.ElementTypeCode == "QUICK_CHECK")
+            .ToList();
+        var blockers = new List<string>();
+        if (editor.Document.Slides.Count == 0)
+        {
+            blockers.Add("Prezentacija mora sadržavati najmanje jedan slajd.");
+        }
+        if (editor.Document.Slides.SelectMany(slide => slide.Elements).Any(element =>
+                AssetElementTypes.Contains(element.ElementTypeCode, StringComparer.Ordinal)
+                && element.Asset is null))
+        {
+            blockers.Add("Svi medijski elementi moraju imati vlastiti provjereni zapis.");
+        }
+        if (quickChecks.Any(element => element.QuickCheck is null
+                || element.QuickCheck.KnowledgeMappingPending))
+        {
+            blockers.Add("Svaki Quick Check mora biti povezan s barem jednom komponentom znanja.");
+        }
+
+        return new PresentationReviewWorkspace(
+            editor.MaterialId,
+            editor.MaterialVersionId,
+            editor.MaterialVersionNumber,
+            editor.MaterialRowVersion,
+            editor.Title,
+            metadata.Description,
+            metadata.Subject,
+            metadata.LanguageCode,
+            metadata.Visibility.ToString(),
+            programName,
+            gradeName,
+            levelName,
+            metadata.LearningGoal,
+            tags,
+            components,
+            outcomes,
+            quickChecks.Count,
+            editor.Document,
+            blockers);
     }
 }

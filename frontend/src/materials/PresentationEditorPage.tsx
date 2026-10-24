@@ -354,7 +354,9 @@ export function PresentationEditorPage() {
         <span className={`presentation-editor__save-state is-${autosaveStatus}`} role="status"><span aria-hidden="true" />{autosaveLabel}</span>
         <Link className="ds-action ds-action--secondary" to={`/materials/${materialId}/edit`}>Odustani</Link>
         <button className="ds-action ds-action--secondary" disabled={busy || autosaveStatus === 'saving'} form={selectedElement ? ELEMENT_FORM_ID : undefined} onClick={() => { if (!selectedElement) setNotice('Sve promjene su spremljene.') }} type={selectedElement ? 'submit' : 'button'}><Save size={17} /> Spremi nacrt</button>
-        <button className="ds-action" disabled type="button">Nastavi <ArrowRight size={17} /></button>
+        {editorWriteLocked
+          ? <button className="ds-action" disabled type="button">Nastavi <ArrowRight size={17} /></button>
+          : <Link className="ds-action" to={`/materials/${materialId}/presentation/review`}>Nastavi <ArrowRight size={17} /></Link>}
       </div>
     </header>
 

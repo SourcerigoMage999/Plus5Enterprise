@@ -16,6 +16,20 @@ public interface IPresentationEditorQuery
         int page,
         int pageSize,
         CancellationToken cancellationToken);
+
+    Task<PresentationReviewWorkspace?> GetReviewAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        CancellationToken cancellationToken);
+}
+
+public interface IPresentationPublishService
+{
+    Task<PresentationPublishResult> PublishAsync(
+        Guid teacherAccountId,
+        Guid materialId,
+        PublishPresentationCommand command,
+        CancellationToken cancellationToken);
 }
 
 public interface IPresentationSlideService
@@ -129,6 +143,11 @@ public sealed record AddPresentationSlideCommand(
 
 public sealed record PresentationConcurrencyCommand(string ExpectedDocumentRowVersion);
 
+public sealed record PublishPresentationCommand(
+    Guid MaterialVersionId,
+    string ExpectedMaterialRowVersion,
+    string ExpectedDocumentRowVersion);
+
 public sealed record ReorderPresentationSlidesCommand(
     string ExpectedDocumentRowVersion,
     IReadOnlyList<Guid> OrderedSlideIds);
@@ -213,6 +232,20 @@ public sealed record PresentationMutationResult(
     Guid? SlideId = null,
     Guid? ElementId = null);
 
+public enum PresentationPublishOutcome
+{
+    Success,
+    InvalidInput,
+    NotFound,
+    Conflict,
+    ValidationFailed,
+    StorageFailure,
+}
+
+public sealed record PresentationPublishResult(
+    PresentationPublishOutcome Outcome,
+    IReadOnlyList<string>? ValidationErrors = null);
+
 public sealed record PresentationEditorWorkspace(
     Guid MaterialId,
     Guid MaterialVersionId,
@@ -282,3 +315,29 @@ public sealed record PresentationKnowledgeComponentPage(
     int Page,
     int PageSize,
     int TotalCount);
+
+public sealed record PresentationReviewWorkspace(
+    Guid MaterialId,
+    Guid MaterialVersionId,
+    int MaterialVersionNumber,
+    string MaterialRowVersion,
+    string Title,
+    string? Description,
+    string? Subject,
+    string? LanguageCode,
+    string Visibility,
+    string? ProgramName,
+    string? SchoolGradeName,
+    string? ProficiencyLevelName,
+    string? LearningGoal,
+    IReadOnlyList<string> Tags,
+    IReadOnlyList<PresentationKnowledgeComponentView> KnowledgeComponents,
+    IReadOnlyList<PresentationCurriculumOutcomeView> CurriculumOutcomes,
+    int QuickCheckCount,
+    PresentationDocumentView Document,
+    IReadOnlyList<string> PublishBlockers);
+
+public sealed record PresentationCurriculumOutcomeView(
+    Guid Id,
+    string? OfficialCode,
+    string Title);

@@ -197,6 +197,8 @@ function friendlyMessage(code?: string): string {
       return 'Materijal već ima otvorenu skicu. Osvježite uređivač i nastavite na toj skici.'
     case 'material_storage_unavailable':
       return 'Pohrana materijala trenutačno nije dostupna. Pokušajte ponovno.'
+    case 'presentation_publish_validation_failed':
+      return 'Prezentacija još nije spremna za spremanje. Provjerite Quick Check povezanost i medijske elemente.'
     case 'presentation_invalid_request':
       return 'Provjerite sadržaj, položaj i veličinu elementa.'
     case 'presentation_element_limit_reached':
