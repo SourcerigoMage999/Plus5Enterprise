@@ -871,9 +871,21 @@ podaci nisu simulirani prije svojih contracta. Contract: `TEACHER_DASHBOARD_READ
 Docker infrastructure validation su N/A prema STRICT VALIDATION BUDGET-u jer nema schema,
 UI, dependency ni infrastructure promjene.
 
-## 8.2 Screen 1.1 Teacher dashboard — TODO
+## 8.2 Screen 1.1 Teacher dashboard — FINAL LOCKED
 
-**Preduvjeti:** studenti, raspored i materijali moraju postojati. Sekcije koje ovise o budućim modulima (poruke, financije, lesson plan) implementirati tek kad njihovi izvori postoje; bez fake produkcijskih podataka.
+**Implementirano 2026-10-26:** `/` sada prikazuje stvarni Teacher Radni stol nad zaključanim
+8.1 read modelom: canonical quick actions, današnji raspored, sljedeći sat i nearhivirani
+Student status pregled. Dostupne akcije vode na postojeće Students, Schedule i Materials
+routeove; poruke, homework, test/ispit, financije, Lesson Plan i pokretanje sata ostaju jasno
+disabled dok njihovi contracti ne postoje. Loading, error/retry i poštena empty stanja ne
+izmišljaju podatke. Desktop/mobile visual evidence koristi stvarni login, API i SQL te nema
+document overflow ni browser/page greške. Contract: `TEACHER_DASHBOARD_SCREEN.md`.
+
+**Acceptance 8.2: FINAL LOCKED.** Targeted frontend 8/8, lint, typecheck i
+production build prolaze. Targeted backend korekcija 8.1 SQL Server projekcije prolazi build
+bez warninga i dashboard testove 3/3; stvarni API vraća HTTP 200. Minimalni canonical visual
+gate 1536×1024 i 390×844 prolazi. Full regression, dependency audit i Docker infrastructure
+validation su N/A prema STRICT VALIDATION BUDGET-u.
 
 ---
 

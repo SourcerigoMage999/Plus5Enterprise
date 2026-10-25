@@ -25,8 +25,8 @@ import { MaterialEditPage } from '../materials/MaterialEditPage.tsx'
 import { MaterialSharingPage } from '../materials/MaterialSharingPage.tsx'
 import { PresentationEditorPage } from '../materials/PresentationEditorPage.tsx'
 import { PresentationReviewPage } from '../materials/PresentationReviewPage.tsx'
+import { DashboardPage } from '../dashboard/DashboardPage.tsx'
 
-const dashboard = navigationItems[0]
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials')
 
 export function AppRoutes() {
@@ -42,7 +42,7 @@ export function AppRoutes() {
         <Route path="auth/session-expired" element={<SessionExpiredPage />} />
         <Route path="auth/access-denied" element={<AccessDeniedPage />} />
         <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
-          <Route index element={<FoundationPage title={dashboard.label} />} />
+          <Route index element={<DashboardPage />} />
           <Route path="students" element={<StudentListPage />} />
           <Route path="students/new" element={<StudentCreatePage />} />
           <Route path="students/groups" element={<GroupListPage />} />

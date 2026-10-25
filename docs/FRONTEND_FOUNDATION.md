@@ -38,7 +38,7 @@ URL slugovi koriste canonical engleske tehničke nazive; korisničke oznake osta
 
 | Route | UI naziv | Trenutačno ponašanje |
 |---|---|---|
-| `/` | Radni stol | foundation placeholder |
+| `/` | Radni stol | Phase 8.2 Teacher dashboard |
 | `/students` | Učenici | foundation placeholder |
 | `/schedule` | Raspored | foundation placeholder |
 | `/materials` | Materijali | Phase 6.3 Material library |
@@ -82,6 +82,11 @@ detail i ostale write akcije ostaju disabled do svojih faza.
 Phase 6.4 dodaje `/materials/:materialId` kao deep-linkable owner/share autorizirani Screen 4.2
 read detail. Frontend ne računa learning/readiness semantiku i ne dobiva storage ključeve;
 binary akcije ostaju disabled do production storage-read adaptera.
+
+Phase 8.2 zamjenjuje `/` foundation stvarnim Screen 1.1 Teacher dashboardom. Ekran koristi
+isključivo Phase 8.1 owner-scoped read model za današnje termine, sljedeći sat i Student status
+brojeve. Canonical sekcije bez postojećeg izvora ostaju disabled ili izostavljene; frontend ne
+izvodi readiness, activity, notification, finance ni recently-used Material podatke.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

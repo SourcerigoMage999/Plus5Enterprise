@@ -73,3 +73,14 @@ desktop/mobile visual gate. Ne smije aktivirati buduće module ili izmišljati n
 ## Review handoff
 
 Phase 8.1 je Solution Architect odobrio i označena je kao FINAL LOCKED.
+
+## Post-lock operational correction — 2026-10-26
+
+Prvi stvarni Phase 8.2 browser gate otkrio je da je izvorna EF projekcija prolazila InMemory
+testove, ali SQL Server nije mogao prevesti korelirane `Single()` podupite. Response contract,
+ownership i business semantika nisu promijenjeni. Projekcija sada prvo čita bounded skup
+današnjih/next Session redaka, zatim owner-scoped Group/Student/Grade/Program/Location i
+membership podatke u batch upitima te mapira rezultat u memoriji.
+
+Targeted backend build prolazi s 0 warninga/grešaka, dashboard testovi 3/3, a stvarni
+autentificirani SQL/API poziv vraća HTTP 200. Phase 8.1 ostaje FINAL LOCKED.

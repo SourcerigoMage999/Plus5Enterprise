@@ -29,22 +29,24 @@ public sealed class EfTeacherDashboardQuery(
             .Where(session => session.TeacherAccountId == teacherAccountId
                 && session.Status != SessionStatus.Cancelled);
 
-        var todaySessions = await Project(
-                visibleSessions.Where(session => session.StartsAtUtc >= todayStartsAtUtc
-                    && session.StartsAtUtc < tomorrowStartsAtUtc),
-                teacherAccountId)
+        var todaySessions = await LoadSessionsAsync(
+            visibleSessions.Where(session => session.StartsAtUtc >= todayStartsAtUtc
+                && session.StartsAtUtc < tomorrowStartsAtUtc)
             .OrderBy(session => session.StartsAtUtc)
             .ThenBy(session => session.EndsAtUtc)
-            .ThenBy(session => session.Id)
-            .ToListAsync(cancellationToken);
+            .ThenBy(session => session.Id),
+            teacherAccountId,
+            cancellationToken);
 
-        var nextSession = await Project(
-                visibleSessions.Where(session => session.Status == SessionStatus.Scheduled
-                    && session.StartsAtUtc >= generatedAtUtc),
-                teacherAccountId)
+        var nextSessions = await LoadSessionsAsync(
+            visibleSessions.Where(session => session.Status == SessionStatus.Scheduled
+                && session.StartsAtUtc >= generatedAtUtc)
             .OrderBy(session => session.StartsAtUtc)
             .ThenBy(session => session.Id)
-            .FirstOrDefaultAsync(cancellationToken);
+            .Take(1),
+            teacherAccountId,
+            cancellationToken);
+        var nextSession = nextSessions.SingleOrDefault();
 
         var studentCounts = await dbContext.Students.AsNoTracking()
             .Where(student => student.TeacherAccountId == teacherAccountId
@@ -67,80 +69,138 @@ public sealed class EfTeacherDashboardQuery(
             studentCounts);
     }
 
-    private IQueryable<TeacherDashboardSession> Project(
+    private async Task<List<TeacherDashboardSession>> LoadSessionsAsync(
         IQueryable<Session> sessions,
-        Guid teacherAccountId) =>
-        sessions.Select(session => new TeacherDashboardSession(
-            session.Id,
-            (int)session.DeliveryMode,
-            session.GroupId,
-            session.StudentId,
-            session.GroupId.HasValue
-                ? dbContext.Groups
-                    .Where(group => group.TeacherAccountId == teacherAccountId
-                        && group.Id == session.GroupId)
-                    .Select(group => group.Name)
-                    .Single()
-                : dbContext.Students
-                    .Where(student => student.TeacherAccountId == teacherAccountId
-                        && student.Id == session.StudentId)
-                    .Select(student => student.FirstName + " " + student.LastName)
-                    .Single(),
-            session.GroupId.HasValue
-                ? (from sourceGroup in dbContext.Groups
-                   join grade in dbContext.SchoolGrades on sourceGroup.SchoolGradeId equals grade.Id
-                   where sourceGroup.TeacherAccountId == teacherAccountId
-                       && sourceGroup.Id == session.GroupId
-                   select grade.Name).Single()
-                : (from student in dbContext.Students
-                   join grade in dbContext.SchoolGrades on student.SchoolGradeId equals grade.Id
-                   where student.TeacherAccountId == teacherAccountId
-                       && student.Id == session.StudentId
-                   select grade.Name).Single(),
-            session.GroupId.HasValue
-                ? dbContext.Groups
-                    .Where(group => group.TeacherAccountId == teacherAccountId
-                        && group.Id == session.GroupId)
-                    .Select(group => (Guid?)group.ProgramId)
-                    .Single()
-                : dbContext.Students
-                    .Where(student => student.TeacherAccountId == teacherAccountId
-                        && student.Id == session.StudentId)
-                    .Select(student => student.ProgramId)
-                    .Single(),
-            session.GroupId.HasValue
-                ? (from sourceGroup in dbContext.Groups
-                   join program in dbContext.Programs on sourceGroup.ProgramId equals program.Id
-                   where sourceGroup.TeacherAccountId == teacherAccountId
-                       && sourceGroup.Id == session.GroupId
-                       && program.TeacherAccountId == teacherAccountId
-                   select program.Name).Single()
-                : (from student in dbContext.Students
-                   join program in dbContext.Programs on student.ProgramId equals (Guid?)program.Id
-                   where student.TeacherAccountId == teacherAccountId
-                       && student.Id == session.StudentId
-                       && program.TeacherAccountId == teacherAccountId
-                   select program.Name).SingleOrDefault(),
-            session.Title,
-            session.StartsAtUtc,
-            session.EndsAtUtc,
-            session.TimeZoneId,
-            session.LocationId,
-            dbContext.Locations
-                .Where(location => location.TeacherAccountId == teacherAccountId
-                    && location.Id == session.LocationId)
-                .Select(location => location.Name)
-                .SingleOrDefault(),
-            session.OnlineMeetingUrl != null,
-            (int)session.Status,
-            session.GroupId.HasValue
-                ? dbContext.GroupMemberships.Count(membership =>
-                    membership.TeacherAccountId == teacherAccountId
-                    && membership.GroupId == session.GroupId
-                    && membership.JoinedAtUtc <= session.StartsAtUtc
-                    && (membership.LeftAtUtc == null
-                        || membership.LeftAtUtc > session.StartsAtUtc))
-                : 1));
+        Guid teacherAccountId,
+        CancellationToken cancellationToken)
+    {
+        var rows = await sessions
+            .Select(session => new
+            {
+                session.Id,
+                session.DeliveryMode,
+                session.GroupId,
+                session.StudentId,
+                session.Title,
+                session.StartsAtUtc,
+                session.EndsAtUtc,
+                session.TimeZoneId,
+                session.LocationId,
+                Online = session.OnlineMeetingUrl != null,
+                session.Status,
+            })
+            .ToListAsync(cancellationToken);
+        if (rows.Count == 0)
+        {
+            return [];
+        }
+
+        var groupIds = rows
+            .Where(row => row.GroupId.HasValue)
+            .Select(row => row.GroupId!.Value)
+            .Distinct()
+            .ToList();
+        var studentIds = rows
+            .Where(row => row.StudentId.HasValue)
+            .Select(row => row.StudentId!.Value)
+            .Distinct()
+            .ToList();
+        var locationIds = rows
+            .Where(row => row.LocationId.HasValue)
+            .Select(row => row.LocationId!.Value)
+            .Distinct()
+            .ToList();
+
+        var groups = await dbContext.Groups.AsNoTracking()
+            .Where(group => group.TeacherAccountId == teacherAccountId
+                && groupIds.Contains(group.Id))
+            .Select(group => new
+            {
+                group.Id,
+                group.Name,
+                group.SchoolGradeId,
+                ProgramId = (Guid?)group.ProgramId,
+            })
+            .ToDictionaryAsync(group => group.Id, cancellationToken);
+        var students = await dbContext.Students.AsNoTracking()
+            .Where(student => student.TeacherAccountId == teacherAccountId
+                && studentIds.Contains(student.Id))
+            .Select(student => new
+            {
+                student.Id,
+                Name = student.FirstName + " " + student.LastName,
+                student.SchoolGradeId,
+                student.ProgramId,
+            })
+            .ToDictionaryAsync(student => student.Id, cancellationToken);
+
+        var gradeIds = groups.Values.Select(group => group.SchoolGradeId)
+            .Concat(students.Values.Select(student => student.SchoolGradeId))
+            .Distinct()
+            .ToList();
+        var programIds = groups.Values.Where(group => group.ProgramId.HasValue)
+            .Select(group => group.ProgramId!.Value)
+            .Concat(students.Values.Where(student => student.ProgramId.HasValue)
+                .Select(student => student.ProgramId!.Value))
+            .Distinct()
+            .ToList();
+
+        var grades = await dbContext.SchoolGrades.AsNoTracking()
+            .Where(grade => gradeIds.Contains(grade.Id))
+            .ToDictionaryAsync(grade => grade.Id, grade => grade.Name, cancellationToken);
+        var programs = await dbContext.Programs.AsNoTracking()
+            .Where(program => program.TeacherAccountId == teacherAccountId
+                && programIds.Contains(program.Id))
+            .ToDictionaryAsync(program => program.Id, program => program.Name, cancellationToken);
+        var locations = await dbContext.Locations.AsNoTracking()
+            .Where(location => location.TeacherAccountId == teacherAccountId
+                && locationIds.Contains(location.Id))
+            .ToDictionaryAsync(location => location.Id, location => location.Name, cancellationToken);
+        var memberships = await dbContext.GroupMemberships.AsNoTracking()
+            .Where(membership => membership.TeacherAccountId == teacherAccountId
+                && groupIds.Contains(membership.GroupId))
+            .Select(membership => new
+            {
+                membership.GroupId,
+                membership.JoinedAtUtc,
+                membership.LeftAtUtc,
+            })
+            .ToListAsync(cancellationToken);
+
+        return rows.Select(row =>
+        {
+            var sourceGroup = row.GroupId.HasValue ? groups[row.GroupId.Value] : null;
+            var student = row.StudentId.HasValue ? students[row.StudentId.Value] : null;
+            var gradeId = sourceGroup?.SchoolGradeId ?? student!.SchoolGradeId;
+            var programId = sourceGroup?.ProgramId ?? student?.ProgramId;
+            return new TeacherDashboardSession(
+                row.Id,
+                (int)row.DeliveryMode,
+                row.GroupId,
+                row.StudentId,
+                sourceGroup?.Name ?? student!.Name,
+                grades[gradeId],
+                programId,
+                programId.HasValue && programs.TryGetValue(programId.Value, out var programName)
+                    ? programName
+                    : null,
+                row.Title,
+                row.StartsAtUtc,
+                row.EndsAtUtc,
+                row.TimeZoneId,
+                row.LocationId,
+                row.LocationId.HasValue && locations.TryGetValue(row.LocationId.Value, out var locationName)
+                    ? locationName
+                    : null,
+                row.Online,
+                (int)row.Status,
+                sourceGroup is null
+                    ? 1
+                    : memberships.Count(membership => membership.GroupId == sourceGroup.Id
+                        && membership.JoinedAtUtc <= row.StartsAtUtc
+                        && (membership.LeftAtUtc == null || membership.LeftAtUtc > row.StartsAtUtc)));
+        }).ToList();
+    }
 
     private static DateTimeOffset LocalMidnightToUtc(DateOnly date, TimeZoneInfo zone)
     {

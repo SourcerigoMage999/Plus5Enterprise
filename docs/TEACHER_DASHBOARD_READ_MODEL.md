@@ -2,7 +2,7 @@
 
 ## Status
 
-**Phase 8.1 — IMPLEMENTED / REVIEW READY — 2026-10-25.**
+**Phase 8.1 — FINAL LOCKED — odobreno 2026-10-25.**
 
 Ovaj dokument definira owner-scoped read model i API za budući Screen 1.1. Mjerodavni
 business izvori su `source_specs/Radi_stol_uU010ditelja.md`, `source_specs/CROSS_ROLE_BASELINE.md`
@@ -63,4 +63,7 @@ sekcije prema ovom contractu.
 - owner/foreign scope, današnja lokalna granica, cancelled exclusion, next-session izbor,
   membership count i Student status counts pokriveni su ciljanim query testovima;
 - endpoint auth boundary i identity-derived owner pokriveni su ciljanim API testom;
+- SQL Server runtime korekcija od 2026-10-26 uklonila je provider-neprevodive korelirane
+  `Single()` projekcije i zamijenila ih bounded owner-scoped batch hydrationom; stvarni
+  dashboard API potvrđen je s HTTP 200 bez promjene response contracta;
 - nema schema/migration, write, frontend ni infrastrukturne promjene.

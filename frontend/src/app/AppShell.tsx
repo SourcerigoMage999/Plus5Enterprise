@@ -8,7 +8,7 @@ export function AppShell() {
   const currentPage = findNavigationItem(location.pathname)
   const { state, signOut } = useAuth()
   const navigate = useNavigate()
-  const usesBusinessHeader = currentPage?.id === 'students' || currentPage?.id === 'schedule'
+  const usesBusinessHeader = currentPage?.id === 'dashboard' || currentPage?.id === 'students' || currentPage?.id === 'schedule'
   const teacherLabel = state.status === 'authenticated'
     ? formatTeacherLabel(state.session.email)
     : 'Teacher'
