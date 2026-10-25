@@ -13,6 +13,7 @@ using Plus5.Api.Materials;
 using Plus5.Infrastructure.Persistence;
 using Plus5.Infrastructure.Materials;
 using Plus5.Application.Materials;
+using Plus5.Api.Dashboard;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,6 +106,7 @@ app.MapMaterialImport();
 app.MapMaterialEditing();
 app.MapMaterialSharing();
 app.MapPresentationEditor();
+app.MapTeacherDashboard();
 
 app.Run();
 

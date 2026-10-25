@@ -857,7 +857,20 @@ infrastructure certifikacija su N/A prema STRICT VALIDATION BUDGET-u.
 
 # PHASE 8 — Teacher Dashboard
 
-## 8.1 Dashboard read model/API — TODO
+## 8.1 Dashboard read model/API — FINAL LOCKED
+
+**Implementirano 2026-10-25:** Teacher-only `GET /api/v1/dashboard` vraća owner-scoped
+današnje termine u `Europe/Zagreb`, prvi budući Scheduled termin te pošten nearhivirani
+Student status summary. Session projekcija nosi samo postojeći Student/Group, razred,
+Program, title, location/online, status i participant kontekst. Lesson Plan, Board,
+notification/message/activity, homework, finance, recently-used Material i ukupni readiness
+podaci nisu simulirani prije svojih contracta. Contract: `TEACHER_DASHBOARD_READ_MODEL.md`.
+
+**Acceptance 8.1: FINAL LOCKED.** Backend Release build, targeted query/API/auth
+3/3 i targeted format prolaze. SQL, frontend/visual, full regression, dependency audit i
+Docker infrastructure validation su N/A prema STRICT VALIDATION BUDGET-u jer nema schema,
+UI, dependency ni infrastructure promjene.
+
 ## 8.2 Screen 1.1 Teacher dashboard — TODO
 
 **Preduvjeti:** studenti, raspored i materijali moraju postojati. Sekcije koje ovise o budućim modulima (poruke, financije, lesson plan) implementirati tek kad njihovi izvori postoje; bez fake produkcijskih podataka.
