@@ -589,6 +589,117 @@ internal sealed class PresentationElementConfiguration
     }
 }
 
+internal sealed class PresentationAiSuggestionConfiguration
+    : IEntityTypeConfiguration<PresentationAiSuggestion>
+{
+    public void Configure(EntityTypeBuilder<PresentationAiSuggestion> builder)
+    {
+        builder.ToTable("PresentationAiSuggestions", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_PresentationAiSuggestions_Status",
+                "[Status] IN (1, 2, 3, 4, 5)");
+            table.HasCheckConstraint(
+                "CK_PresentationAiSuggestions_ContentLifecycle",
+                "([Status] = 1 AND [GeneratedContentJson] IS NOT NULL AND ISJSON([GeneratedContentJson]) = 1) OR ([Status] <> 1 AND [GeneratedContentJson] IS NULL)");
+            table.HasCheckConstraint(
+                "CK_PresentationAiSuggestions_Expiry",
+                "[ExpiresAtUtc] > [GeneratedAtUtc]");
+            table.HasCheckConstraint(
+                "CK_PresentationAiSuggestions_DocumentVersion",
+                "[PresentationDocumentId] = [MaterialVersionId]");
+            table.HasCheckConstraint(
+                "CK_PresentationAiSuggestions_Resolution",
+                "([Status] = 1 AND [ResolvedAtUtc] IS NULL) OR ([Status] <> 1 AND [ResolvedAtUtc] IS NOT NULL AND [ResolvedAtUtc] >= [GeneratedAtUtc])");
+        });
+
+        builder.HasKey(suggestion => suggestion.Id);
+        builder.Property(suggestion => suggestion.SuggestionKind)
+            .HasMaxLength(PresentationAiSuggestion.KindMaxLength)
+            .IsRequired();
+        builder.Property(suggestion => suggestion.Provider)
+            .HasMaxLength(PresentationAiSuggestion.ProviderMaxLength)
+            .IsRequired();
+        builder.Property(suggestion => suggestion.Model)
+            .HasMaxLength(PresentationAiSuggestion.ModelMaxLength)
+            .IsRequired();
+        builder.Property(suggestion => suggestion.PromptTemplateVersion)
+            .HasMaxLength(PresentationAiSuggestion.TemplateVersionMaxLength)
+            .IsRequired();
+        builder.Property(suggestion => suggestion.GeneratedContentJson)
+            .HasColumnType("nvarchar(max)");
+        builder.Property(suggestion => suggestion.Status).HasConversion<int>().IsRequired();
+        builder.Property(suggestion => suggestion.GeneratedAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(suggestion => suggestion.ExpiresAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(suggestion => suggestion.ResolvedAtUtc).HasPrecision(7);
+        builder.Property(suggestion => suggestion.RowVersion).IsRowVersion();
+
+        builder.HasOne<Material>()
+            .WithMany()
+            .HasForeignKey(suggestion => new
+            {
+                suggestion.MaterialId,
+                suggestion.TeacherAccountId,
+            })
+            .HasPrincipalKey(material => new
+            {
+                material.Id,
+                material.OwnerTeacherId,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<PresentationDocument>()
+            .WithMany()
+            .HasForeignKey(suggestion => suggestion.PresentationDocumentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<MaterialVersion>()
+            .WithMany()
+            .HasForeignKey(suggestion => new
+            {
+                suggestion.MaterialId,
+                suggestion.MaterialVersionId,
+            })
+            .HasPrincipalKey(version => new
+            {
+                version.MaterialId,
+                version.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<PresentationSlide>()
+            .WithMany()
+            .HasForeignKey(suggestion => new
+            {
+                suggestion.MaterialVersionId,
+                suggestion.TargetSlideId,
+            })
+            .HasPrincipalKey(slide => new
+            {
+                slide.MaterialVersionId,
+                slide.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<PresentationElement>()
+            .WithMany()
+            .HasForeignKey(suggestion => new
+            {
+                suggestion.MaterialVersionId,
+                suggestion.TargetElementId,
+            })
+            .HasPrincipalKey(element => new
+            {
+                element.MaterialVersionId,
+                element.Id,
+            })
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(suggestion => new
+        {
+            suggestion.TeacherAccountId,
+            suggestion.Status,
+            suggestion.ExpiresAtUtc,
+        }).HasDatabaseName("IX_PresentationAiSuggestions_Teacher_Status_Expiry");
+    }
+}
+
 internal sealed class AssessableTaskConfiguration : IEntityTypeConfiguration<AssessableTask>
 {
     public void Configure(EntityTypeBuilder<AssessableTask> builder)

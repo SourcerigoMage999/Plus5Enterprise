@@ -1,0 +1,38 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "paidProviderCall": false,
+  "canonicalSource": "4.3 P5.png",
+  "screens": [
+    {
+      "name": "ai-disabled-no-cost",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1528
+    },
+    {
+      "name": "ai-disabled-no-cost",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2291
+    }
+  ],
+  "checks": [
+    "desktop: actual editor, explicit AI-disabled/no-cost state and no document overflow",
+    "mobile: actual editor, explicit AI-disabled/no-cost state and no document overflow",
+    "default-disabled runtime: zero generation requests and zero paid provider calls"
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": []
+}

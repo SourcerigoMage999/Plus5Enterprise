@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Plus5.Api.Identity;
 using Plus5.Api.Materials;
 using Plus5.Application.Materials;
+using Plus5.Infrastructure.Materials;
 
 namespace Plus5.Api.Tests.Materials;
 
@@ -344,6 +345,64 @@ public sealed class PresentationEditorApiTests
         Assert.Equal(materialId, publisher.MaterialId);
     }
 
+    [Fact]
+    public async Task AiGenerationRequiresCsrfAndUsesTheDedicatedTeacherLimit()
+    {
+        var teacherId = Guid.NewGuid();
+        var materialId = Guid.NewGuid();
+        await using var app = await StartApplicationAsync(new CapturingQuery(materialId));
+        using var client = app.GetTestClient();
+        var path = $"/api/v1/materials/{materialId:D}/presentation/ai/suggestions";
+
+        using var anonymous = await client.PostAsJsonAsync(path, new
+        {
+            expectedDocumentRowVersion = "AAAAAAAAAAA=",
+            suggestionKind = PresentationAiSuggestionKinds.ElementContent,
+            instruction = "Predloži primjer.",
+            targetSlideId = Guid.NewGuid(),
+        });
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+
+        var csrf = await SignInAndGetCsrfAsync(client, teacherId);
+        using var missingCsrf = new HttpRequestMessage(HttpMethod.Post, path)
+        {
+            Content = JsonContent.Create(new
+            {
+                expectedDocumentRowVersion = "AAAAAAAAAAA=",
+                suggestionKind = PresentationAiSuggestionKinds.ElementContent,
+                instruction = "Predloži primjer.",
+                targetSlideId = Guid.NewGuid(),
+            }),
+        };
+        missingCsrf.Headers.Add("Cookie", csrf.Cookie);
+        using var rejected = await client.SendAsync(missingCsrf);
+        Assert.Equal(HttpStatusCode.BadRequest, rejected.StatusCode);
+
+        var statuses = new List<HttpStatusCode>();
+        for (var attempt = 0; attempt < 21; attempt++)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, path)
+            {
+                Content = JsonContent.Create(new
+                {
+                    expectedDocumentRowVersion = "AAAAAAAAAAA=",
+                    suggestionKind = PresentationAiSuggestionKinds.ElementContent,
+                    instruction = "Predloži primjer.",
+                    targetSlideId = Guid.NewGuid(),
+                }),
+            };
+            request.Headers.Add("Cookie", csrf.Cookie);
+            request.Headers.Add(IdentityServiceExtensions.CsrfHeaderName, csrf.Token);
+            using var response = await client.SendAsync(request);
+            statuses.Add(response.StatusCode);
+        }
+
+        // The authenticated request rejected by CSRF is still an attempted AI write and
+        // intentionally consumes one permit before endpoint filters run.
+        Assert.All(statuses.Take(19), status => Assert.Equal(HttpStatusCode.OK, status));
+        Assert.All(statuses.Skip(19), status => Assert.Equal(HttpStatusCode.TooManyRequests, status));
+    }
+
     private static async Task<WebApplication> StartApplicationAsync(
         CapturingQuery query,
         IPresentationPublishService? publisher = null)
@@ -365,6 +424,8 @@ public sealed class PresentationEditorApiTests
         builder.Services.AddSingleton<IPresentationElementService, SuccessfulElementService>();
         builder.Services.AddSingleton<IPresentationPublishService>(
             publisher ?? new CapturingPublishService());
+        builder.Services.AddSingleton<IPresentationAiSuggestionService, SuccessfulAiService>();
+        builder.Services.AddOptions<PresentationAiOptions>();
 
         var app = builder.Build();
         app.UseAuthentication();
@@ -517,5 +578,52 @@ public sealed class PresentationEditorApiTests
 
         private static Task<PresentationMutationResult> Success() => Task.FromResult(
             new PresentationMutationResult(PresentationMutationOutcome.Success));
+    }
+
+    private sealed class SuccessfulAiService : IPresentationAiSuggestionService
+    {
+        public Task<PresentationAiSuggestionResult> CreateAsync(
+            Guid teacherAccountId,
+            Guid materialId,
+            CreatePresentationAiSuggestionCommand command,
+            CancellationToken cancellationToken) => Task.FromResult(
+                new PresentationAiSuggestionResult(
+                    PresentationAiSuggestionOutcome.Success,
+                    View(command, teacherAccountId, materialId)));
+
+        public Task<PresentationAiSuggestionView?> GetAsync(
+            Guid teacherAccountId,
+            Guid materialId,
+            Guid suggestionId,
+            CancellationToken cancellationToken) => Task.FromResult<PresentationAiSuggestionView?>(null);
+
+        public Task<PresentationAiSuggestionResult> ResolveAsync(
+            Guid teacherAccountId,
+            Guid materialId,
+            Guid suggestionId,
+            ResolvePresentationAiSuggestionCommand command,
+            CancellationToken cancellationToken) => Task.FromResult(
+                new PresentationAiSuggestionResult(PresentationAiSuggestionOutcome.Success));
+
+        private static PresentationAiSuggestionView View(
+            CreatePresentationAiSuggestionCommand command,
+            Guid teacherAccountId,
+            Guid materialId)
+        {
+            var generatedAt = new DateTimeOffset(2026, 10, 24, 10, 0, 0, TimeSpan.Zero);
+            return new PresentationAiSuggestionView(
+                Guid.NewGuid(),
+                command.SuggestionKind,
+                "Pending",
+                "{\"elementTypeCode\":\"TEXT\",\"content\":\"Primjer\"}",
+                "OPENAI",
+                PresentationAiOptions.CanonicalModel,
+                "presentation-ai-v1",
+                generatedAt,
+                generatedAt.AddHours(24),
+                null,
+                command.TargetSlideId,
+                command.TargetElementId);
+        }
     }
 }

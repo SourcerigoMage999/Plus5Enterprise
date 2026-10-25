@@ -10,6 +10,15 @@ dependency graph i ne uvode te pakete, pa upgrade nije dio feature scopea. Solut
 treba zasebno odrediti maintenance termin i usklađeni .NET package patch; finding ne mijenja
 njihov business acceptance.
 
+## Engineering maintenance — pre-existing Presentation contract boundary
+
+Phase 7.9 targeted architecture provjera 2026-10-25 pokazala je da `Plus5.Api` assembly već
+izravno referencira `Plus5.Domain.Evidence.EvidenceType` kroz raniji Phase 7.5
+`PresentationEditorContracts` application DTO. Phase 7.9 ne uvodi taj type ni novi API →
+Domain source dependency; njegov provider-neutralni Application → Infrastructure smjer je
+ispravan. Prema `No opportunistic cleanup` pravilu contract boundary treba korigirati u
+zasebnom maintenance radu, bez mijenjanja zaključanog 7.5 business ponašanja.
+
 Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje utječe na trajni business contract mora dobiti odluku prije odgovarajuće implementacijske faze.
 
 ## Blocking
@@ -28,11 +37,12 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
    početnim Cloudflare R2 providerom, bez binaryja u SQL/API disku; PDF/DOCX/PPTX/MP4/ZIP
    limiti, signature/structure validation, ZIP zaštita, quarantine i obavezni fail-closed scan
    zaključani su u `MATERIAL_FOUNDATION.md`.
-7. **DJELOMIČNO RIJEŠENO 2026-09-29 — Materials, ADR-0023:** analiza Materiala dopuštena je
-   samo nakon `Clean` scana; AI je opcionalan, provider/privacy mora biti odobren, svaki output
-   ostaje suggestion dok ga Teacher ne prihvati/uredi/odbije, a AI failure ne blokira ručni
-   workflow. Presentation Editor i Lesson Builder provider/prompt/model-improvement contracti
-   ostaju otvoreni za Phase 7.9/9.2.
+7. **DJELOMIČNO RIJEŠENO 2026-10-25 — Materials/Presentation, ADR-0023/0027:** analiza
+   Materiala dopuštena je samo nakon `Clean` scana. Phase 7.9 Presentation AI provider,
+   EU/privacy, bounded prompt/data, structured suggestion, Teacher confirmation, provenance,
+   failure fallback i default-disabled/no-charge contract zaključani su u
+   `PRESENTATION_AI_ASSISTANCE.md`. Lesson Builder AI i model-improvement contract ostaju
+   otvoreni za Phase 9.2; Phase 7.9 odluka ih ne zaključava.
 8. **DJELOMIČNO RIJEŠENO 2026-09-24 — Phase 5.2/5.3, ADR-0019/0020:** `KnowledgeModel` i
    `KnowledgeComponent` lifecycle, version boundary, Area/tree struktura, lineage i
    CurriculumOutcome M:N zaključani su u `KNOWLEDGE_COMPONENT_MODEL.md`. Student-specific

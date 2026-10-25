@@ -12,6 +12,7 @@ using Plus5.Api.Readiness;
 using Plus5.Api.Materials;
 using Plus5.Infrastructure.Persistence;
 using Plus5.Infrastructure.Materials;
+using Plus5.Application.Materials;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,12 @@ builder.Services.AddOptions<MalwareScannerOptions>()
             && options.TimeoutSeconds is >= 10 and <= 300,
         "MalwareScanner host, port and timeout are invalid.")
     .ValidateOnStart();
+builder.Services.AddHttpClient<IPresentationAiAssistant, OpenAiPresentationAiAssistant>((services, client) =>
+{
+    var options = services.GetRequiredService<Microsoft.Extensions.Options.IOptions<PresentationAiOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
+    client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+});
 
 builder.Services.AddPersistence(
     builder.Configuration.GetConnectionString("Plus5"),

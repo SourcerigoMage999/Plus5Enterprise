@@ -832,8 +832,26 @@ Stvarni review → package → publish runtime i minimalni canonical desktop/mob
 bez globalnog overflowa, capture writeova ili browser/page grešaka. Full regression,
 dependency audit, SQL/migration/architecture i Docker infrastructure validacija su N/A prema
 STRICT VALIDATION BUDGET-u; dependency graph, schema i infrastruktura nisu promijenjeni.
-## 7.9 AI assistance — BLOCKED
-**Gate:** definirati AI provider, privacy, prompt/data boundary, confirmation behavior i failure fallback prije implementacije.
+## 7.9 AI assistance — FINAL LOCKED
+
+**Implementirano 2026-10-25:** optional/default-disabled OpenAI Responses adapter iza
+provider-neutralnog porta, canonical `gpt-6.1-sol` na EU endpointu, `store=false`, bounded
+server-owned prompt/context, strict structured output i četiri suggestion use casea. Svaki
+rezultat ostaje Pending dok Teacher eksplicitno ne prihvati, uredi ili odbije; server ponovno
+provjerava ownership, rowversion i domenska pravila prije typed canonical writea. Student,
+Evidence, binary, provider-tool i publish pristup su zabranjeni. Contract:
+`PRESENTATION_AI_ASSISTANCE.md`.
+
+AI je defaultno isključen, nema automatskih provider poziva, dodatnog troška ni naplate u
+aplikaciji; ručni editor uvijek radi. Samo deployment owner može ga uključiti serverskom
+konfiguracijom i vlastitim API ključem.
+
+**Acceptance 7.9: FINAL LOCKED.** Targeted provider/domain/API, stvarni SQL
+migration/lifecycle, frontend, Release build, EF drift, format/lint/typecheck/build i minimalni
+stvarni desktop/mobile visual gate prolaze. Novi provider-neutral dependency smjer je ispravan;
+globalni architecture suite ostaje 3/4 zbog ranijeg Phase 7.5 `EvidenceType` contracta koji
+7.9 ne mijenja. Live paid provider poziv, full regression, dependency audit i ponovna Docker
+infrastructure certifikacija su N/A prema STRICT VALIDATION BUDGET-u.
 
 ---
 

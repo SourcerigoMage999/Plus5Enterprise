@@ -15,6 +15,7 @@ import {
   Plus,
   Redo2,
   Save,
+  Sparkles,
   Shapes,
   Table2,
   Quote,
@@ -49,6 +50,7 @@ import {
   type PresentationQuickCheck,
 } from './presentationApi.ts'
 import './PresentationEditorPage.css'
+import { PresentationAiPanel } from './PresentationAiPanel.tsx'
 
 type StructuredElementType = Exclude<PresentationElementType, 'IMAGE' | 'VIDEO' | 'AUDIO' | 'QUICK_CHECK'>
 type AutosaveStatus = 'saved' | 'dirty' | 'saving' | 'error' | 'conflict'
@@ -75,6 +77,7 @@ export function PresentationEditorPage() {
   const [notice, setNotice] = useState('')
   const [revision, setRevision] = useState(0)
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus>('saved')
+  const [aiOpen, setAiOpen] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -353,6 +356,7 @@ export function PresentationEditorPage() {
       <div>
         <span className={`presentation-editor__save-state is-${autosaveStatus}`} role="status"><span aria-hidden="true" />{autosaveLabel}</span>
         <Link className="ds-action ds-action--secondary" to={`/materials/${materialId}/edit`}>Odustani</Link>
+        <button className="ds-action ds-action--secondary" disabled={editorWriteLocked} onClick={() => setAiOpen(value => !value)} type="button"><Sparkles size={17} /> AI pomoć</button>
         <button className="ds-action ds-action--secondary" disabled={busy || autosaveStatus === 'saving'} form={selectedElement ? ELEMENT_FORM_ID : undefined} onClick={() => { if (!selectedElement) setNotice('Sve promjene su spremljene.') }} type={selectedElement ? 'submit' : 'button'}><Save size={17} /> Spremi nacrt</button>
         {editorWriteLocked
           ? <button className="ds-action" disabled type="button">Nastavi <ArrowRight size={17} /></button>
@@ -363,6 +367,14 @@ export function PresentationEditorPage() {
     <ol className="presentation-editor__steps"><li className="is-done"><span>✓</span> Vrsta i osnovni podaci</li><li className="is-done"><span>✓</span> Ciljevi i povezanost</li><li className="is-active"><span>3</span> Izrada prezentacije</li><li><span>4</span> Pregled i spremanje</li></ol>
     <div className="presentation-editor__intro"><h2>3. Izrada prezentacije</h2><p>Gradite 16:9 slajdove osnovnim i nastavnim elementima te privatnim, sigurnosno provjerenim medijima.</p></div>
     {(error || notice) && <div className={`presentation-editor__notice${error ? ' is-error' : ''}`} role={error ? 'alert' : 'status'}>{error || notice}</div>}
+    {aiOpen && <PresentationAiPanel
+      documentRowVersion={document.rowVersion}
+      materialId={materialId}
+      onApplied={() => { setNotice('AI prijedlog je potvrđen i spremljen kao učiteljeva skica.'); reload() }}
+      onClose={() => setAiOpen(false)}
+      selectedElement={selectedElement}
+      selectedSlideId={selectedSlideId}
+    />}
 
     <div className="presentation-editor__workspace" aria-busy={busy}>
       <div className="presentation-editor__toolbar" role="toolbar" aria-label="Alati prezentacije">

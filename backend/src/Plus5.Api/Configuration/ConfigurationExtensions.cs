@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Plus5.Infrastructure.Identity;
+using Plus5.Infrastructure.Materials;
 
 namespace Plus5.Api.Configuration;
 
@@ -26,6 +27,9 @@ public static class ConfigurationExtensions
         builder.Services.AddSingleton<
             IValidateOptions<DataProtectionPersistenceOptions>,
             DataProtectionPersistenceOptionsValidator>();
+        builder.Services.AddSingleton<
+            IValidateOptions<PresentationAiOptions>,
+            PresentationAiOptionsValidator>();
         builder.Services
             .AddOptions<FrontendOptions>()
             .Bind(builder.Configuration.GetSection(FrontendOptions.SectionName))
@@ -37,6 +41,10 @@ public static class ConfigurationExtensions
         builder.Services
             .AddOptions<DataProtectionPersistenceOptions>()
             .Bind(builder.Configuration.GetSection(DataProtectionPersistenceOptions.SectionName))
+            .ValidateOnStart();
+        builder.Services
+            .AddOptions<PresentationAiOptions>()
+            .Bind(builder.Configuration.GetSection(PresentationAiOptions.SectionName))
             .ValidateOnStart();
 
         return builder;

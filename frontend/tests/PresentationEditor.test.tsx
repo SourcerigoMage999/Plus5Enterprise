@@ -421,4 +421,64 @@ describe('presentation slide editor', () => {
     expect(screen.getByDisplayValue('Lokalni nespremljeni tekst')).toBeInTheDocument()
     expect(screen.getByText('Vraćen je nespremljeni unos iz ove kartice.')).toBeInTheDocument()
   })
+
+  it('keeps paid AI disabled by default without making a generation call', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(workspace))
+      .mockResolvedValueOnce(json({
+        enabled: false,
+        paidExternalService: true,
+        automaticCalls: false,
+        inAppBilling: false,
+      }))
+
+    renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: /AI pomoć/ }))
+
+    expect(await screen.findByText('AI pomoć je isključena')).toBeInTheDocument()
+    expect(screen.getByText(/nema naplatu unutar aplikacije/i)).toBeInTheDocument()
+    expect(vi.mocked(fetch).mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(0)
+  })
+
+  it('generates only after an explicit click and requires accept edit or reject', async () => {
+    const suggestion = {
+      id: '50000000-0000-0000-0000-000000000001',
+      suggestionKind: 'ELEMENT_CONTENT',
+      status: 'Pending',
+      contentJson: JSON.stringify({ elementTypeCode: 'TEXT', content: 'AI tekst za provjeru' }),
+      provider: 'OPENAI',
+      model: 'gpt-6.1-sol',
+      promptTemplateVersion: 'presentation-ai-v1',
+      generatedAtUtc: '2026-10-24T10:00:00Z',
+      expiresAtUtc: '2026-10-25T10:00:00Z',
+      resolvedAtUtc: null,
+      targetSlideId: slideOne.id,
+      targetElementId: null,
+    }
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(json(workspace))
+      .mockResolvedValueOnce(json({ enabled: true, paidExternalService: true, automaticCalls: false, inAppBilling: false }))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json(suggestion))
+      .mockResolvedValueOnce(json({ token: 'csrf-token' }))
+      .mockResolvedValueOnce(json({ ...suggestion, status: 'Rejected', contentJson: null }))
+
+    renderEditor()
+    fireEvent.click(await screen.findByRole('button', { name: /AI pomoć/ }))
+    expect(await screen.findByRole('button', { name: /Generiraj prijedlog/ })).toBeEnabled()
+    expect(vi.mocked(fetch).mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(0)
+
+    fireEvent.click(screen.getByRole('button', { name: /Generiraj prijedlog/ }))
+    expect(await screen.findByText('AI prijedlog · nije spremljeno')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Prihvati' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Uredi' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Odbij' }))
+
+    await waitFor(() => expect(screen.queryByText('AI prijedlog · nije spremljeno')).not.toBeInTheDocument())
+    const posts = vi.mocked(fetch).mock.calls.filter(([, init]) => init?.method === 'POST')
+    expect(posts).toHaveLength(2)
+    expect(JSON.parse(String(posts[1]?.[1]?.body)).decision).toBe('Reject')
+  })
 })

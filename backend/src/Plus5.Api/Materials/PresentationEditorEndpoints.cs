@@ -2,12 +2,15 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Plus5.Api.Identity;
 using Plus5.Application.Materials;
+using Microsoft.Extensions.Options;
+using Plus5.Infrastructure.Materials;
 
 namespace Plus5.Api.Materials;
 
 public static class PresentationEditorEndpoints
 {
     private const long CommandBodyLimit = 16 * 1024;
+    private const long AiCommandBodyLimit = 8 * 1024;
     private const int KnowledgeSearchMaxLength = 200;
     private const int KnowledgePageSizeLimit = 50;
     private const long ImageBodyLimit = 11 * 1024 * 1024;
@@ -49,8 +52,82 @@ public static class PresentationEditorEndpoints
             "/slides/{slideId:guid}/elements/{elementId:guid}",
             DeleteElementAsync));
         ConfigureWrite(group.MapPost("/publish", PublishAsync));
+        ConfigureAiWrite(group.MapPost("/ai/suggestions", CreateAiSuggestionAsync));
+        group.MapGet("/ai/status", GetAiStatus);
+        group.MapGet("/ai/suggestions/{suggestionId:guid}", GetAiSuggestionAsync);
+        ConfigureWrite(group.MapPost(
+            "/ai/suggestions/{suggestionId:guid}/resolve",
+            ResolveAiSuggestionAsync));
         group.MapGet("/assets/{assetId:guid}", OpenAssetAsync);
         return endpoints;
+    }
+
+    private static Microsoft.AspNetCore.Http.HttpResults.Ok<PresentationAiStatusView> GetAiStatus(
+        IOptions<PresentationAiOptions> options) => TypedResults.Ok(
+        new PresentationAiStatusView(
+            options.Value.Enabled,
+            PaidExternalService: true,
+            AutomaticCalls: false,
+            InAppBilling: false));
+
+    private static async Task<IResult> CreateAiSuggestionAsync(
+        Guid materialId,
+        CreatePresentationAiSuggestionCommand request,
+        HttpContext context,
+        IPresentationAiSuggestionService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        return Map(await service.CreateAsync(
+            teacherId,
+            materialId,
+            request,
+            cancellationToken));
+    }
+
+    private static async Task<IResult> GetAiSuggestionAsync(
+        Guid materialId,
+        Guid suggestionId,
+        HttpContext context,
+        IPresentationAiSuggestionService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        var suggestion = await service.GetAsync(
+            teacherId,
+            materialId,
+            suggestionId,
+            cancellationToken);
+        return suggestion is null ? TypedResults.NotFound() : TypedResults.Ok(suggestion);
+    }
+
+    private static async Task<IResult> ResolveAiSuggestionAsync(
+        Guid materialId,
+        Guid suggestionId,
+        ResolvePresentationAiSuggestionCommand request,
+        HttpContext context,
+        IPresentationAiSuggestionService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        return Map(await service.ResolveAsync(
+            teacherId,
+            materialId,
+            suggestionId,
+            request,
+            cancellationToken));
     }
 
     private static async Task<IResult> OpenAssetAsync(
@@ -577,6 +654,25 @@ public static class PresentationEditorEndpoints
             return await next(context);
         });
 
+    private static void ConfigureAiWrite(RouteHandlerBuilder builder) => builder
+        .WithMetadata(new RequestSizeLimitAttribute(AiCommandBodyLimit))
+        .RequireRateLimiting(IdentityServiceExtensions.PresentationAiRateLimitPolicy)
+        .AddEndpointFilter(async (context, next) =>
+        {
+            try
+            {
+                await context.HttpContext.RequestServices
+                    .GetRequiredService<IAntiforgery>()
+                    .ValidateRequestAsync(context.HttpContext);
+            }
+            catch (AntiforgeryValidationException)
+            {
+                return Problem(400, "invalid_csrf_token");
+            }
+
+            return await next(context);
+        });
+
     private static void ConfigureAssetWrite(RouteHandlerBuilder builder, long bodyLimit) => builder
         .WithMetadata(new RequestSizeLimitAttribute(bodyLimit))
         .RequireRateLimiting(IdentityServiceExtensions.PresentationEditingRateLimitPolicy)
@@ -636,6 +732,19 @@ public static class PresentationEditorEndpoints
             503,
             "material_storage_unavailable"),
         _ => Problem(500, "presentation_write_failed"),
+    };
+
+    private static IResult Map(PresentationAiSuggestionResult result) => result.Outcome switch
+    {
+        PresentationAiSuggestionOutcome.Success => TypedResults.Ok(result.Suggestion),
+        PresentationAiSuggestionOutcome.Disabled => Problem(503, "presentation_ai_disabled"),
+        PresentationAiSuggestionOutcome.InvalidInput => Problem(400, "presentation_ai_invalid_request"),
+        PresentationAiSuggestionOutcome.InvalidOutput => Problem(422, "presentation_ai_invalid_output"),
+        PresentationAiSuggestionOutcome.NotFound => Problem(404, "material_not_found"),
+        PresentationAiSuggestionOutcome.Conflict => Problem(409, "concurrency_conflict"),
+        PresentationAiSuggestionOutcome.Expired => Problem(409, "presentation_ai_suggestion_expired"),
+        PresentationAiSuggestionOutcome.Unavailable => Problem(503, "presentation_ai_unavailable"),
+        _ => Problem(500, "presentation_ai_failed"),
     };
 
     private static IResult Problem(int status, string code) => Results.Problem(

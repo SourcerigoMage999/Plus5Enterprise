@@ -115,6 +115,34 @@ export interface PresentationReviewWorkspace {
   readonly publishBlockers: readonly string[]
 }
 
+export type PresentationAiSuggestionKind =
+  | 'PRESENTATION_DRAFT'
+  | 'ELEMENT_CONTENT'
+  | 'QUICK_CHECK'
+  | 'KNOWLEDGE_MAPPING'
+
+export interface PresentationAiSuggestion {
+  readonly id: string
+  readonly suggestionKind: PresentationAiSuggestionKind
+  readonly status: 'Pending' | 'Accepted' | 'Edited' | 'Rejected' | 'Expired'
+  readonly contentJson: string | null
+  readonly provider: string
+  readonly model: string
+  readonly promptTemplateVersion: string
+  readonly generatedAtUtc: string
+  readonly expiresAtUtc: string
+  readonly resolvedAtUtc: string | null
+  readonly targetSlideId: string | null
+  readonly targetElementId: string | null
+}
+
+export interface PresentationAiStatus {
+  readonly enabled: boolean
+  readonly paidExternalService: boolean
+  readonly automaticCalls: boolean
+  readonly inAppBilling: boolean
+}
+
 interface PresentationMutationResponse {
   readonly slideId: string | null
   readonly elementId: string | null
@@ -145,6 +173,38 @@ export function publishPresentation(
     expectedMaterialRowVersion: workspace.materialRowVersion,
     expectedDocumentRowVersion: workspace.document.rowVersion,
   })
+}
+
+export function createPresentationAiSuggestion(
+  materialId: string,
+  body: {
+    readonly expectedDocumentRowVersion: string
+    readonly suggestionKind: PresentationAiSuggestionKind
+    readonly instruction: string
+    readonly targetSlideId: string | null
+    readonly targetElementId: string | null
+  },
+): Promise<PresentationAiSuggestion> {
+  return postJson(`${path(materialId)}/ai/suggestions`, body)
+}
+
+export function getPresentationAiStatus(
+  materialId: string,
+  signal?: AbortSignal,
+): Promise<PresentationAiStatus> {
+  return getJson<PresentationAiStatus>(`${path(materialId)}/ai/status`, signal)
+}
+
+export function resolvePresentationAiSuggestion(
+  materialId: string,
+  suggestionId: string,
+  body: {
+    readonly expectedDocumentRowVersion: string
+    readonly decision: 'Accept' | 'Edit' | 'Reject'
+    readonly editedContentJson: string | null
+  },
+): Promise<PresentationAiSuggestion> {
+  return postJson(`${path(materialId)}/ai/suggestions/${suggestionId}/resolve`, body)
 }
 
 export function searchPresentationKnowledgeComponents(

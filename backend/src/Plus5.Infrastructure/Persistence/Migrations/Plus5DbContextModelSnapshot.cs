@@ -954,6 +954,103 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationAiSuggestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<DateTimeOffset>("GeneratedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<string>("GeneratedContentJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MaterialVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("PresentationDocumentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PromptTemplateVersion")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTimeOffset?>("ResolvedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SuggestionKind")
+                        .IsRequired()
+                        .HasMaxLength(48)
+                        .HasColumnType("nvarchar(48)");
+
+                    b.Property<Guid?>("TargetElementId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TargetSlideId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PresentationDocumentId");
+
+                    b.HasIndex("MaterialId", "MaterialVersionId");
+
+                    b.HasIndex("MaterialId", "TeacherAccountId");
+
+                    b.HasIndex("MaterialVersionId", "TargetElementId");
+
+                    b.HasIndex("MaterialVersionId", "TargetSlideId");
+
+                    b.HasIndex("TeacherAccountId", "Status", "ExpiresAtUtc")
+                        .HasDatabaseName("IX_PresentationAiSuggestions_Teacher_Status_Expiry");
+
+                    b.ToTable("PresentationAiSuggestions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PresentationAiSuggestions_ContentLifecycle", "([Status] = 1 AND [GeneratedContentJson] IS NOT NULL AND ISJSON([GeneratedContentJson]) = 1) OR ([Status] <> 1 AND [GeneratedContentJson] IS NULL)");
+
+                            t.HasCheckConstraint("CK_PresentationAiSuggestions_DocumentVersion", "[PresentationDocumentId] = [MaterialVersionId]");
+
+                            t.HasCheckConstraint("CK_PresentationAiSuggestions_Expiry", "[ExpiresAtUtc] > [GeneratedAtUtc]");
+
+                            t.HasCheckConstraint("CK_PresentationAiSuggestions_Resolution", "([Status] = 1 AND [ResolvedAtUtc] IS NULL) OR ([Status] <> 1 AND [ResolvedAtUtc] IS NOT NULL AND [ResolvedAtUtc] >= [GeneratedAtUtc])");
+
+                            t.HasCheckConstraint("CK_PresentationAiSuggestions_Status", "[Status] IN (1, 2, 3, 4, 5)");
+                        });
+                });
+
             modelBuilder.Entity("Plus5.Domain.Materials.PresentationAsset", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2467,6 +2564,41 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .HasForeignKey("MaterialVersionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.Materials.PresentationAiSuggestion", b =>
+                {
+                    b.HasOne("Plus5.Domain.Materials.PresentationDocument", null)
+                        .WithMany()
+                        .HasForeignKey("PresentationDocumentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.Materials.MaterialVersion", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialId", "MaterialVersionId")
+                        .HasPrincipalKey("MaterialId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.Materials.Material", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialId", "TeacherAccountId")
+                        .HasPrincipalKey("Id", "OwnerTeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.Materials.PresentationElement", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId", "TargetElementId")
+                        .HasPrincipalKey("MaterialVersionId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.Materials.PresentationSlide", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId", "TargetSlideId")
+                        .HasPrincipalKey("MaterialVersionId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Plus5.Domain.Materials.PresentationAsset", b =>

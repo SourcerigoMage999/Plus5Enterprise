@@ -1,5 +1,32 @@
 # DECISION_LOG
 
+### ADR-0027 — Default-disabled bounded Presentation AI suggestions
+- **Datum:** 2026-10-25
+- **Status:** Accepted — Phase 7.9 IMPLEMENTED / REVIEW READY.
+- **Kontekst:** canonical Presentation source dopušta AI pomoć za draft, tekstualne elemente,
+  Quick Check i Knowledge mapping, ali ne zaključava provider, privacy, trošak, confirmation,
+  retention ni failure granicu. Korisnik izričito ne želi dodatnu obaveznu naplatu niti
+  naplatu kroz PLUS 5.
+- **Odluka:** application koristi provider-neutralni `IPresentationAiAssistant`; v1 adapter je
+  OpenAI Responses API, model `gpt-6.1-sol`, EU endpoint, `store=false`, bez tools/web/file
+  pristupa i bez automatskog fallback modela. Integracija je defaultno isključena, ne radi
+  vanjske pozive niti stvara trošak dok je deployment owner izričito ne uključi vlastitim
+  serverskim ključem. PLUS 5 nema AI billing, credits ni in-app kupnju.
+- **Privacy:** server šalje samo bounded version-bound Material/Presentation tekst i, za
+  mapping, najviše 100 eligible leaf kandidata. Student/Guardian/Attempt/Evidence/
+  mastery/readiness, binary asseti, credentials i storage podatci zabranjeni su. Promptovi su
+  server-owned; Material i Teacher tekst su nepouzdani data context.
+- **Authority:** strict JSON-schema response stvara samo 24-satni Pending suggestion. Accept,
+  Edit ili Reject su eksplicitni serverski lifecycle; canonical write ide tek nakon ponovne
+  ownership/concurrency/schema/domain validacije kroz typed servise. AI ne može publishati,
+  stvarati Evidence ili izravno pisati EF/bazu.
+- **Operations:** 20 requestova/10 minuta/Teacher, 8 KiB request, timeout najviše 30 sekundi i
+  najviše jedan transient network/5xx retry. Logovi isključuju prompt/response/free text/key;
+  resolve/expiry briše generated content i zadržava samo minimalni provenance metadata.
+- **Granice:** live paid provider call nije acceptance preduvjet; ručni workflow uvijek radi.
+  Student personalization, extraction, multimodal/asset AI, autonomous publish i Lesson
+  Builder/model-improvement ostaju izvan 7.9. Detalji: `PRESENTATION_AI_ASSISTANCE.md`.
+
 ### ADR-0026 — Version-bound relational PresentationDocument with typed element payloads
 - **Datum:** 2026-10-09
 - **Status:** Accepted — Phase 7.1 FINAL LOCKED.

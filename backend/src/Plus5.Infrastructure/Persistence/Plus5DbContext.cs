@@ -78,6 +78,9 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<PresentationAsset> PresentationAssets => Set<PresentationAsset>();
 
+    public DbSet<PresentationAiSuggestion> PresentationAiSuggestions =>
+        Set<PresentationAiSuggestion>();
+
     public DbSet<MasteryEstimate> MasteryEstimates => Set<MasteryEstimate>();
 
     public DbSet<KnowledgeAreaReadinessEstimate> KnowledgeAreaReadinessEstimates =>
