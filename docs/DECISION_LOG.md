@@ -1,5 +1,32 @@
 # DECISION_LOG
 
+### ADR-0029 — Privacy-minimized default-disabled Lesson Builder AI suggestions
+- **Datum:** 2026-10-30
+- **Status:** Accepted — Phase 9.2 FINAL LOCKED.
+- **Kontekst:** Lesson Builder treba Student/Group-aware prijedloge, ali Phase 7.9 Presentation
+  AI namjerno ne zaključava PII, learning-context, fairness, feedback-learning, moderation,
+  retention ni audit granice planiranja sata.
+- **Provider i cost:** application ovisi o `ILessonBuilderAiAssistant`; v1 adapter je OpenAI
+  Responses API, model `gpt-6.1-sol`, EU endpoint i `store=false`. Integracija je defaultno
+  isključena, poziva se samo eksplicitnom Teacher akcijom, nema PLUS 5 AI billing/in-app
+  naplate, tools/web/file/computer pristupa, provider memoryja ni binaryja.
+- **Privacy:** dedicated server context builder uklanja Student/Guardian PII, sensitive data,
+  Teacher free-form notes i raw Evidence/history. Dopušteni su bounded canonical readiness,
+  relevantni 30-day Evidence summary, najviše pet relevantnih lesson summaryja, structured
+  homework, AI-shareable interest i neutralni instructional-support tagovi. Individualni
+  request ne uključuje druge Studente; group request koristi ephemeral pseudonime i ne smije
+  optimizirati samo prosjek ili otkriti cross-student podatke.
+- **Authority i lifecycle:** strict versioned schema stvara 24-satni Pending suggestion uz
+  structured explainability/provenance i moderation. Accept/Edit/Reject su eksplicitni;
+  regenerate stvara novi Replaced lifecycle zapis, a undo je normalna rowversion-safe Draft
+  mutation. AI ne direct-writa LessonPlan, ne pokreće LessonSession i ne stvara Attempt,
+  Evidence ili Mastery/Readiness promjenu.
+- **Learning i operations:** `UseMyAiFeedback=false` je default. Opt-in/resettable lokalni
+  profil pamti samo Teacher-style preference, nikad Student-specific memory; nema provider
+  fine-tuninga/training feedbacka. Limit je 10 requestova/10 min i 50/dan/Teacher, payload
+  najviše 64 KiB, timeout 30 s i najviše jedan transient network/5xx retry. Manualni workflow
+  uvijek ostaje dostupan. Detalji: `LESSON_BUILDER_AI.md`.
+
 ### ADR-0028 — Versioned Lesson Plan and snapshot-based activity planning
 - **Datum:** 2026-10-30
 - **Status:** Accepted — Phase 9.1 FINAL LOCKED.

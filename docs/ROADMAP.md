@@ -912,8 +912,26 @@ Evidence. Contract: `LESSON_BUILDER_DOMAIN.md`; odluka: ADR-0028.
 participant/session, concurrency, activity/template/KB, Knowledge, Material/Task i
 Attempt/Evidence boundaryji dokumentirani su bez runtime/schema scopea. `git diff --check`
 prolazi; build/test/SQL/frontend/visual i dependency audit su N/A za DOCS_ONLY fazu.
-## 9.2 AI input privacy explainability confirmation and audit contract — BLOCKED
-## 9.3 Versioned KB-001–KB-025 catalog and applicability rules — BLOCKED until 9.1–9.2
+## 9.2 AI input privacy explainability confirmation and audit contract — FINAL LOCKED
+
+**Dizajnirano 2026-10-30:** Lesson Builder AI je defaultno isključen provider-neutralni
+suggestion servis nad OpenAI Responses API-jem, modelom `gpt-6.1-sol`, EU endpointom i
+`store=false`. Samo eksplicitna Teacher akcija smije napraviti bounded, stateless request;
+tools/web/file/computer, provider memory, binaryji i obavezna/in-app naplata su zabranjeni.
+
+Server-side context builder uklanja Student/Guardian PII i sensitive/free-form podatke,
+agregira relevantni canonical readiness/Evidence/lesson/homework kontekst te za group flow
+koristi request-local pseudonime bez cross-student leakagea. Structured suggestion zahtijeva
+explainability, provenance, moderation i Teacher Accept/Edit/Reject; regenerate stvara novi
+suggestion, a undo je normalni rowversion-safe canonical write. Lokalno preference learning
+je Teacher-only, opt-in i resettable, bez Student memoryja ili provider traininga. Contract:
+`LESSON_BUILDER_AI.md`; odluka: ADR-0029.
+
+**Acceptance 9.2: FINAL LOCKED — odobreno 2026-10-30.** Provider/cost, privacy/minimization, group
+fairness, retention, explainability, confirmation, concurrency, moderation, local feedback,
+audit i operational granice dokumentirane su bez runtime/provider/schema scopea. `git diff
+--check` prolazi; build/test/SQL/frontend/visual i dependency audit su N/A za DOCS_ONLY fazu.
+## 9.3 Versioned KB-001–KB-025 catalog and applicability rules — READY
 ## 9.4 Goal selection — TODO after contracts
 ## 9.5 Suggested lesson structure timeline and balance check — TODO
 ## 9.6 Lesson Plan editor and immutable material-version attachment — TODO
@@ -921,7 +939,8 @@ prolazi; build/test/SQL/frontend/visual i dependency audit su N/A za DOCS_ONLY f
 ## 9.8 Lesson Activity detail/edit and regeneration — TODO
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
-**Gate:** prije implementacije zaključati formalne `LessonPlan`, `ActivityTemplate` i `LessonActivity` contracte te dependencyje na Knowledge/Material modele. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
+**Gate:** Phase 9.1 domain i Phase 9.2 AI/privacy contracti su zatvoreni; Phase 9.3 je sljedeći
+izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
 
 ---
 
