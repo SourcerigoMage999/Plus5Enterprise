@@ -894,7 +894,24 @@ validation su N/A prema STRICT VALIDATION BUDGET-u.
 ## 9.0 Detailed specification 5.1–5.6 and KB-001–KB-025 — DOCUMENTED / DRAFT GATES
 Source: `source_specs/5.0_Priprema_sata_Lesson_Builder.md` i 5.1–5.6 screen specovi.
 
-## 9.1 Lesson Plan Activity and Knowledge Block formal domain contract — BLOCKED
+## 9.1 Lesson Plan Activity and Knowledge Block formal domain contract — FINAL LOCKED
+
+**Dizajnirano 2026-10-30:** zaključani su stabilni `LessonPlan` root i immutable versioned
+snapshoti, `Student XOR Group` participant kontekst, optional same-context Session,
+Draft/Ready/Superseded lifecycle, restore/edit kroz novi Draft, root/version optimistic
+concurrency te owner-scoped archive bez hard deletea. `ActivityTemplateVersion` se kopira u
+konkretni `LessonActivity` snapshot; budući `LessonSessionActivity` ostaje Phase 10.
+
+Knowledge Block je opcionalna versioned pedagoška klasifikacija, a nije
+`KnowledgeComponent`, template ni aktivnost i ne mapira automatski znanje. LessonActivity
+čuva contiguous redoslijed, trajanje 1–480, instructional KC veze te exact
+`MaterialVersion`/`AssessableTaskVersion` reference. Planirani Quick Check nije Attempt ni
+Evidence. Contract: `LESSON_BUILDER_DOMAIN.md`; odluka: ADR-0028.
+
+**Acceptance 9.1: FINAL LOCKED — odobreno 2026-10-30.** Formalni lifecycle, versioning, ownership,
+participant/session, concurrency, activity/template/KB, Knowledge, Material/Task i
+Attempt/Evidence boundaryji dokumentirani su bez runtime/schema scopea. `git diff --check`
+prolazi; build/test/SQL/frontend/visual i dependency audit su N/A za DOCS_ONLY fazu.
 ## 9.2 AI input privacy explainability confirmation and audit contract — BLOCKED
 ## 9.3 Versioned KB-001–KB-025 catalog and applicability rules — BLOCKED until 9.1–9.2
 ## 9.4 Goal selection — TODO after contracts

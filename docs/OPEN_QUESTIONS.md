@@ -49,7 +49,9 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
    Evidence provenance, idempotentni emission, leaf targeti i append-only
    Observation/Correction/Invalidation lifecycle zaključani su u `EVIDENCE_EVENT.md`, a potpuni
    immutable metadata snapshot i bounded katalozi u `EVIDENCE_METADATA.md`.
-   `KnowledgeBlock` ostaje blocking gate svoje kasnije faze.
+   Phase 9.1 zaključava da `KnowledgeBlock` nije KnowledgeComponent, ActivityTemplate ni
+   LessonActivity te da ne mapira KC automatski. Njegov versioned KB-001–KB-025 katalog i
+   applicability pravila ostaju blocking gate Phase 9.3.
 9. Koji je finalni participant/permission/retention/delivery contract za Poruke i privitke?
 10. Koje su finalne metric definitions, privacy, export/PDF i immutable `ReportSnapshot` politike za Izvještaje?
 11. Je li Finance samo interna evidencija ili uključuje payment processing, račune, fiskalizaciju ili porezne obveze; koji su currency/precision contracti?
@@ -90,7 +92,11 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
   security, ownership/sharing, versioning i AI-confirmation contract. Upload orchestration/UI,
   mapping i operational provider deployment ostaju scope svojih kasnijih faza, ne otvorene
   business odluke.
-- Lesson Builder: formalni Lesson Plan, Activity Template i Lesson Activity domain contract
+- **RIJEŠENO 2026-10-30 — Phase 9.1, ADR-0028:** formalni Lesson Plan,
+  ActivityTemplate i LessonActivity lifecycle/versioning, participant/Session ownership,
+  concurrency, exact Material/Task reference i Attempt/Evidence granice zaključani su u
+  `LESSON_BUILDER_DOMAIN.md`. Lesson Builder AI/privacy ostaje Phase 9.2, a versioned
+  Knowledge Block katalog i applicability pravila Phase 9.3.
 - PLUS 5 Ploča: Lesson Session persistence, autosave/recovery i Evidence emission/invalidation contract
 - Povijest sati: immutable historical Task/Material version references i void/audit semantics
 - Domaće zadaće: Assignment/Submission, participant access, versioning i Evidence contract

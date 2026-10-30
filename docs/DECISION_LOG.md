@@ -1,5 +1,29 @@
 # DECISION_LOG
 
+### ADR-0028 — Versioned Lesson Plan and snapshot-based activity planning
+- **Datum:** 2026-10-30
+- **Status:** Accepted — Phase 9.1 FINAL LOCKED.
+- **Kontekst:** Lesson Builder source zaključava planiranje prije runtimea, ali nije definirao
+  formalni lifecycle, verzioniranje, ownership, concurrency ni odnos templatea, aktivnosti,
+  Knowledge Blocka, materijala i procjenjivih taskova.
+- **Odluka:** `LessonPlan` je stabilni Teacher-owned root s `Active/Archived` lifecycleom,
+  `Student XOR Group` participantom, opcionalnim same-context Sessionom i current Ready
+  referencom. Sadržaj je versioned `Draft/Ready/Superseded`; samo Draft je mutable, confirm je
+  atomski, a edit/restore uvijek stvaraju novi Draft. Root i version imaju odvojeni optimistic
+  concurrency authority.
+- **Aktivnosti:** `ActivityTemplateVersion` se instancira kao neovisni `LessonActivity`
+  snapshot. Teacher template je privatan, System template globalan; Published/Retired verzije
+  su immutable. Aktivnost ima contiguous order, trajanje 1–480, eksplicitni instructional KC
+  mapping te exact MaterialVersion i AssessableTaskVersion reference. TaskVersion mora
+  pripadati materijalu attached istoj aktivnosti.
+- **Knowledge/Evidence granica:** Knowledge Block je opcionalna versioned pedagoška
+  klasifikacija i nije KnowledgeComponent, template ni aktivnost; ne mapira KC automatski.
+  Planirani Quick Check nije Attempt ni EvidenceEvent, a Ready plan ne stvara ni pokreće
+  LessonSession.
+- **Granice:** Phase 9.1 je dokumentacijski contract bez domain/EF/schema/API/UI
+  implementacije. AI privacy/explainability/audit ostaje Phase 9.2, versioned KB katalog Phase
+  9.3, a persistence i workflow 9.4–9.9. Detalji: `LESSON_BUILDER_DOMAIN.md`.
+
 ### ADR-0027 — Default-disabled bounded Presentation AI suggestions
 - **Datum:** 2026-10-25
 - **Status:** Accepted — Phase 7.9 IMPLEMENTED / REVIEW READY.

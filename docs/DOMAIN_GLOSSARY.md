@@ -48,13 +48,16 @@ Glossary definira pojmove, ali ne zaključava nedokumentirane kardinalnosti, per
 | `Session` | Termin | Jedna konkretna, kalendarski određena instanca nastave s početkom, završetkom i individualnim ili grupnim kontekstom. Termin nije grupa ni redoviti raspored grupe. |
 | `RecurringSessionSeries` | Serija termina | Skup konkretnih termina nastalih iz pravila ponavljanja. Nije sinonim za grupu; odnos prema `RegularGroupSchedule` mora se formalizirati prije DB locka rasporeda. |
 | `Location` | Lokacija / učionica | Mjesto održavanja termina, fizičko ili online. Pravila rezervacije, preklapanja i videopoveznica pripadaju fazi rasporeda. |
-| `LessonPlan` | Priprema sata | Strukturirani plan ciljeva, aktivnosti i materijala za budući ili konkretni termin. Nije sam termin i ne predstavlja dokaz znanja. |
-| `LearningActivity` | Nastavna aktivnost | Organizirana cjelina rada tijekom sata, domaće zadaće, testa ili samostalne vježbe. Može sadržavati nula ili više procjenjivih zadataka. |
+| `LessonPlan` | Priprema sata | Stabilni Teacher-owned aggregate pripreme s versioned Draft/Ready/Superseded snapshotima za točno jednog Studenta ili Grupu i opcionalni same-context Session. Nije sam termin i ne predstavlja dokaz znanja. |
+| `LessonActivity` | Nastavna aktivnost u pripremi | Konkretni planirani snapshot aktivnosti unutar točne LessonPlanVersion. Može sadržavati nula ili više procjenjivih TaskVersion referenci, ali nije runtime izvedba. |
+| `ActivityTemplate` | Predložak aktivnosti | Stabilni System ili privatni Teacher reusable predložak s Draft/Published/Retired verzijama. Instanciranje kopira snapshot u LessonActivity; kasnija promjena templatea ne mijenja postojeći plan. |
+| `LessonSessionActivity` | Izvedena aktivnost sata | Buduća runtime instanca planirane aktivnosti unutar konkretnog LessonSessiona. Pripada Phase 10 i nije LessonActivity. |
+| `LearningActivity` | Nastavna aktivnost | Širi poslovni pojam za organiziranu cjelinu rada tijekom sata, domaće zadaće, testa ili samostalne vježbe. U Lesson Builder persistenceu koristi se precizni `LessonActivity`. |
 
-`Knowledge Block` iz novog DRAFT Lesson Builder paketa trenutačno je naziv pedagoškog
-predloška/kategorije aktivnosti KB-001–KB-025, a ne sinonim za `KnowledgeComponent`.
-Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prema
-`LearningActivity`, `LessonPlan` i `Material` ostaju otvoreni do ROADMAP 9.1.
+`KnowledgeBlock` je versioned pedagoška kategorija/strategija iz KB-001–KB-025 kataloga.
+Nije sinonim za `KnowledgeComponent`, `ActivityTemplate` ili `LessonActivity`; klasifikacija
+aktivnosti je opcionalna i ne mapira automatski Knowledge Components. Phase 9.1 zaključava
+te granice, dok konkretni katalog, lifecycle podaci i applicability pravila pripadaju Phase 9.3.
 
 ## Curriculum and knowledge model
 
@@ -110,7 +113,9 @@ Njegov konačni canonical tehnički naziv, lifecycle, verzioniranje i odnos prem
 | `DeliveryMode` ↔ `Group` | Način rada je eksplicitno Individual ili Group; grupa je konkretna organizacijska jedinica. |
 | `RegularGroupSchedule` ↔ `Session` | Redoviti raspored je trajni obrazac; termin je konkretna kalendarska instanca. |
 | `Session` ↔ `LessonPlan` | Termin određuje kada/tko/gdje; priprema sata određuje plan rada. |
-| `LearningActivity` ↔ `AssessableTask` | Aktivnost je šira nastavna cjelina; procjenjivi zadatak je atomska jedinica vrednovanja. |
+| `LessonActivity` ↔ `AssessableTaskVersion` | Aktivnost je planirani snapshot nastavne cjeline; exact TaskVersion je atomska procjenjiva referenca i samo planiranje ne stvara Attempt/Evidence. |
+| `ActivityTemplate` ↔ `LessonActivity` | Template je reusable versioned izvor; instanciranje stvara neovisni snapshot aktivnosti bez live inheritancea. |
+| `KnowledgeBlock` ↔ `KnowledgeComponent` | Knowledge Block je pedagoška strategija/kategorija; Knowledge Component je kontrolirana jedinica znanja. KB ne mapira KC automatski. |
 | `KnowledgeArea` ↔ `KnowledgeComponent` | Područje je široka kategorija; komponenta je kontrolirana mjerljiva jedinica. |
 | `Tag` ↔ `KnowledgeComponent` | Tag služi organizaciji; komponenta prima evidence signal. |
 | `StudentAttempt` ↔ `EvidenceEvent` | Pokušaj je učenikov odgovor/izvedba; Evidence Event je standardizirani dokaz izveden iz pokušaja. |
