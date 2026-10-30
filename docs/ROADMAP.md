@@ -931,16 +931,36 @@ je Teacher-only, opt-in i resettable, bez Student memoryja ili provider training
 fairness, retention, explainability, confirmation, concurrency, moderation, local feedback,
 audit i operational granice dokumentirane su bez runtime/provider/schema scopea. `git diff
 --check` prolazi; build/test/SQL/frontend/visual i dependency audit su N/A za DOCS_ONLY fazu.
-## 9.3 Versioned KB-001–KB-025 catalog and applicability rules — READY
-## 9.4 Goal selection — TODO after contracts
+## 9.3 Versioned KB-001–KB-025 catalog and applicability rules — FINAL LOCKED
+
+**Dizajnirano 2026-10-30:** svih 25 KB codeova zaključani su kao immutable System-owned
+stable roots s versioned Draft/Published/Retired snapshotima. KB-001–KB-005 početno su
+Published v1, a KB-006–KB-025 Draft v1 i nisu selectable/AI candidates. LessonActivity i
+ActivityTemplateVersion koriste optional exact KnowledgeBlockVersion; jedan activity ima
+najviše jedan primary KB, dok KC mapping ostaje zaseban M:N.
+
+Typed deterministic applicability odvaja hard eligibility od recommendation/warning pravila,
+koristi tri-state missing semantiku i stable reason codeove. Duration envelope daje guidance,
+a ručni LessonActivity duration ostaje canonical. Sequence ne radi silent reorder; KB-024/025
+smiju biti Composite uz acyclic parent/child graph, dubinu najviše 2 i child-duration Ready
+invariant. Phase 9.2 privacy ima prednost nad legacy KB draftovima. Contract:
+`KNOWLEDGE_BLOCK_CATALOG.md`; odluka: ADR-0030.
+
+**Acceptance 9.3: FINAL LOCKED — odobreno 2026-10-30.** Roster/maturity, ownership, code/version
+lifecycle, exact references, duration, typed applicability, sequence/composition,
+privacy-precedence, catalog deployment i historical-readability granice dokumentirane su bez
+runtime/schema/seed scopea. `git diff --check` prolazi; build/test/SQL/frontend/visual i
+dependency audit su N/A za DOCS_ONLY fazu.
+## 9.4 Goal selection — READY
 ## 9.5 Suggested lesson structure timeline and balance check — TODO
 ## 9.6 Lesson Plan editor and immutable material-version attachment — TODO
 ## 9.7 Activity / Knowledge Block selection — TODO
 ## 9.8 Lesson Activity detail/edit and regeneration — TODO
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
-**Gate:** Phase 9.1 domain i Phase 9.2 AI/privacy contracti su zatvoreni; Phase 9.3 je sljedeći
-izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
+**Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy i Phase 9.3 KB catalog contracti su zatvoreni;
+Phase 9.4 je sljedeći izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti
+mijenja Knowledge Model.
 
 ---
 

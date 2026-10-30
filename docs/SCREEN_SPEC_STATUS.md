@@ -24,7 +24,7 @@ Ovaj dokument je gate protiv AI-haluciniranja nedokumentiranih funkcionalnosti.
 | Profil/Auth | 14.1–14.3 | screen source + zaključani auth contract | Phase 1.6 auth contract ima prednost |
 | Master sitemap/audit | cross-module | početni master sitemap izveden | završni functional audit i MVP rez nisu zaključani |
 | DS-001 | cross-platform | odobreni DS-001 source + UI kit | alignment prema postojećim tokenima i PNG-ovima obavezan prije sljedećeg UI featurea |
-| Lesson Builder KB katalog | KB-001–KB-025 | detaljni DRAFT pedagoški opisi | zahtijeva formalni Lesson Plan/Activity/Knowledge/Evidence/AI/privacy contract |
+| Lesson Builder KB katalog | KB-001–KB-025 | Phase 9.1–9.3 formalni contracti zaključani; runtime pending 9.4–9.9 | KB-001–005 Published v1, KB-006–025 Draft v1; typed applicability u `KNOWLEDGE_BLOCK_CATALOG.md` |
 | Student aplikacija | 1.1, 2.1–10.4 | 44 detaljna screen DOCX/PNG para + 10 master/modulskih site-mapova | blokirano dok se ne zaključe Student/Guardian auth, minor consent, permissions i shared-domain contracti |
 | Cross-role baseline | FS-001–FS-003, sitemap C1–C11 | business intent i lifecycle mape | koristiti kao input; noviji ADR/security/phase contracti imaju prednost kod konflikta |
 

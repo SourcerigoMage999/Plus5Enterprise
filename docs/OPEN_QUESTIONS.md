@@ -45,15 +45,16 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
    pseudonimizaciju, bounded learning context, explainability, confirmation, moderation,
    retention, audit, local Teacher-only opt-in preference learning i no-charge/default-off
    granicu u `LESSON_BUILDER_AI.md`.
-8. **DJELOMIČNO RIJEŠENO 2026-09-24 — Phase 5.2/5.3, ADR-0019/0020:** `KnowledgeModel` i
+8. **RIJEŠENO 2026-10-30 — Phase 5.2/5.3/9.3, ADR-0019/0020/0030:** `KnowledgeModel` i
    `KnowledgeComponent` lifecycle, version boundary, Area/tree struktura, lineage i
    CurriculumOutcome M:N zaključani su u `KNOWLEDGE_COMPONENT_MODEL.md`. Student-specific
    Evidence provenance, idempotentni emission, leaf targeti i append-only
    Observation/Correction/Invalidation lifecycle zaključani su u `EVIDENCE_EVENT.md`, a potpuni
    immutable metadata snapshot i bounded katalozi u `EVIDENCE_METADATA.md`.
    Phase 9.1 zaključava da `KnowledgeBlock` nije KnowledgeComponent, ActivityTemplate ni
-   LessonActivity te da ne mapira KC automatski. Njegov versioned KB-001–KB-025 katalog i
-   applicability pravila ostaju izvršni scope Phase 9.3.
+   LessonActivity te da ne mapira KC automatski. Phase 9.3 zaključava versioned System roster
+   KB-001–KB-025, source-maturity statuse, typed deterministic applicability,
+   sequence/composition i exact-version reference u `KNOWLEDGE_BLOCK_CATALOG.md`.
 9. Koji je finalni participant/permission/retention/delivery contract za Poruke i privitke?
 10. Koje su finalne metric definitions, privacy, export/PDF i immutable `ReportSnapshot` politike za Izvještaje?
 11. Je li Finance samo interna evidencija ili uključuje payment processing, račune, fiskalizaciju ili porezne obveze; koji su currency/precision contracti?
@@ -102,8 +103,9 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
   concurrency, exact Material/Task reference i Attempt/Evidence granice zaključani su u
   `LESSON_BUILDER_DOMAIN.md`. **Phase 9.2 / ADR-0029** dodatno zaključava AI/privacy,
   explainability, confirmation, retention, audit i Teacher preference granice u
-  `LESSON_BUILDER_AI.md`; versioned Knowledge Block katalog i applicability pravila ostaju
-  Phase 9.3.
+  `LESSON_BUILDER_AI.md`. **Phase 9.3 / ADR-0030** zaključava versioned Knowledge Block
+  katalog, source-maturity publish granicu i deterministic applicability pravila u
+  `KNOWLEDGE_BLOCK_CATALOG.md`.
 - PLUS 5 Ploča: Lesson Session persistence, autosave/recovery i Evidence emission/invalidation contract
 - Povijest sati: immutable historical Task/Material version references i void/audit semantics
 - Domaće zadaće: Assignment/Submission, participant access, versioning i Evidence contract

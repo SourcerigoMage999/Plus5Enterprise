@@ -1,5 +1,30 @@
 # DECISION_LOG
 
+### ADR-0030 — Versioned System Knowledge Block catalog with typed applicability
+- **Datum:** 2026-10-30
+- **Status:** Accepted — Phase 9.3 FINAL LOCKED.
+- **Kontekst:** canonical source potvrđuje roster KB-001–KB-025, ali samo KB-001–KB-005 ima
+  approved maturity, dok ostali dokumenti ostaju draft i ne definiraju versioning,
+  deterministic eligibility, composition ni production deployment.
+- **Katalog:** svih 25 codeova su immutable System-owned stable roots. Version statusi su
+  Draft/Published/Retired, root Active/Retired, a Published/Retired snapshot je immutable.
+  KB-001–KB-005 početno su Published v1; KB-006–KB-025 Draft v1, ne-selectable i nisu AI
+  candidates. Promjena Published sadržaja stvara novu verziju; historical reference ostaje.
+- **Activity granica:** LessonActivity i ActivityTemplateVersion referenciraju optional exact
+  KnowledgeBlockVersion. V1 dopušta najviše jedan primary KB po aktivnosti, no-KB aktivnost je
+  valjana, a KB nikad ne auto-mapira KnowledgeComponent niti emitira Evidence.
+- **Applicability:** typed server rules odvajaju Required hard eligibility od Recommended
+  warninga i koriste `Satisfied/NotSatisfied/Unknown`. Min/Optimal/Max duration je guidance;
+  canonical LessonActivity duration ostaje Teacherov i ne auto-revertira se. AI smije samo
+  rankirati/objasniti current Published/Active/hard-eligible candidates.
+- **Sequence/composition/privacy:** typed predecessor/successor metadata ne radi silent
+  reorder. KB-024/025 mogu biti Composite; activity nesting je acyclic i najviše parent→child,
+  a child duration sum ne smije prijeći parent pri Ready potvrdi. Phase 9.2 privacy ima
+  prednost nad legacy notes/PII/raw-Evidence/motivation/Student-memory pravilima.
+- **Deployment:** 25 rootova i initial v1 snapshoti dolaze kroz migration/explicit catalog
+  deployment, nikad API startup upsert. Obični Teacher/Lesson Builder API ne mutira System
+  katalog. Detalji: `KNOWLEDGE_BLOCK_CATALOG.md`.
+
 ### ADR-0029 — Privacy-minimized default-disabled Lesson Builder AI suggestions
 - **Datum:** 2026-10-30
 - **Status:** Accepted — Phase 9.2 FINAL LOCKED.
