@@ -1,5 +1,3 @@
-using Plus5.Domain.Evidence;
-
 namespace Plus5.Application.Materials;
 
 public interface IPresentationEditorQuery
@@ -207,8 +205,16 @@ public sealed record UpsertPresentationQuickCheckCommand(
     IReadOnlyList<string> Options,
     int CorrectOptionIndex,
     int Difficulty,
-    EvidenceType EvidenceType,
+    PresentationEvidenceType EvidenceType,
     IReadOnlyList<Guid> KnowledgeComponentIds);
+
+public enum PresentationEvidenceType
+{
+    Recognition = 1,
+    Understanding = 2,
+    Application = 3,
+    Production = 4,
+}
 
 public enum PresentationMutationOutcome
 {
@@ -294,7 +300,7 @@ public sealed record PresentationQuickCheckView(
     IReadOnlyList<QuickCheckOptionView> Options,
     string CorrectOptionKey,
     int Difficulty,
-    EvidenceType EvidenceType,
+    PresentationEvidenceType EvidenceType,
     decimal MaxPoints,
     bool KnowledgeMappingPending,
     IReadOnlyList<PresentationKnowledgeComponentView> KnowledgeComponents);

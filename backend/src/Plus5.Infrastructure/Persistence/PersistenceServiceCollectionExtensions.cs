@@ -23,6 +23,8 @@ using Plus5.Application.Materials;
 using Plus5.Infrastructure.Materials;
 using Plus5.Application.Dashboard;
 using Plus5.Infrastructure.Dashboard;
+using Plus5.Application.LessonPlanning;
+using Plus5.Infrastructure.LessonPlanning;
 
 namespace Plus5.Infrastructure.Persistence;
 
@@ -133,6 +135,8 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<IPresentationPublishService, EfPresentationPublishService>();
         services.AddScoped<IPresentationAiSuggestionService, EfPresentationAiSuggestionService>();
         services.AddScoped<ITeacherDashboardQuery, EfTeacherDashboardQuery>();
+        services.AddScoped<ILessonGoalSelectionQuery, EfLessonGoalSelectionQuery>();
+        services.AddScoped<ILessonGoalSelectionService, EfLessonGoalSelectionService>();
         services.AddSingleton<IMaterialFileValidator, MaterialFileValidator>();
         services.AddSingleton<IPresentationAssetValidator, PresentationAssetValidator>();
         services.AddSingleton<IMaterialObjectStorage, S3MaterialObjectStorage>();

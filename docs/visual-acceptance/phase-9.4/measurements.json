@@ -1,0 +1,68 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "5.1 Početak pripreme - cilj sata.png",
+  "screens": [
+    {
+      "name": "lesson-goal",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1266
+    },
+    {
+      "name": "lesson-goal",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2498
+    }
+  ],
+  "checks": [
+    "desktop: actual participant, goal and Knowledge Component selection; no document overflow",
+    "mobile: actual participant, goal and Knowledge Component selection; no document overflow"
+  ],
+  "apiResponses": [
+    {
+      "size": "desktop",
+      "path": "/api/v1/lesson-plans/participants",
+      "status": 200
+    },
+    {
+      "size": "desktop",
+      "path": "/api/v1/lesson-plans/knowledge-components",
+      "status": 200
+    },
+    {
+      "size": "desktop",
+      "path": "/api/v1/lesson-plans/sessions",
+      "status": 200
+    },
+    {
+      "size": "mobile",
+      "path": "/api/v1/lesson-plans/participants",
+      "status": 200
+    },
+    {
+      "size": "mobile",
+      "path": "/api/v1/lesson-plans/knowledge-components",
+      "status": 200
+    },
+    {
+      "size": "mobile",
+      "path": "/api/v1/lesson-plans/sessions",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "businessWritesDuringCapture": []
+}

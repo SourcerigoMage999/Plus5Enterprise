@@ -126,7 +126,7 @@ public sealed class PresentationQuickCheckSqlTests
                 ["Present Simple", "Present Continuous", "Past Simple"],
                 1,
                 2,
-                EvidenceType.Recognition,
+                PresentationEvidenceType.Recognition,
                 [firstLeaf.Id]);
 
             var created = await service.CreateQuickCheckAsync(

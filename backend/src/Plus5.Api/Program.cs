@@ -14,6 +14,7 @@ using Plus5.Infrastructure.Persistence;
 using Plus5.Infrastructure.Materials;
 using Plus5.Application.Materials;
 using Plus5.Api.Dashboard;
+using Plus5.Api.LessonPlanning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +108,7 @@ app.MapMaterialEditing();
 app.MapMaterialSharing();
 app.MapPresentationEditor();
 app.MapTeacherDashboard();
+app.MapLessonGoalSelection();
 
 app.Run();
 

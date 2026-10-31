@@ -2,7 +2,6 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Plus5.Application.Materials;
-using Plus5.Domain.Evidence;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Persistence;
@@ -410,7 +409,7 @@ public sealed class EfPresentationAiSuggestionService(
                 answers,
                 content.GetProperty("correctAnswerIndex").GetInt32(),
                 content.GetProperty("difficulty").GetInt32(),
-                (EvidenceType)content.GetProperty("evidenceType").GetInt32(),
+                (PresentationEvidenceType)content.GetProperty("evidenceType").GetInt32(),
                 []),
             cancellationToken);
         return MapMutation(result.Outcome);

@@ -142,3 +142,12 @@ Svi endpointi koriste `/api/v1/auth`. Anonymous pristup je eksplicitno ograniče
 | `POST /api/v1/auth/change-password` | Teacher + CSRF | promjena lozinke i opoziv svih sesija |
 
 Browser client koristi `credentials: include` i za svaki write prvo dohvaća CSRF token. Auth cookie nije javni JavaScript contract i ne smije se kopirati u browser storage. Neaktivna/istekla/opozvana sesija vraća `401`; postojeći authorization denial vraća `403`.
+
+## Phase 9.4 Lesson Builder goal-selection API
+
+`/api/v1/lesson-plans` zahtijeva aktivnu Teacher sesiju. `participants` primjenjuje owner scope
+prije pretrage i paginacije; `sessions` vraća samo buduće Scheduled termine istog ownera i
+participant konteksta; `knowledge-components` vraća samo Active komponente Published modela.
+`POST /api/v1/lesson-plans/` dodatno zahtijeva CSRF i atomarno stvara root, Draft v1 i exact
+KC mappinge. Request ima bounded goal i 1–50 jedinstvenih KC identifikatora. Stabilni
+business error kodovi dokumentirani su u `LESSON_BUILDER_GOAL_SELECTION.md`.

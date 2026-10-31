@@ -3,6 +3,7 @@ using Amazon.S3;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Plus5.Application.Materials;
+using Plus5.Domain.Evidence;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Persistence;
@@ -256,7 +257,7 @@ public sealed class EfPresentationElementService(
                 command.Prompt,
                 AssessableTaskVersion.SingleChoiceQuickCheckTypeCode,
                 command.Difficulty,
-                command.EvidenceType,
+                MapEvidenceType(command.EvidenceType),
                 1m,
                 now,
                 correctOptionKey,
@@ -385,7 +386,7 @@ public sealed class EfPresentationElementService(
                 version,
                 command.Prompt,
                 command.Difficulty,
-                command.EvidenceType,
+                MapEvidenceType(command.EvidenceType),
                 correctOptionKey,
                 authoringPayload);
             var selectedTargetIds = knowledgeTargets
@@ -446,6 +447,15 @@ public sealed class EfPresentationElementService(
             return Conflict();
         }
     }
+
+    private static EvidenceType MapEvidenceType(PresentationEvidenceType evidenceType) => evidenceType switch
+    {
+        PresentationEvidenceType.Recognition => EvidenceType.Recognition,
+        PresentationEvidenceType.Understanding => EvidenceType.Understanding,
+        PresentationEvidenceType.Application => EvidenceType.Application,
+        PresentationEvidenceType.Production => EvidenceType.Production,
+        _ => throw new ArgumentOutOfRangeException(nameof(evidenceType)),
+    };
 
     private async Task<IReadOnlyList<KnowledgeTarget>?> LoadKnowledgeTargetsAsync(
         IReadOnlyList<Guid> requestedIds,

@@ -215,6 +215,14 @@ function friendlyMessage(code?: string): string {
       return 'Provjerite vidljivost, e-mail adrese i razine pristupa.'
     case 'material_share_invalid_recipient':
       return 'Nije moguće dodati ovog učitelja.'
+    case 'lesson_goal_invalid_request':
+      return 'Odaberite sudionika, unesite cilj sata i odaberite barem jednu komponentu znanja.'
+    case 'lesson_goal_participant_unavailable':
+      return 'Odabrani učenik ili grupa više nisu dostupni.'
+    case 'lesson_goal_session_mismatch':
+      return 'Odabrani termin više ne pripada odabranom učeniku ili grupi.'
+    case 'lesson_goal_knowledge_unavailable':
+      return 'Jedna ili više odabranih komponenti znanja više nisu dostupne za novi plan.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

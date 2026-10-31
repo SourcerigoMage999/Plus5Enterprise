@@ -951,16 +951,29 @@ lifecycle, exact references, duration, typed applicability, sequence/composition
 privacy-precedence, catalog deployment i historical-readability granice dokumentirane su bez
 runtime/schema/seed scopea. `git diff --check` prolazi; build/test/SQL/frontend/visual i
 dependency audit su N/A za DOCS_ONLY fazu.
-## 9.4 Goal selection — READY
+## 9.4 Goal selection — FINAL LOCKED
+
+**Implementirano 2026-10-31:** Teacher-only Screen 5.1 na `/lesson-plans` sada odabire točno
+jednog owner-scoped Studenta ili Grupu, opcionalni budući Session istog konteksta, obavezni
+goal do 300 znakova i 1–50 Active Knowledge Componenta iz Published modela. Atomarni create
+stvara `LessonPlan`, Draft verziju 1 i exact KC mappinge; SQL constrainti/triggeri štite
+participant XOR, owner/session kontekst, version/current-ready i snapshot/mapping
+immutability. AI ostaje default-disabled bez provider poziva i bez dodatne naplate.
+
+**Acceptance 9.4: FINAL LOCKED — odobreno 2026-10-31.** Release build prolazi bez warninga, targeted
+backend/SQL 4/4, architecture 4/4, frontend 2/2 uz lint/typecheck/build te stvarni canonical
+desktop/mobile visual gate prolaze. Full regression, dependency audit i Docker infrastructure
+validation su N/A prema STRICT VALIDATION BUDGET-u. Contract:
+`LESSON_BUILDER_GOAL_SELECTION.md`.
 ## 9.5 Suggested lesson structure timeline and balance check — TODO
 ## 9.6 Lesson Plan editor and immutable material-version attachment — TODO
 ## 9.7 Activity / Knowledge Block selection — TODO
 ## 9.8 Lesson Activity detail/edit and regeneration — TODO
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
-**Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy i Phase 9.3 KB catalog contracti su zatvoreni;
-Phase 9.4 je sljedeći izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti
-mijenja Knowledge Model.
+**Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog i Phase 9.4
+goal-selection runtime su FINAL LOCKED. Phase 9.5 je sljedeći izvršni korak. Planiranje ne
+stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
 
 ---
 

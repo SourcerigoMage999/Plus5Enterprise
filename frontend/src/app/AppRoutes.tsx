@@ -26,8 +26,9 @@ import { MaterialSharingPage } from '../materials/MaterialSharingPage.tsx'
 import { PresentationEditorPage } from '../materials/PresentationEditorPage.tsx'
 import { PresentationReviewPage } from '../materials/PresentationReviewPage.tsx'
 import { DashboardPage } from '../dashboard/DashboardPage.tsx'
+import { LessonGoalSelectionPage } from '../lessonPlanning/LessonGoalSelectionPage.tsx'
 
-const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials')
+const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials' && item.id !== 'lesson-plans')
 
 export function AppRoutes() {
   return (
@@ -63,6 +64,7 @@ export function AppRoutes() {
           <Route path="materials/:materialId/presentation" element={<PresentationEditorPage />} />
           <Route path="materials/:materialId/presentation/review" element={<PresentationReviewPage />} />
           <Route path="materials/:materialId" element={<MaterialDetailPage />} />
+          <Route path="lesson-plans" element={<LessonGoalSelectionPage />} />
           {moduleItems.map((item) => (
             <Route
               key={item.id}

@@ -43,7 +43,7 @@ URL slugovi koriste canonical engleske tehničke nazive; korisničke oznake osta
 | `/schedule` | Raspored | foundation placeholder |
 | `/materials` | Materijali | Phase 6.3 Material library |
 | `/materials/:materialId` | Pregled materijala i procjenjivi Task metadata | Phase 6.4–6.5 Material detail |
-| `/lesson-plans` | Priprema sata | foundation placeholder |
+| `/lesson-plans` | Priprema sata | Phase 9.4 Lesson Builder goal selection |
 | `/board` | PLUS 5 Ploča | foundation placeholder |
 | `/homework` | Domaće zadaće | foundation placeholder |
 | `/messages` | Poruke | foundation placeholder |
@@ -87,6 +87,11 @@ Phase 8.2 zamjenjuje `/` foundation stvarnim Screen 1.1 Teacher dashboardom. Ekr
 isključivo Phase 8.1 owner-scoped read model za današnje termine, sljedeći sat i Student status
 brojeve. Canonical sekcije bez postojećeg izvora ostaju disabled ili izostavljene; frontend ne
 izvodi readiness, activity, notification, finance ni recently-used Material podatke.
+
+Phase 9.4 zamjenjuje `/lesson-plans` foundation stvarnim Screen 5.1 goal-selection flowom.
+Participant, optional Session i Knowledge Component kandidati dolaze iz server-side
+owner/lifecycle scoped API-ja. Ručni goal i KC odabir stvaraju Draft v1; AI, timeline i activity
+editor nisu simulirani prije svojih ROADMAP faza.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

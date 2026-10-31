@@ -3,6 +3,7 @@ using Plus5.Application.Materials;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Teaching;
 using Plus5.Infrastructure.Persistence;
+using DomainEvidenceType = Plus5.Domain.Evidence.EvidenceType;
 
 namespace Plus5.Infrastructure.Materials;
 
@@ -153,7 +154,14 @@ public sealed class EfPresentationEditorQuery(Plus5DbContext db) : IPresentation
                                     taskVersion.AuthoringPayloadJson ?? string.Empty),
                                 taskVersion.CorrectAnswer ?? string.Empty,
                                 taskVersion.Difficulty,
-                                taskVersion.EvidenceType,
+                                taskVersion.EvidenceType switch
+                                {
+                                    DomainEvidenceType.Recognition => PresentationEvidenceType.Recognition,
+                                    DomainEvidenceType.Understanding => PresentationEvidenceType.Understanding,
+                                    DomainEvidenceType.Application => PresentationEvidenceType.Application,
+                                    DomainEvidenceType.Production => PresentationEvidenceType.Production,
+                                    _ => throw new InvalidOperationException("Unsupported presentation evidence type."),
+                                },
                                 taskVersion.MaxPoints,
                                 !mappingsByTaskVersion.ContainsKey(taskVersion.Id),
                                 mappingsByTaskVersion.GetValueOrDefault(taskVersion.Id, []))

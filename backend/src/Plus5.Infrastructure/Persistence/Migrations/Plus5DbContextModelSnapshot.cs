@@ -429,6 +429,150 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ArchivedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<Guid?>("CurrentReadyVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("LifecycleStatus")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid?>("SessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("TeacherAccountId", "Id")
+                        .HasName("AK_LessonPlans_Teacher_Id");
+
+                    b.HasIndex("Id", "CurrentReadyVersionId");
+
+                    b.HasIndex("TeacherAccountId", "GroupId");
+
+                    b.HasIndex("TeacherAccountId", "SessionId");
+
+                    b.HasIndex("TeacherAccountId", "StudentId");
+
+                    b.HasIndex("TeacherAccountId", "LifecycleStatus", "CreatedAtUtc")
+                        .HasDatabaseName("IX_LessonPlans_Teacher_Status_Created");
+
+                    b.ToTable("LessonPlans", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonPlans_ValidateContext");
+
+                            t.HasCheckConstraint("CK_LessonPlans_Archive", "([LifecycleStatus] = 1 AND [ArchivedAtUtc] IS NULL) OR ([LifecycleStatus] = 2 AND [ArchivedAtUtc] IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_LessonPlans_LifecycleStatus", "[LifecycleStatus] IN (1, 2)");
+
+                            t.HasCheckConstraint("CK_LessonPlans_Participant", "([StudentId] IS NOT NULL AND [GroupId] IS NULL) OR ([StudentId] IS NULL AND [GroupId] IS NOT NULL)");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlanVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<string>("Goal")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<Guid>("LessonPlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("LessonPlanId", "Id")
+                        .HasName("AK_LessonPlanVersions_Plan_Id");
+
+                    b.HasIndex("LessonPlanId", "Status")
+                        .IsUnique()
+                        .HasDatabaseName("UX_LessonPlanVersions_Plan_WorkingStatus")
+                        .HasFilter("[Status] IN (1, 2)");
+
+                    b.HasIndex("LessonPlanId", "VersionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_LessonPlanVersions_Plan_Version");
+
+                    b.ToTable("LessonPlanVersions", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonPlanVersions_ProtectSnapshots");
+
+                            t.HasCheckConstraint("CK_LessonPlanVersions_Status", "[Status] IN (1, 2, 3)");
+
+                            t.HasCheckConstraint("CK_LessonPlanVersions_VersionNumber", "[VersionNumber] > 0");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlanVersionKnowledgeComponent", b =>
+                {
+                    b.Property<Guid>("LessonPlanVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("KnowledgeComponentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LessonPlanVersionId", "KnowledgeComponentId");
+
+                    b.HasIndex("KnowledgeComponentId")
+                        .HasDatabaseName("IX_LessonPlanVersionKnowledgeComponents_ComponentId");
+
+                    b.ToTable("LessonPlanVersionKnowledgeComponents", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonPlanVersionKnowledgeComponents_Validate");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("Plus5.Domain.Materials.AssessableTask", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2413,6 +2557,63 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlan", b =>
+                {
+                    b.HasOne("Plus5.Domain.Identity.UserAccount", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonPlanVersion", null)
+                        .WithMany()
+                        .HasForeignKey("Id", "CurrentReadyVersionId")
+                        .HasPrincipalKey("LessonPlanId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.Groups.Group", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherAccountId", "GroupId")
+                        .HasPrincipalKey("TeacherAccountId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.Scheduling.Session", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherAccountId", "SessionId")
+                        .HasPrincipalKey("TeacherAccountId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.Students.Student", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherAccountId", "StudentId")
+                        .HasPrincipalKey("TeacherAccountId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlanVersion", b =>
+                {
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonPlan", null)
+                        .WithMany()
+                        .HasForeignKey("LessonPlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlanVersionKnowledgeComponent", b =>
+                {
+                    b.HasOne("Plus5.Domain.Teaching.KnowledgeComponent", null)
+                        .WithMany()
+                        .HasForeignKey("KnowledgeComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonPlanVersion", null)
+                        .WithMany()
+                        .HasForeignKey("LessonPlanVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Plus5.Domain.Materials.AssessableTask", b =>

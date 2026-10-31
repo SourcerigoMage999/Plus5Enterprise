@@ -322,3 +322,17 @@ Aplikacijski candidate query za nove izbore dodatno ograničava katalog na
 uklonjiv radi povijesne/recovery semantike. Create/update Quick Checka i mapping set izvršavaju
 se u istoj transakciji pod PresentationDocument rowversionom. Detalji su u
 `PRESENTATION_KNOWLEDGE_MAPPING.md`.
+
+## Phase 9.4 Lesson Builder goal selection schema
+
+Migracija `AddLessonGoalSelection` dodaje `LessonPlans`, `LessonPlanVersions` i
+`LessonPlanVersionKnowledgeComponents` bez seeda ili backfilla. Root ima točno jedan
+owner-scoped Student/Group participant, optional same-context Session, lifecycle i nullable
+current Ready version. Version ima pozitivan redni broj, Draft/Ready/Superseded status,
+bounded goal i SQL `rowversion`; root također koristi `rowversion`.
+
+Composite owner FK-ovi, restrictive deleteovi, participant/lifecycle CHECK constrainti te
+unique version i filtered status indeksi štite aggregate granice. SQL triggeri `51301–51305`
+štite Session kontekst, current-ready podudaranje, immutable Ready/Superseded snapshote i
+Draft + Published/Active KC mapping. Phase 9.4 create upisuje root, Draft v1 i KC veze u jednoj
+serializable transakciji. Detalji su u `LESSON_BUILDER_GOAL_SELECTION.md`.
