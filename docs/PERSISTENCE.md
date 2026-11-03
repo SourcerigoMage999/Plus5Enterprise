@@ -336,3 +336,17 @@ unique version i filtered status indeksi štite aggregate granice. SQL triggeri 
 štite Session kontekst, current-ready podudaranje, immutable Ready/Superseded snapshote i
 Draft + Published/Active KC mapping. Phase 9.4 create upisuje root, Draft v1 i KC veze u jednoj
 serializable transakciji. Detalji su u `LESSON_BUILDER_GOAL_SELECTION.md`.
+
+## Phase 9.5 Knowledge Block catalog and lesson timeline schema
+
+Migracija `AddLessonStructureTimeline` dodaje `TargetDurationMinutes` i `UpdatedAtUtc` na
+`LessonPlanVersion`, System `KnowledgeBlocks`/`KnowledgeBlockVersions`, `LessonActivities` i
+`LessonActivityKnowledgeComponents`. Existing plan target backfilla se na 60, a UpdatedAt na
+CreatedAt. KB roots 001–025 i v1 snapshoti dolaze isključivo kroz migraciju; 001–005 su
+Published/current, 006–025 Draft.
+
+Exact optional KB version FK, unique plan/sort indeks, bounded duration/purpose CHECK-ovi i
+SQL triggeri `51310–51312` štite immutable Published KB snapshot, Draft-only activity graph,
+current Published KB reference i KC-subset pravilo. Apply pet aktivnosti, njihove KC mappinge
+i parent authoring rowversion mijenja u jednoj serializable transakciji. Detalji su u
+`LESSON_BUILDER_TIMELINE_BALANCE.md`.

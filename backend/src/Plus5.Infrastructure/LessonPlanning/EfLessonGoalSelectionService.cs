@@ -43,12 +43,19 @@ public sealed class EfLessonGoalSelectionService(Plus5DbContext db, TimeProvider
                 if (!exists) return Failure(CreateLessonGoalFailure.ParticipantUnavailable);
             }
 
+            var targetDurationMinutes = LessonPlanVersion.DefaultTargetDurationMinutes;
             if (command.SessionId.HasValue)
             {
-                var sessionMatches = await db.Sessions.AnyAsync(item => item.Id == command.SessionId
+                var session = await db.Sessions.Where(item => item.Id == command.SessionId
                     && item.TeacherAccountId == teacherId && item.Status == SessionStatus.Scheduled
-                    && item.StudentId == studentId && item.GroupId == groupId, cancellationToken);
-                if (!sessionMatches) return Failure(CreateLessonGoalFailure.SessionMismatch);
+                    && item.StudentId == studentId && item.GroupId == groupId)
+                    .Select(item => new { item.StartsAtUtc, item.EndsAtUtc })
+                    .SingleOrDefaultAsync(cancellationToken);
+                if (session is null) return Failure(CreateLessonGoalFailure.SessionMismatch);
+                targetDurationMinutes = checked((int)(session.EndsAtUtc - session.StartsAtUtc).TotalMinutes);
+                if (targetDurationMinutes is < LessonPlanVersion.MinimumTargetDurationMinutes
+                    or > LessonPlanVersion.MaximumTargetDurationMinutes)
+                    return Failure(CreateLessonGoalFailure.Invalid);
             }
 
             var componentIds = command.KnowledgeComponentIds.Distinct().ToArray();
@@ -64,7 +71,7 @@ public sealed class EfLessonGoalSelectionService(Plus5DbContext db, TimeProvider
 
             var now = clock.GetUtcNow();
             var plan = new LessonPlan(Guid.NewGuid(), teacherId, studentId, groupId, command.SessionId, now);
-            var version = new LessonPlanVersion(Guid.NewGuid(), plan.Id, 1, command.Goal, now);
+            var version = new LessonPlanVersion(Guid.NewGuid(), plan.Id, 1, command.Goal, now, targetDurationMinutes);
             db.LessonPlans.Add(plan);
             db.LessonPlanVersions.Add(version);
             db.LessonPlanVersionKnowledgeComponents.AddRange(componentIds.Select(id =>

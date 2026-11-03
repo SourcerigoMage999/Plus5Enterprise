@@ -93,6 +93,11 @@ Participant, optional Session i Knowledge Component kandidati dolaze iz server-s
 owner/lifecycle scoped API-ja. Ručni goal i KC odabir stvaraju Draft v1; AI, timeline i activity
 editor nisu simulirani prije svojih ROADMAP faza.
 
+Phase 9.5 dodaje stvarni `/lesson-plans/:lessonPlanId/structure` Screen 5.2. UI prikazuje
+server-derived timeline/balance i jasno označava no-cost `Početni prijedlog`; ne računa
+balance u browseru, ne glumi AI i ne pokazuje predicted outcome bez contracta. Preview se
+pretvara u canonical Draft aktivnosti samo eksplicitnim Apply writeom.
+
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 
 ## Design tokeni

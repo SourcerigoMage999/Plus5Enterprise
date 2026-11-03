@@ -122,7 +122,7 @@ export function LessonGoalSelectionPage() {
       </header>
 
       {error && <div className="lesson-goal-alert" role="alert">{error}</div>}
-      {savedPlanId && <div className="lesson-goal-success" role="status"><strong>Cilj sata je spremljen kao Draft.</strong><span>Sljedeći korak, prijedlog strukture i balansa, dolazi u Phase 9.5.</span></div>}
+      {savedPlanId && <div className="lesson-goal-success" role="status"><strong>Cilj sata je spremljen kao Draft.</strong><span>Deterministički prijedlog ne koristi AI servis i ne stvara dodatni trošak.</span><Link to={`/lesson-plans/${savedPlanId}/structure`}>Nastavi na prijedlog strukture</Link></div>}
 
       <form id="lesson-goal-form" onSubmit={(event) => void submit(event)}>
         <section className="lesson-goal-context" aria-labelledby="participant-heading">

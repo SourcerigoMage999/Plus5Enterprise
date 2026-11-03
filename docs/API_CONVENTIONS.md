@@ -151,3 +151,13 @@ participant konteksta; `knowledge-components` vraća samo Active komponente Publ
 `POST /api/v1/lesson-plans/` dodatno zahtijeva CSRF i atomarno stvara root, Draft v1 i exact
 KC mappinge. Request ima bounded goal i 1–50 jedinstvenih KC identifikatora. Stabilni
 business error kodovi dokumentirani su u `LESSON_BUILDER_GOAL_SELECTION.md`.
+
+## Phase 9.5 Lesson structure API
+
+`GET /api/v1/lesson-plans/{lessonPlanId}/structure/` vraća deterministic preview bez writea
+ili već primijenjene canonical aktivnosti, target snapshot, KC kontekst, šest balance statusa
+i odvojeni Material candidate count. `PUT .../target-duration` i `POST .../apply` zahtijevaju
+Teacher sesiju, CSRF i `LessonPlanVersion.RowVersion`. Apply ne prihvaća proizvoljan activity
+graph iz browsera i vrijedi samo za prazan Draft. Missing/foreign/archived vraća isti 404;
+stale write vraća `409 concurrency_conflict`. Detalji su u
+`LESSON_BUILDER_TIMELINE_BALANCE.md`.

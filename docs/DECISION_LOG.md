@@ -1,5 +1,26 @@
 # DECISION_LOG
 
+### ADR-0031 — Deterministic no-cost Lesson structure baseline and balance read model
+- **Datum:** 2026-11-01
+- **Status:** Accepted — Phase 9.5 IMPLEMENTED / REVIEW READY.
+- **Kontekst:** Screen 5.2 treba koristan početni timeline kada je Lesson Builder AI
+  defaultno isključen, bez lažnog AI autoriteta, dodatne naplate ili izmišljene readiness
+  matematike.
+- **Odluka:** server-owned `SYSTEM_BASELINE_V1` daje preview bez writea i bez provider poziva.
+  Eksplicitni Teacher Apply atomarno stvara pet aktivnosti s exact Published
+  KB-001/002/004/005 referencama; unclassified `CheckForUnderstanding` ne koristi Draft KB-006
+  i nije AssessableTask/Attempt/Evidence. Goal/KC/optional Session duration jedini su inputi.
+- **Vrijeme i balans:** `LessonPlanVersion.TargetDurationMinutes` je snapshot 5–480; default je
+  60 ili exact Session duration. 60-min baseline je 5/10/15/20/10, a drugi targeti koriste
+  weights 1/2/3/4/2 i deterministic largest remainder. Balance ima šest nebrojčanih
+  `Satisfied/Warning/NotEvaluated` područja; nema overall scorea ni predikcije.
+- **Materijali i cost:** Phase 9.5 vraća samo owner/Use + Active/current + Clean + exact-KC
+  overlap candidate count. Ne attach-a materijal i MaterialRelevance ostaje NotEvaluated.
+  AI je u UI-ju disabled; nema PLUS 5 AI billing/credits/in-app naplate.
+- **Granice:** optimistic rowversion, CSRF, Teacher ownership, Draft-only i SQL snapshot
+  zaštita ostaju authority. Material attachment, KB picker, editor/regeneration, Ready,
+  Session runtime i Evidence ostaju kasnije faze. Detalji: `LESSON_BUILDER_TIMELINE_BALANCE.md`.
+
 ### ADR-0030 — Versioned System Knowledge Block catalog with typed applicability
 - **Datum:** 2026-10-30
 - **Status:** Accepted — Phase 9.3 FINAL LOCKED.

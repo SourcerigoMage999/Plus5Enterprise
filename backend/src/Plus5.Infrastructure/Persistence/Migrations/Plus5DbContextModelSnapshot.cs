@@ -429,6 +429,670 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.KnowledgeBlock", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<Guid?>("CurrentPublishedVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Id", "CurrentPublishedVersionId");
+
+                    b.ToTable("KnowledgeBlocks", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_KnowledgeBlocks_Status", "[Status] IN (1, 2)");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000001"),
+                            Code = "KB-001",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000002"),
+                            Code = "KB-002",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000003"),
+                            Code = "KB-003",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000004"),
+                            Code = "KB-004",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000005"),
+                            Code = "KB-005",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000006"),
+                            Code = "KB-006",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000007"),
+                            Code = "KB-007",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000008"),
+                            Code = "KB-008",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000009"),
+                            Code = "KB-009",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000010"),
+                            Code = "KB-010",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000011"),
+                            Code = "KB-011",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000012"),
+                            Code = "KB-012",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000013"),
+                            Code = "KB-013",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000014"),
+                            Code = "KB-014",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000015"),
+                            Code = "KB-015",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000016"),
+                            Code = "KB-016",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000017"),
+                            Code = "KB-017",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000018"),
+                            Code = "KB-018",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000019"),
+                            Code = "KB-019",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000020"),
+                            Code = "KB-020",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000021"),
+                            Code = "KB-021",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000022"),
+                            Code = "KB-022",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000023"),
+                            Code = "KB-023",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000024"),
+                            Code = "KB-024",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95000000-0000-0000-0000-000000000025"),
+                            Code = "KB-025",
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 1
+                        });
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.KnowledgeBlockVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AssessmentCapability")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("HomeworkMode")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("KnowledgeBlockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("MaxDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OptimalDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ParticipantApplicability")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("PublishedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KnowledgeBlockId")
+                        .IsUnique()
+                        .HasFilter("[Status] = 2");
+
+                    b.HasIndex("KnowledgeBlockId", "VersionNumber")
+                        .IsUnique();
+
+                    b.ToTable("KnowledgeBlockVersions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_KnowledgeBlockVersions_Duration", "([Status] = 1 AND [MinDurationMinutes] IS NULL AND [OptimalDurationMinutes] IS NULL AND [MaxDurationMinutes] IS NULL) OR ([Status] IN (2, 3) AND [MinDurationMinutes] BETWEEN 1 AND 480 AND [OptimalDurationMinutes] BETWEEN [MinDurationMinutes] AND 480 AND [MaxDurationMinutes] BETWEEN [OptimalDurationMinutes] AND 480)");
+
+                            t.HasCheckConstraint("CK_KnowledgeBlockVersions_Status", "[Status] IN (1, 2, 3)");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000001"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Small Talk",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000001"),
+                            MaxDurationMinutes = 10,
+                            MinDurationMinutes = 3,
+                            OptimalDurationMinutes = 5,
+                            ParticipantApplicability = 3,
+                            PublishedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 2,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000002"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Aktivacija predznanja",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000002"),
+                            MaxDurationMinutes = 15,
+                            MinDurationMinutes = 5,
+                            OptimalDurationMinutes = 10,
+                            ParticipantApplicability = 3,
+                            PublishedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 2,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000003"),
+                            AssessmentCapability = 2,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Pregled domaće zadaće",
+                            HomeworkMode = 3,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000003"),
+                            MaxDurationMinutes = 20,
+                            MinDurationMinutes = 5,
+                            OptimalDurationMinutes = 10,
+                            ParticipantApplicability = 3,
+                            PublishedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 2,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000004"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Objašnjenje novog gradiva",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000004"),
+                            MaxDurationMinutes = 25,
+                            MinDurationMinutes = 8,
+                            OptimalDurationMinutes = 15,
+                            ParticipantApplicability = 3,
+                            PublishedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 2,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000005"),
+                            AssessmentCapability = 2,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Interaktivni zadaci",
+                            HomeworkMode = 2,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000005"),
+                            MaxDurationMinutes = 30,
+                            MinDurationMinutes = 10,
+                            OptimalDurationMinutes = 20,
+                            ParticipantApplicability = 3,
+                            PublishedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Status = 2,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000006"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Mini provjera razumijevanja",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000006"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000007"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Završna refleksija",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000007"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000008"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Speaking",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000008"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000009"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Listening",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000009"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000010"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Reading",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000010"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000011"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Writing",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000011"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000012"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Vocabulary Practice",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000012"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000013"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Grammar Practice",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000013"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000014"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Revision",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000014"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000015"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Domaća zadaća",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000015"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000016"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Procjena znanja",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000016"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000017"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Rad na pogreškama",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000017"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000018"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Motivacija učenika",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000018"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000019"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Projektni zadatak",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000019"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000020"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Suradnički zadatak",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000020"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000021"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Edukativna igra",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000021"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000022"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Simulacija stvarne situacije",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000022"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000023"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Izazov",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000023"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000024"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Priča",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000024"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("95100000-0000-0000-0000-000000000025"),
+                            AssessmentCapability = 1,
+                            CreatedAtUtc = new DateTimeOffset(new DateTime(2026, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            DisplayName = "Misija",
+                            HomeworkMode = 1,
+                            KnowledgeBlockId = new Guid("95000000-0000-0000-0000-000000000025"),
+                            ParticipantApplicability = 3,
+                            Status = 1,
+                            VersionNumber = 1
+                        });
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("KnowledgeBlockVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LessonPlanVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("LessonPlanVersionId", "Id");
+
+                    b.HasIndex("KnowledgeBlockVersionId");
+
+                    b.HasIndex("LessonPlanVersionId", "SortOrder")
+                        .IsUnique();
+
+                    b.ToTable("LessonActivities", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonActivities_ValidateDraftAndKnowledgeBlock");
+
+                            t.HasCheckConstraint("CK_LessonActivities_Duration", "[DurationMinutes] BETWEEN 1 AND 480");
+
+                            t.HasCheckConstraint("CK_LessonActivities_Purpose", "[Purpose] BETWEEN 1 AND 6");
+
+                            t.HasCheckConstraint("CK_LessonActivities_SortOrder", "[SortOrder] >= 0");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivityKnowledgeComponent", b =>
+                {
+                    b.Property<Guid>("LessonActivityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("KnowledgeComponentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LessonActivityId", "KnowledgeComponentId");
+
+                    b.HasIndex("KnowledgeComponentId");
+
+                    b.ToTable("LessonActivityKnowledgeComponents", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonActivityKnowledgeComponents_Validate");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -523,6 +1187,13 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("TargetDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
                     b.Property<int>("VersionNumber")
                         .HasColumnType("int");
 
@@ -545,6 +1216,8 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                             t.HasTrigger("TR_LessonPlanVersions_ProtectSnapshots");
 
                             t.HasCheckConstraint("CK_LessonPlanVersions_Status", "[Status] IN (1, 2, 3)");
+
+                            t.HasCheckConstraint("CK_LessonPlanVersions_TargetDuration", "[TargetDurationMinutes] BETWEEN 5 AND 480");
 
                             t.HasCheckConstraint("CK_LessonPlanVersions_VersionNumber", "[VersionNumber] > 0");
                         });
@@ -2557,6 +3230,53 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.KnowledgeBlock", b =>
+                {
+                    b.HasOne("Plus5.Domain.LessonPlanning.KnowledgeBlockVersion", null)
+                        .WithMany()
+                        .HasForeignKey("Id", "CurrentPublishedVersionId")
+                        .HasPrincipalKey("KnowledgeBlockId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.KnowledgeBlockVersion", b =>
+                {
+                    b.HasOne("Plus5.Domain.LessonPlanning.KnowledgeBlock", null)
+                        .WithMany()
+                        .HasForeignKey("KnowledgeBlockId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivity", b =>
+                {
+                    b.HasOne("Plus5.Domain.LessonPlanning.KnowledgeBlockVersion", null)
+                        .WithMany()
+                        .HasForeignKey("KnowledgeBlockVersionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonPlanVersion", null)
+                        .WithMany()
+                        .HasForeignKey("LessonPlanVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivityKnowledgeComponent", b =>
+                {
+                    b.HasOne("Plus5.Domain.Teaching.KnowledgeComponent", null)
+                        .WithMany()
+                        .HasForeignKey("KnowledgeComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonActivity", null)
+                        .WithMany()
+                        .HasForeignKey("LessonActivityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlan", b =>

@@ -109,6 +109,7 @@ app.MapMaterialSharing();
 app.MapPresentationEditor();
 app.MapTeacherDashboard();
 app.MapLessonGoalSelection();
+app.MapLessonStructure();
 
 app.Run();
 

@@ -1,0 +1,48 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "5.2 Prijedlog strukture i sadržaj sata.png",
+  "policyCode": "SYSTEM_BASELINE_V1",
+  "setupBusinessWrites": [
+    "POST /api/v1/lesson-plans/"
+  ],
+  "businessWritesDuringCapture": [],
+  "screens": [
+    {
+      "name": "lesson-structure-preview",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1152
+    },
+    {
+      "name": "lesson-structure-preview",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2491
+    }
+  ],
+  "apiResponses": [
+    {
+      "size": "desktop",
+      "path": "/api/v1/lesson-plans/28a212f4-660d-48d5-9944-897e05c65a38/structure/",
+      "status": 200
+    },
+    {
+      "size": "mobile",
+      "path": "/api/v1/lesson-plans/28a212f4-660d-48d5-9944-897e05c65a38/structure/",
+      "status": 200
+    }
+  ],
+  "errors": []
+}

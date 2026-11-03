@@ -75,6 +75,7 @@ public sealed class LessonGoalSelectionTests
         Assert.Equal(data.Student.Id, plan.StudentId);
         Assert.Equal(data.Session.Id, plan.SessionId);
         Assert.Equal(plan.Id, version.LessonPlanId);
+        Assert.Equal(45, version.TargetDurationMinutes);
         Assert.Equal(data.Component.Id, mapping.KnowledgeComponentId);
     }
 

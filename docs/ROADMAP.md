@@ -965,15 +965,30 @@ backend/SQL 4/4, architecture 4/4, frontend 2/2 uz lint/typecheck/build te stvar
 desktop/mobile visual gate prolaze. Full regression, dependency audit i Docker infrastructure
 validation su N/A prema STRICT VALIDATION BUDGET-u. Contract:
 `LESSON_BUILDER_GOAL_SELECTION.md`.
-## 9.5 Suggested lesson structure timeline and balance check — TODO
+## 9.5 Suggested lesson structure timeline and balance check — FINAL LOCKED
+
+**Implementirano 2026-11-01:** `/lesson-plans/:lessonPlanId/structure` prikazuje no-cost
+`SYSTEM_BASELINE_V1` preview, target duration snapshot, pet determinističkih aktivnosti,
+exact KC pokrivenost, šest statusnih balance područja i odvojeni broj dostupnih Material
+kandidata. Eksplicitni Apply atomarno stvara canonical aktivnosti i mappinge nad praznim
+Draftom uz owner scope, CSRF i optimistic concurrency. Migration-deployed KB-001–KB-025
+katalog drži 001–005 Published v1, a 006–025 Draft v1; KB-006 se ne koristi kao lažna
+provjera razumijevanja. AI/provider/naplata, Material attachment, editor i Evidence nisu
+uvedeni. Contract: `LESSON_BUILDER_TIMELINE_BALANCE.md`; odluka: ADR-0031.
+
+**Acceptance 9.5: FINAL LOCKED — odobreno 2026-11-03.** Targeted backend/SQL/frontend, architecture,
+release build i minimalni stvarni desktop/mobile visual gate dokumentirani su u Phase 9.5
+summaryju. Full regression, dependency audit i Docker infrastructure validation su N/A prema
+STRICT VALIDATION BUDGET-u.
 ## 9.6 Lesson Plan editor and immutable material-version attachment — TODO
 ## 9.7 Activity / Knowledge Block selection — TODO
 ## 9.8 Lesson Activity detail/edit and regeneration — TODO
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
-**Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog i Phase 9.4
-goal-selection runtime su FINAL LOCKED. Phase 9.5 je sljedeći izvršni korak. Planiranje ne
-stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
+**Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog, Phase 9.4
+goal-selection runtime i Phase 9.5 structure/timeline runtime su FINAL LOCKED. Phase 9.6 je
+sljedeći izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge
+Model.
 
 ---
 
