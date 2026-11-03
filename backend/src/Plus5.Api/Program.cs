@@ -110,6 +110,7 @@ app.MapPresentationEditor();
 app.MapTeacherDashboard();
 app.MapLessonGoalSelection();
 app.MapLessonStructure();
+app.MapLessonPlanEditor();
 
 app.Run();
 

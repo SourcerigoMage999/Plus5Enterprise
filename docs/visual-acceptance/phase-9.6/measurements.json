@@ -1,0 +1,32 @@
+{
+  "phase": "9.6",
+  "capturedAt": "2026-11-04",
+  "canonicalSha256": "6E7748522E8EE310E9664E6705DA490F75D128CD564E90F9DE9FC62459C151DE",
+  "desktop": {
+    "viewportWidth": 1536,
+    "viewportHeight": 1024,
+    "innerWidth": 1536,
+    "innerHeight": 1024,
+    "clientWidth": 1521,
+    "scrollWidth": 1521,
+    "scrollY": 0,
+    "horizontalOverflow": false,
+    "sha256": "DFBBFB83C721CCD334A6C4DBAC9A7FFF6DCF8326E03126CD43B13B7F68C907C8"
+  },
+  "mobile": {
+    "viewportWidth": 390,
+    "viewportHeight": 844,
+    "innerWidth": 390,
+    "innerHeight": 844,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "scrollY": 853,
+    "horizontalOverflow": false,
+    "sha256": "BCF28A2FD211F3346568D8CB74E668F9C0E9E5C96EE899AA58225C80BE43DA39"
+  },
+  "browserErrors": 0,
+  "authBypass": false,
+  "apiInterception": false,
+  "domMutation": false,
+  "captureWritesAfterFinalState": 0
+}

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Plus5.Domain.Groups;
 using Plus5.Domain.Identity;
 using Plus5.Domain.LessonPlanning;
+using Plus5.Domain.Materials;
 using Plus5.Domain.Scheduling;
 using Plus5.Domain.Students;
 using Plus5.Domain.Teaching;
@@ -167,6 +168,25 @@ internal sealed class LessonActivityKnowledgeComponentConfiguration : IEntityTyp
         builder.HasKey(item => new { item.LessonActivityId, item.KnowledgeComponentId });
         builder.HasOne<LessonActivity>().WithMany().HasForeignKey(item => item.LessonActivityId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<KnowledgeComponent>().WithMany().HasForeignKey(item => item.KnowledgeComponentId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+internal sealed class LessonActivityMaterialVersionConfiguration
+    : IEntityTypeConfiguration<LessonActivityMaterialVersion>
+{
+    public void Configure(EntityTypeBuilder<LessonActivityMaterialVersion> builder)
+    {
+        builder.ToTable("LessonActivityMaterialVersions", table =>
+            table.HasTrigger("TR_LessonActivityMaterialVersions_Validate"));
+        builder.HasKey(item => new { item.LessonActivityId, item.MaterialVersionId });
+        builder.HasOne<LessonActivity>().WithMany()
+            .HasForeignKey(item => item.LessonActivityId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<MaterialVersion>().WithMany()
+            .HasForeignKey(item => item.MaterialVersionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(item => item.MaterialVersionId)
+            .HasDatabaseName("IX_LessonActivityMaterialVersions_MaterialVersionId");
     }
 }
 

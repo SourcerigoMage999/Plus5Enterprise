@@ -980,15 +980,28 @@ uvedeni. Contract: `LESSON_BUILDER_TIMELINE_BALANCE.md`; odluka: ADR-0031.
 release build i minimalni stvarni desktop/mobile visual gate dokumentirani su u Phase 9.5
 summaryju. Full regression, dependency audit i Docker infrastructure validation su N/A prema
 STRICT VALIDATION BUDGET-u.
-## 9.6 Lesson Plan editor and immutable material-version attachment — TODO
+## 9.6 Lesson Plan editor and immutable material-version attachment — FINAL LOCKED
+
+**Implementirano 2026-11-04:** `/lesson-plans/:lessonPlanId/editor` prikazuje owner-scoped
+Screen 5.3 nad postojećim Draft activity graphom te omogućuje search i attach/detach exact
+`MaterialVersion`. Novi attachment dopušta samo current Active/Clean owner ili Shared+Use
+verziju; historical exact referenca ostaje pinned bez auto-upgradea. Writeovi koriste CSRF,
+serializable transakciju i parent rowversion, a SQL triggeri `51320–51321` štite Draft i
+access/lifecycle granice. Material relevance ostaje objašnjivi status, bez readiness scorea,
+AI/provider poziva ili naplate. Contract: `LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.
+
+**Acceptance 9.6: FINAL LOCKED — odobreno 2026-11-04.** Release build, targeted backend/SQL/frontend,
+EF drift/idempotent script, architecture i minimalni stvarni desktop/mobile visual gate
+prolaze. Full regression, dependency audit i Docker infrastructure validation su N/A prema
+STRICT VALIDATION BUDGET-u.
 ## 9.7 Activity / Knowledge Block selection — TODO
 ## 9.8 Lesson Activity detail/edit and regeneration — TODO
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
 **Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog, Phase 9.4
-goal-selection runtime i Phase 9.5 structure/timeline runtime su FINAL LOCKED. Phase 9.6 je
-sljedeći izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge
-Model.
+goal-selection runtime, Phase 9.5 structure/timeline runtime i Phase 9.6 editor/material
+attachment runtime su FINAL LOCKED. Phase 9.7 je sljedeći izvršni korak. Planiranje ne stvara `Attempt`,
+`EvidenceEvent` niti mijenja Knowledge Model.
 
 ---
 

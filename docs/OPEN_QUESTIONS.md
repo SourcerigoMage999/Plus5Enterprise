@@ -108,8 +108,10 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
   `KNOWLEDGE_BLOCK_CATALOG.md`.
 - **RIJEŠENO 2026-11-01 — Phase 9.5, ADR-0031:** default-disabled AI koristi no-cost
   `SYSTEM_BASELINE_V1`, target duration snapshot, atomic Apply i šest-area balance bez scorea
-  ili predikcije. Material relevance ostaje NotEvaluated do Phase 9.6. Detalji:
-  `LESSON_BUILDER_TIMELINE_BALANCE.md`.
+  ili predikcije. **Phase 9.6** sada računa Material relevance samo iz exact KC overlapa,
+  veže immutable exact current Active/Clean MaterialVersion i ostavlja historical verziju
+  pinned bez auto-upgradea. Detalji: `LESSON_BUILDER_TIMELINE_BALANCE.md` i
+  `LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.
 - PLUS 5 Ploča: Lesson Session persistence, autosave/recovery i Evidence emission/invalidation contract
 - Povijest sati: immutable historical Task/Material version references i void/audit semantics
 - Domaće zadaće: Assignment/Submission, participant access, versioning i Evidence contract

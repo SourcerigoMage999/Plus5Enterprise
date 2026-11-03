@@ -350,3 +350,17 @@ SQL triggeri `51310–51312` štite immutable Published KB snapshot, Draft-only 
 current Published KB reference i KC-subset pravilo. Apply pet aktivnosti, njihove KC mappinge
 i parent authoring rowversion mijenja u jednoj serializable transakciji. Detalji su u
 `LESSON_BUILDER_TIMELINE_BALANCE.md`.
+
+## Phase 9.6 exact MaterialVersion attachments
+
+Migracija `AddLessonMaterialAttachments` dodaje composite junction
+`LessonActivityMaterialVersions(LessonActivityId, MaterialVersionId)` s restrictive FK-ovima
+i indeksom po MaterialVersionu. Junction nema mutable metadata niti stabilni Material FK;
+referenca je exact version snapshot.
+
+SQL trigger `TR_LessonActivityMaterialVersions_Validate` odbija mutation izvan Draft plana
+greškom `51320`. Za novi attachment zahtijeva current Active MaterialVersion, Active i
+nearhivirani Material, najmanje jednu Clean datoteku te owner ili Shared+Use pristup Teachera
+koji posjeduje plan; kršenje vraća `51321`. Detach historical verzije ostaje dopušten na
+Draftu, dok Ready/Superseded graph ostaje immutable. Detalji su u
+`LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.

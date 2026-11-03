@@ -12,7 +12,7 @@ Ovaj dokument je gate protiv AI-haluciniranja nedokumentiranih funkcionalnosti.
 | Materijali | 4.2 | detaljan opis | može nakon Material + Knowledge metadata modela |
 | Materijali | 4.3 Prezentacija | detaljan opis | može nakon Material foundationa; editor treba zaseban tehnički dizajn |
 | Materijali | 4.4–4.5 | detaljni import/edit/versioning source specovi | nakon Material storage, versioning, permissions i AI-confirmation contracta |
-| Priprema sata | 5.1–5.6 | detaljni Lesson Builder source specovi | 5.1 implementiran u Phase 9.4; 5.2 timeline/balance implementiran u Phase 9.5; 5.3–5.6 nastavljaju prema Phase 9.6–9.9 contractima |
+| Priprema sata | 5.1–5.6 | detaljni Lesson Builder source specovi | 5.1 implementiran u Phase 9.4; 5.2 timeline/balance u Phase 9.5; 5.3 editor i exact MaterialVersion attachment u Phase 9.6; 5.4–5.6 nastavljaju prema Phase 9.7–9.9 contractima |
 | PLUS 5 Ploča | 6.1–6.5 | detaljni runtime/lifecycle source specovi | screen-flow gate riješen; zahtijeva Lesson Session/Evidence architecture |
 | Sati/Povijest | 7.1–7.2 | detaljni source specovi | može nakon Lesson Session persistencea i povijesnog version contracta |
 | Domaće zadaće | 8.1–8.3 | detaljni source specovi | zahtijeva Homework/Evidence contract i participant access pravila |

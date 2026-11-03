@@ -1,4 +1,4 @@
-import { getJson, postJson, putJson } from '../api/apiClient.ts'
+import { deleteJson, getJson, postJson, putJson } from '../api/apiClient.ts'
 
 export type ParticipantType = 'student' | 'group'
 
@@ -121,4 +121,111 @@ export function changeLessonTargetDuration(lessonPlanId: string, targetDurationM
 
 export function applyLessonBaseline(lessonPlanId: string, rowVersion: string) {
   return postJson<LessonStructure>(`/lesson-plans/${lessonPlanId}/structure/apply`, { rowVersion })
+}
+
+export interface LessonPlanEditorSession {
+  readonly id: string
+  readonly startsAtUtc: string
+  readonly endsAtUtc: string
+  readonly timeZoneId: string
+  readonly title: string | null
+}
+
+export interface LessonActivityMaterialAttachment {
+  readonly materialId: string
+  readonly materialVersionId: string
+  readonly versionNumber: number
+  readonly title: string
+  readonly materialTypeCode: string
+  readonly subject: string | null
+  readonly isCurrentVersion: boolean
+  readonly isOwner: boolean
+  readonly matchingKnowledgeComponentCount: number
+}
+
+export interface LessonPlanEditorActivity {
+  readonly id: string
+  readonly sortOrder: number
+  readonly name: string
+  readonly purpose: string
+  readonly durationMinutes: number
+  readonly knowledgeBlockCode: string | null
+  readonly knowledgeComponentIds: string[]
+  readonly materials: LessonActivityMaterialAttachment[]
+}
+
+export interface LessonPlanEditor {
+  readonly lessonPlanId: string
+  readonly lessonPlanVersionId: string
+  readonly rowVersion: string
+  readonly participantName: string
+  readonly participantType: ParticipantType
+  readonly session: LessonPlanEditorSession | null
+  readonly goal: string
+  readonly targetDurationMinutes: number
+  readonly knowledgeComponents: LessonStructureKnowledge[]
+  readonly activities: LessonPlanEditorActivity[]
+  readonly balance: LessonBalanceArea[]
+  readonly attachedMaterials: LessonActivityMaterialAttachment[]
+}
+
+export interface LessonMaterialCandidate {
+  readonly materialId: string
+  readonly materialVersionId: string
+  readonly versionNumber: number
+  readonly title: string
+  readonly materialTypeCode: string
+  readonly subject: string | null
+  readonly isOwner: boolean
+  readonly matchingKnowledgeComponentCount: number
+  readonly isAttached: boolean
+}
+
+export interface LessonMaterialCandidatePage {
+  readonly items: LessonMaterialCandidate[]
+  readonly page: number
+  readonly pageSize: number
+  readonly totalCount: number
+}
+
+export function getLessonPlanEditor(lessonPlanId: string, signal?: AbortSignal) {
+  return getJson<LessonPlanEditor>(`/lesson-plans/${lessonPlanId}/editor/`, signal)
+}
+
+export function getLessonMaterialCandidates(
+  lessonPlanId: string,
+  activityId: string,
+  search: string,
+  signal?: AbortSignal,
+) {
+  const query = new URLSearchParams({ page: '1', pageSize: '20' })
+  if (search.trim()) query.set('search', search.trim())
+  return getJson<LessonMaterialCandidatePage>(
+    `/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/material-candidates?${query}`,
+    signal,
+  )
+}
+
+export function attachLessonMaterial(
+  lessonPlanId: string,
+  activityId: string,
+  materialVersionId: string,
+  rowVersion: string,
+) {
+  return postJson<LessonPlanEditor>(
+    `/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/materials/${materialVersionId}`,
+    { rowVersion },
+  )
+}
+
+export function detachLessonMaterial(
+  lessonPlanId: string,
+  activityId: string,
+  materialVersionId: string,
+  rowVersion: string,
+) {
+  return deleteJson<LessonPlanEditor>(
+    `/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/materials/${materialVersionId}`,
+    { rowVersion },
+  )
 }

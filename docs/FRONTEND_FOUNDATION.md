@@ -44,6 +44,7 @@ URL slugovi koriste canonical engleske tehničke nazive; korisničke oznake osta
 | `/materials` | Materijali | Phase 6.3 Material library |
 | `/materials/:materialId` | Pregled materijala i procjenjivi Task metadata | Phase 6.4–6.5 Material detail |
 | `/lesson-plans` | Priprema sata | Phase 9.4 Lesson Builder goal selection |
+| `/lesson-plans/:lessonPlanId/editor` | Plan sata | Phase 9.6 full plan editor i exact MaterialVersion attachment |
 | `/board` | PLUS 5 Ploča | foundation placeholder |
 | `/homework` | Domaće zadaće | foundation placeholder |
 | `/messages` | Poruke | foundation placeholder |
@@ -97,6 +98,11 @@ Phase 9.5 dodaje stvarni `/lesson-plans/:lessonPlanId/structure` Screen 5.2. UI 
 server-derived timeline/balance i jasno označava no-cost `Početni prijedlog`; ne računa
 balance u browseru, ne glumi AI i ne pokazuje predicted outcome bez contracta. Preview se
 pretvara u canonical Draft aktivnosti samo eksplicitnim Apply writeom.
+
+Phase 9.6 dodaje stvarni `/lesson-plans/:lessonPlanId/editor` Screen 5.3. UI prikazuje exact
+MaterialVersion attachmente po postojećoj aktivnosti i owner/shared-use candidate picker;
+browser ne bira canonical verziju izvan server responsea i ne računa learning/readiness
+semantiku. Buduće 9.7–9.9 akcije ostaju jasno disabled.
 
 Route URL je navigation state. Ne duplicira se u globalnom storeu. `NavLink` daje standardni `aria-current=page` za aktivno odredište.
 

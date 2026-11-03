@@ -138,6 +138,7 @@ public static class PersistenceServiceCollectionExtensions
         services.AddScoped<ILessonGoalSelectionQuery, EfLessonGoalSelectionQuery>();
         services.AddScoped<ILessonGoalSelectionService, EfLessonGoalSelectionService>();
         services.AddScoped<ILessonStructureService, EfLessonStructureService>();
+        services.AddScoped<ILessonPlanEditorService, EfLessonPlanEditorService>();
         services.AddSingleton<IMaterialFileValidator, MaterialFileValidator>();
         services.AddSingleton<IPresentationAssetValidator, PresentationAssetValidator>();
         services.AddSingleton<IMaterialObjectStorage, S3MaterialObjectStorage>();

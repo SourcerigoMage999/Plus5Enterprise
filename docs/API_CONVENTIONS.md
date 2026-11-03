@@ -161,3 +161,16 @@ Teacher sesiju, CSRF i `LessonPlanVersion.RowVersion`. Apply ne prihvaća proizv
 graph iz browsera i vrijedi samo za prazan Draft. Missing/foreign/archived vraća isti 404;
 stale write vraća `409 concurrency_conflict`. Detalji su u
 `LESSON_BUILDER_TIMELINE_BALANCE.md`.
+
+## Phase 9.6 Lesson Plan editor API
+
+`GET /api/v1/lesson-plans/{lessonPlanId}/editor/` vraća owner-scoped Draft plan context,
+canonical aktivnosti, exact MaterialVersion attachmente i server-derived balance. Candidate
+endpoint vraća samo current Active/Clean owner ili Shared+Use verzije, nakon access scopea i
+uz bounded search/paginaciju.
+
+`POST` i `DELETE .../activities/{activityId}/materials/{materialVersionId}` zahtijevaju
+Teacher sesiju, CSRF i parent `LessonPlanVersion.RowVersion`; attachment se mijenja atomarno i
+stale write vraća `409 concurrency_conflict`. Missing/foreign/archived aggregatei dijele isti
+404. Response ne sadrži storage key, signed/public URL, scan detalje ni binary. Detalji su u
+`LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.

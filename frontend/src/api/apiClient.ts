@@ -223,6 +223,14 @@ function friendlyMessage(code?: string): string {
       return 'Odabrani termin više ne pripada odabranom učeniku ili grupi.'
     case 'lesson_goal_knowledge_unavailable':
       return 'Jedna ili više odabranih komponenti znanja više nisu dostupne za novi plan.'
+    case 'lesson_editor_not_draft':
+      return 'Materijale je moguće mijenjati samo na nacrtu plana sata.'
+    case 'lesson_material_unavailable':
+      return 'Odabrana verzija materijala više nije dostupna za povezivanje.'
+    case 'lesson_material_already_attached':
+      return 'Odabrani materijal već je povezan s ovom aktivnosti.'
+    case 'lesson_material_attachment_not_found':
+      return 'Povezani materijal više nije dostupan. Osvježite plan sata.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

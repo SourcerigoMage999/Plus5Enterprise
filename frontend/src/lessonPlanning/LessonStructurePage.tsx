@@ -53,7 +53,7 @@ export function LessonStructurePage() {
       <nav className="lesson-structure-breadcrumb" aria-label="Putanja"><Link to="/lesson-plans">Priprema sata</Link><span>›</span><span>Prijedlog strukture i sadržaja</span></nav>
       <header className="lesson-structure-hero">
         <div><p className="lesson-structure-kicker">5.2 Prijedlog strukture i sadržaja sata</p><h1 id="lesson-structure-title">Plan sata za {view.participantName}</h1><p>{view.goal}</p></div>
-        <div className="lesson-structure-actions"><Link to="/lesson-plans">Natrag</Link><button type="button" disabled={!view.canApply || saving} onClick={() => void applySuggestion()}>{view.isApplied ? 'Prijedlog je primijenjen' : saving ? 'Primjena…' : 'Primijeni prijedlog'}</button></div>
+        <div className="lesson-structure-actions"><Link to="/lesson-plans">Natrag</Link>{view.isApplied ? <Link className="lesson-structure-primary" to={`/lesson-plans/${lessonPlanId}/editor`}>Otvori plan sata</Link> : <button type="button" disabled={!view.canApply || saving} onClick={() => void applySuggestion()}>{saving ? 'Primjena…' : 'Primijeni prijedlog'}</button>}</div>
       </header>
 
       {error && <div className="lesson-structure-alert" role="alert">{error}</div>}

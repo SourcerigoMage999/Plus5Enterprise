@@ -1093,6 +1093,27 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivityMaterialVersion", b =>
+                {
+                    b.Property<Guid>("LessonActivityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MaterialVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LessonActivityId", "MaterialVersionId");
+
+                    b.HasIndex("MaterialVersionId")
+                        .HasDatabaseName("IX_LessonActivityMaterialVersions_MaterialVersionId");
+
+                    b.ToTable("LessonActivityMaterialVersions", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonActivityMaterialVersions_Validate");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonPlan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3275,6 +3296,21 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasOne("Plus5.Domain.LessonPlanning.LessonActivity", null)
                         .WithMany()
                         .HasForeignKey("LessonActivityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivityMaterialVersion", b =>
+                {
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonActivity", null)
+                        .WithMany()
+                        .HasForeignKey("LessonActivityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.Materials.MaterialVersion", null)
+                        .WithMany()
+                        .HasForeignKey("MaterialVersionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
