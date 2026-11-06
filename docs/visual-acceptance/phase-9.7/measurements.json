@@ -1,0 +1,49 @@
+{
+  "realApi": true,
+  "realSql": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "5.4 odabir aktivnosti  knowledge blocka.png",
+  "setupBusinessWrites": [
+    "POST /api/v1/lesson-plans/",
+    "POST /api/v1/lesson-plans/{id}/structure/apply",
+    "POST /api/v1/lesson-plans/{id}/editor/activities"
+  ],
+  "businessWritesDuringCapture": [],
+  "screens": [
+    {
+      "name": "activity-selection",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1028
+    },
+    {
+      "name": "activity-selection",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2592
+    }
+  ],
+  "apiResponses": [
+    {
+      "size": "desktop",
+      "path": "/api/v1/lesson-plans/87c4dd51-2e44-48c8-a2d2-733e490122b7/editor/activity-candidates",
+      "status": 200
+    },
+    {
+      "size": "mobile",
+      "path": "/api/v1/lesson-plans/87c4dd51-2e44-48c8-a2d2-733e490122b7/editor/activity-candidates",
+      "status": 200
+    }
+  ],
+  "errors": []
+}

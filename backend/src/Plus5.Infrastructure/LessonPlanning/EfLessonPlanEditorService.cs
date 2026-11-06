@@ -93,6 +93,153 @@ public sealed class EfLessonPlanEditorService(
             item.IsAttached)).ToList(), page, pageSize, total), LessonPlanEditorFailure.None);
     }
 
+    public async Task<LessonActivityCandidateResult> GetActivityCandidatesAsync(
+        Guid teacherId,
+        Guid lessonPlanId,
+        string? search,
+        int? maximumDurationMinutes,
+        CancellationToken cancellationToken)
+    {
+        if (teacherId == Guid.Empty || lessonPlanId == Guid.Empty || search?.Length > 120
+            || maximumDurationMinutes is < 1 or > 480)
+            return ActivityCandidateFailure(LessonPlanEditorFailure.Invalid);
+
+        var state = await LoadPlanStateAsync(teacherId, lessonPlanId, true, cancellationToken);
+        if (state is null) return ActivityCandidateFailure(LessonPlanEditorFailure.NotFound);
+        if (state.Version.Status != LessonPlanVersionStatus.Draft)
+            return ActivityCandidateFailure(LessonPlanEditorFailure.NotDraft);
+
+        var participant = state.IsStudent
+            ? KnowledgeBlockParticipantApplicability.Individual
+            : KnowledgeBlockParticipantApplicability.Group;
+        var normalizedSearch = search?.Trim();
+        var query =
+            from block in db.KnowledgeBlocks.AsNoTracking()
+            join version in db.KnowledgeBlockVersions.AsNoTracking()
+                on block.CurrentPublishedVersionId equals version.Id
+            where block.Status == KnowledgeBlockStatus.Active
+                && version.Status == KnowledgeBlockVersionStatus.Published
+                && version.HomeworkMode != KnowledgeBlockHomeworkMode.RequiresHomeworkContext
+                && (version.ParticipantApplicability == KnowledgeBlockParticipantApplicability.Both
+                    || version.ParticipantApplicability == participant)
+                && (!maximumDurationMinutes.HasValue
+                    || version.MinDurationMinutes <= maximumDurationMinutes.Value)
+                && (string.IsNullOrEmpty(normalizedSearch)
+                    || block.Code.Contains(normalizedSearch)
+                    || version.DisplayName.Contains(normalizedSearch))
+            select new
+            {
+                version.Id,
+                block.Code,
+                version.DisplayName,
+                version.VersionNumber,
+                MinDurationMinutes = version.MinDurationMinutes!.Value,
+                OptimalDurationMinutes = version.OptimalDurationMinutes!.Value,
+                MaxDurationMinutes = version.MaxDurationMinutes!.Value,
+                version.ParticipantApplicability,
+                version.AssessmentCapability,
+                ExistingActivityCount = db.LessonActivities.Count(activity =>
+                    activity.LessonPlanVersionId == state.Version.Id
+                    && activity.KnowledgeBlockVersionId == version.Id),
+            };
+
+        var rows = await query.OrderBy(item => item.Code).ToListAsync(cancellationToken);
+        var items = rows.Select(item => new LessonActivityCandidate(
+            item.Id,
+            item.Code,
+            item.DisplayName,
+            item.VersionNumber,
+            item.MinDurationMinutes,
+            item.OptimalDurationMinutes,
+            item.MaxDurationMinutes,
+            item.ParticipantApplicability.ToString(),
+            item.AssessmentCapability.ToString(),
+            item.ExistingActivityCount)).ToList();
+        return new(items, LessonPlanEditorFailure.None);
+    }
+
+    public async Task<LessonPlanEditorResult> AddActivityAsync(
+        Guid teacherId,
+        Guid lessonPlanId,
+        Guid knowledgeBlockVersionId,
+        string rowVersion,
+        CancellationToken cancellationToken)
+    {
+        if (teacherId == Guid.Empty || lessonPlanId == Guid.Empty
+            || knowledgeBlockVersionId == Guid.Empty
+            || !TryRowVersion(rowVersion, out var expected))
+            return Failure(LessonPlanEditorFailure.Invalid);
+
+        await using var transaction = db.Database.IsRelational()
+            ? await db.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken)
+            : null;
+        try
+        {
+            var state = await LoadPlanStateAsync(teacherId, lessonPlanId, false, cancellationToken);
+            if (state is null) return Failure(LessonPlanEditorFailure.NotFound);
+            if (state.Version.Status != LessonPlanVersionStatus.Draft)
+                return Failure(LessonPlanEditorFailure.NotDraft);
+
+            var participant = state.IsStudent
+                ? KnowledgeBlockParticipantApplicability.Individual
+                : KnowledgeBlockParticipantApplicability.Group;
+            var candidate = await (
+                from block in db.KnowledgeBlocks
+                join version in db.KnowledgeBlockVersions
+                    on block.CurrentPublishedVersionId equals version.Id
+                where version.Id == knowledgeBlockVersionId
+                    && block.Status == KnowledgeBlockStatus.Active
+                    && version.Status == KnowledgeBlockVersionStatus.Published
+                    && version.HomeworkMode != KnowledgeBlockHomeworkMode.RequiresHomeworkContext
+                    && (version.ParticipantApplicability == KnowledgeBlockParticipantApplicability.Both
+                        || version.ParticipantApplicability == participant)
+                select new { block.Code, Version = version })
+                .SingleOrDefaultAsync(cancellationToken);
+            if (candidate is null)
+                return Failure(LessonPlanEditorFailure.KnowledgeBlockUnavailable);
+
+            var sortOrder = (await db.LessonActivities
+                .Where(item => item.LessonPlanVersionId == state.Version.Id)
+                .Select(item => (int?)item.SortOrder)
+                .MaxAsync(cancellationToken) ?? -1) + 1;
+            var activity = new LessonActivity(
+                Guid.NewGuid(),
+                state.Version.Id,
+                candidate.Version.Id,
+                sortOrder,
+                candidate.Version.DisplayName,
+                PurposeFor(candidate.Code),
+                candidate.Version.OptimalDurationMinutes!.Value);
+            db.LessonActivities.Add(activity);
+
+            var componentIds = await db.LessonPlanVersionKnowledgeComponents
+                .Where(item => item.LessonPlanVersionId == state.Version.Id)
+                .Select(item => item.KnowledgeComponentId)
+                .ToListAsync(cancellationToken);
+            db.LessonActivityKnowledgeComponents.AddRange(componentIds.Select(componentId =>
+                new LessonActivityKnowledgeComponent(activity.Id, componentId)));
+
+            db.Entry(state.Version).Property(item => item.RowVersion).OriginalValue = expected;
+            state.Version.RecordAuthoringChange(clock.GetUtcNow());
+            await db.SaveChangesAsync(cancellationToken);
+            if (transaction is not null) await transaction.CommitAsync(cancellationToken);
+
+            var structure = await structureService.GetAsync(teacherId, lessonPlanId, cancellationToken);
+            if (structure.View is null) return Failure(LessonPlanEditorFailure.Conflict);
+            return new(await BuildViewAsync(teacherId, structure.View, cancellationToken),
+                LessonPlanEditorFailure.None);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Failure(LessonPlanEditorFailure.Conflict);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is SqlException
+            { Number: 2601 or 2627 or 51311 or 51312 })
+        {
+            return Failure(LessonPlanEditorFailure.Conflict);
+        }
+    }
+
     public Task<LessonPlanEditorResult> AttachMaterialAsync(
         Guid teacherId,
         Guid lessonPlanId,
@@ -283,6 +430,22 @@ public sealed class EfLessonPlanEditorService(
         return await query.SingleOrDefaultAsync(cancellationToken);
     }
 
+    private async Task<PlanState?> LoadPlanStateAsync(
+        Guid teacherId,
+        Guid lessonPlanId,
+        bool noTracking,
+        CancellationToken cancellationToken)
+    {
+        var query = from plan in db.LessonPlans
+                    join version in db.LessonPlanVersions on plan.Id equals version.LessonPlanId
+                    where plan.Id == lessonPlanId && plan.TeacherAccountId == teacherId
+                        && plan.ArchivedAtUtc == null
+                        && version.Status == LessonPlanVersionStatus.Draft
+                    select new PlanState(version, plan.StudentId.HasValue);
+        if (noTracking) query = query.AsNoTracking();
+        return await query.SingleOrDefaultAsync(cancellationToken);
+    }
+
     private IQueryable<MaterialAccessRow> AccessibleCurrentMaterials(Guid teacherId) =>
         from material in db.Materials.AsNoTracking()
         join version in db.MaterialVersions.AsNoTracking()
@@ -315,8 +478,19 @@ public sealed class EfLessonPlanEditorService(
 
     private static LessonPlanEditorResult Failure(LessonPlanEditorFailure failure) => new(null, failure);
     private static LessonMaterialCandidateResult CandidateFailure(LessonPlanEditorFailure failure) => new(null, failure);
+    private static LessonActivityCandidateResult ActivityCandidateFailure(LessonPlanEditorFailure failure) => new(null, failure);
+
+    private static LessonActivityPurpose PurposeFor(string code) => code switch
+    {
+        "KB-001" => LessonActivityPurpose.Engagement,
+        "KB-002" => LessonActivityPurpose.ActivatePriorKnowledge,
+        "KB-004" => LessonActivityPurpose.Instruction,
+        "KB-005" => LessonActivityPurpose.Practice,
+        _ => LessonActivityPurpose.Other,
+    };
 
     private sealed record State(LessonPlanVersion Version, LessonActivity Activity);
+    private sealed record PlanState(LessonPlanVersion Version, bool IsStudent);
     private sealed class MaterialAccessRow
     {
         public required Material Material { get; init; }

@@ -994,14 +994,27 @@ AI/provider poziva ili naplate. Contract: `LESSON_PLAN_EDITOR_MATERIAL_ATTACHMEN
 EF drift/idempotent script, architecture i minimalni stvarni desktop/mobile visual gate
 prolaze. Full regression, dependency audit i Docker infrastructure validation su N/A prema
 STRICT VALIDATION BUDGET-u.
-## 9.7 Activity / Knowledge Block selection — TODO
+## 9.7 Activity / Knowledge Block selection — FINAL LOCKED
+
+**Implementirano 2026-11-06:** `/lesson-plans/:lessonPlanId/activity-selection` prikazuje
+owner-scoped current Published/Active Knowledge Blockove uz participant/homework hard
+eligibility, bounded search i duration filter. Eksplicitni Add uz CSRF i parent rowversion u
+serializable transakciji dodaje server-authoritative aktivnost na kraj Draft timelinea i
+preslikava trenutačne plan KC mappinge. Duplicate tip ostaje dopušten uz upozorenje; ne postoji
+lažni ActivityTemplate katalog. Contract: `LESSON_ACTIVITY_KNOWLEDGE_BLOCK_SELECTION.md`.
+
+**Acceptance 9.7: FINAL LOCKED — odobreno 2026-11-06.** Release build, targeted backend/frontend,
+architecture, stvarni SQL runtime i minimalni desktop/mobile visual gate prolaze. Full
+regression, dependency audit i Docker infrastructure validation su N/A prema STRICT
+VALIDATION BUDGET-u.
 ## 9.8 Lesson Activity detail/edit and regeneration — TODO
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
 **Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog, Phase 9.4
 goal-selection runtime, Phase 9.5 structure/timeline runtime i Phase 9.6 editor/material
-attachment runtime su FINAL LOCKED. Phase 9.7 je sljedeći izvršni korak. Planiranje ne stvara `Attempt`,
-`EvidenceEvent` niti mijenja Knowledge Model.
+attachment runtime i Phase 9.7 Activity / Knowledge Block selection su FINAL LOCKED. Phase 9.8 je
+sljedeći izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge
+Model.
 
 ---
 

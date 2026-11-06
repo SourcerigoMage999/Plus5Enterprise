@@ -80,7 +80,9 @@ describe('lesson plan editor material attachments', () => {
     open()
     fireEvent.click(await screen.findByRole('button', { name: 'Ukloni Present Perfect worksheet' }))
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Ukloni Present Perfect worksheet' })).not.toBeInTheDocument())
-    expect(screen.getByRole('button', { name: /Dodaj aktivnost/ })).toBeDisabled()
+    expect(screen.getByRole('link', { name: /Dodaj aktivnost/ })).toHaveAttribute(
+      'href', `/lesson-plans/${planId}/activity-selection`,
+    )
     expect(screen.getByRole('button', { name: 'Spremi i nastavi' })).toBeDisabled()
   })
 })

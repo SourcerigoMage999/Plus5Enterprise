@@ -188,6 +188,19 @@ export interface LessonMaterialCandidatePage {
   readonly totalCount: number
 }
 
+export interface LessonActivityCandidate {
+  readonly knowledgeBlockVersionId: string
+  readonly code: string
+  readonly name: string
+  readonly versionNumber: number
+  readonly minDurationMinutes: number
+  readonly optimalDurationMinutes: number
+  readonly maxDurationMinutes: number
+  readonly participantApplicability: string
+  readonly assessmentCapability: string
+  readonly existingActivityCount: number
+}
+
 export function getLessonPlanEditor(lessonPlanId: string, signal?: AbortSignal) {
   return getJson<LessonPlanEditor>(`/lesson-plans/${lessonPlanId}/editor/`, signal)
 }
@@ -203,6 +216,32 @@ export function getLessonMaterialCandidates(
   return getJson<LessonMaterialCandidatePage>(
     `/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/material-candidates?${query}`,
     signal,
+  )
+}
+
+export function getLessonActivityCandidates(
+  lessonPlanId: string,
+  search: string,
+  maximumDurationMinutes: number | null,
+  signal?: AbortSignal,
+) {
+  const query = new URLSearchParams()
+  if (search.trim()) query.set('search', search.trim())
+  if (maximumDurationMinutes !== null) query.set('maximumDurationMinutes', String(maximumDurationMinutes))
+  return getJson<LessonActivityCandidate[]>(
+    `/lesson-plans/${lessonPlanId}/editor/activity-candidates?${query}`,
+    signal,
+  )
+}
+
+export function addLessonActivity(
+  lessonPlanId: string,
+  knowledgeBlockVersionId: string,
+  rowVersion: string,
+) {
+  return postJson<LessonPlanEditor>(
+    `/lesson-plans/${lessonPlanId}/editor/activities`,
+    { knowledgeBlockVersionId, rowVersion },
   )
 }
 

@@ -15,6 +15,9 @@ public static class LessonPlanEditorEndpoints
             .MapGroup("/lesson-plans/{lessonPlanId:guid}/editor")
             .RequireAuthorization(IdentityServiceExtensions.TeacherPolicy);
         group.MapGet("/", GetAsync);
+        group.MapGet("/activity-candidates", GetActivityCandidatesAsync);
+        group.MapPost("/activities", AddActivityAsync)
+            .AddEndpointFilter(ValidateCsrfAsync);
         group.MapGet("/activities/{activityId:guid}/material-candidates", GetCandidatesAsync);
         group.MapPost("/activities/{activityId:guid}/materials/{materialVersionId:guid}", AttachAsync)
             .AddEndpointFilter(ValidateCsrfAsync);
@@ -54,6 +57,40 @@ public static class LessonPlanEditorEndpoints
             LessonPlanEditorFailure.Invalid => Problem(400, "lesson_editor_invalid_request"),
             _ => Problem(404, "lesson_editor_not_found"),
         };
+    }
+
+    private static async Task<IResult> GetActivityCandidatesAsync(
+        Guid lessonPlanId,
+        string? search,
+        int? maximumDurationMinutes,
+        HttpContext context,
+        ILessonPlanEditorService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+            return TypedResults.Unauthorized();
+        var result = await service.GetActivityCandidatesAsync(teacherId, lessonPlanId,
+            search, maximumDurationMinutes, cancellationToken);
+        return result.Failure switch
+        {
+            LessonPlanEditorFailure.None => TypedResults.Ok(result.Items),
+            LessonPlanEditorFailure.Invalid => Problem(400, "lesson_activity_selection_invalid_request"),
+            LessonPlanEditorFailure.NotDraft => Problem(409, "lesson_editor_not_draft"),
+            _ => Problem(404, "lesson_editor_not_found"),
+        };
+    }
+
+    private static async Task<IResult> AddActivityAsync(
+        Guid lessonPlanId,
+        [FromBody] AddActivityRequest request,
+        HttpContext context,
+        ILessonPlanEditorService service,
+        CancellationToken cancellationToken)
+    {
+        if (!IdentityClaims.TryRead(context.User, out var teacherId, out _))
+            return TypedResults.Unauthorized();
+        return ToResult(await service.AddActivityAsync(teacherId, lessonPlanId,
+            request.KnowledgeBlockVersionId, request.RowVersion, cancellationToken));
     }
 
     private static async Task<IResult> AttachAsync(
@@ -96,6 +133,8 @@ public static class LessonPlanEditorEndpoints
         LessonPlanEditorFailure.MaterialUnavailable => Problem(409, "lesson_material_unavailable"),
         LessonPlanEditorFailure.AlreadyAttached => Problem(409, "lesson_material_already_attached"),
         LessonPlanEditorFailure.AttachmentNotFound => Problem(409, "lesson_material_attachment_not_found"),
+        LessonPlanEditorFailure.KnowledgeBlockUnavailable =>
+            Problem(409, "lesson_knowledge_block_unavailable"),
         _ => Problem(409, "concurrency_conflict"),
     };
 
@@ -122,6 +161,14 @@ public static class LessonPlanEditorEndpoints
 
     public sealed record RowVersionRequest
     {
+        [Required, StringLength(24)]
+        public string RowVersion { get; init; } = string.Empty;
+    }
+
+    public sealed record AddActivityRequest
+    {
+        public Guid KnowledgeBlockVersionId { get; init; }
+
         [Required, StringLength(24)]
         public string RowVersion { get; init; } = string.Empty;
     }

@@ -29,6 +29,7 @@ import { DashboardPage } from '../dashboard/DashboardPage.tsx'
 import { LessonGoalSelectionPage } from '../lessonPlanning/LessonGoalSelectionPage.tsx'
 import { LessonStructurePage } from '../lessonPlanning/LessonStructurePage.tsx'
 import { LessonPlanEditorPage } from '../lessonPlanning/LessonPlanEditorPage.tsx'
+import { LessonActivitySelectionPage } from '../lessonPlanning/LessonActivitySelectionPage.tsx'
 
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials' && item.id !== 'lesson-plans')
 
@@ -69,6 +70,7 @@ export function AppRoutes() {
           <Route path="lesson-plans" element={<LessonGoalSelectionPage />} />
           <Route path="lesson-plans/:lessonPlanId/structure" element={<LessonStructurePage />} />
           <Route path="lesson-plans/:lessonPlanId/editor" element={<LessonPlanEditorPage />} />
+          <Route path="lesson-plans/:lessonPlanId/activity-selection" element={<LessonActivitySelectionPage />} />
           {moduleItems.map((item) => (
             <Route
               key={item.id}

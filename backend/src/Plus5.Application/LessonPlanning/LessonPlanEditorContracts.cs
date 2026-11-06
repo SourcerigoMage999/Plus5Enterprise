@@ -59,6 +59,18 @@ public sealed record LessonMaterialCandidatePage(
     int PageSize,
     long TotalCount);
 
+public sealed record LessonActivityCandidate(
+    Guid KnowledgeBlockVersionId,
+    string Code,
+    string Name,
+    int VersionNumber,
+    int MinDurationMinutes,
+    int OptimalDurationMinutes,
+    int MaxDurationMinutes,
+    string ParticipantApplicability,
+    string AssessmentCapability,
+    int ExistingActivityCount);
+
 public enum LessonPlanEditorFailure
 {
     None,
@@ -69,6 +81,7 @@ public enum LessonPlanEditorFailure
     MaterialUnavailable,
     AlreadyAttached,
     AttachmentNotFound,
+    KnowledgeBlockUnavailable,
     Conflict,
 }
 
@@ -78,6 +91,10 @@ public sealed record LessonPlanEditorResult(
 
 public sealed record LessonMaterialCandidateResult(
     LessonMaterialCandidatePage? Page,
+    LessonPlanEditorFailure Failure);
+
+public sealed record LessonActivityCandidateResult(
+    IReadOnlyList<LessonActivityCandidate>? Items,
     LessonPlanEditorFailure Failure);
 
 public interface ILessonPlanEditorService
@@ -94,6 +111,20 @@ public interface ILessonPlanEditorService
         string? search,
         int page,
         int pageSize,
+        CancellationToken cancellationToken);
+
+    Task<LessonActivityCandidateResult> GetActivityCandidatesAsync(
+        Guid teacherId,
+        Guid lessonPlanId,
+        string? search,
+        int? maximumDurationMinutes,
+        CancellationToken cancellationToken);
+
+    Task<LessonPlanEditorResult> AddActivityAsync(
+        Guid teacherId,
+        Guid lessonPlanId,
+        Guid knowledgeBlockVersionId,
+        string rowVersion,
         CancellationToken cancellationToken);
 
     Task<LessonPlanEditorResult> AttachMaterialAsync(

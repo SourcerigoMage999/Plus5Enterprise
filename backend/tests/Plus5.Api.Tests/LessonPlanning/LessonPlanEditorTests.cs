@@ -97,6 +97,66 @@ public sealed class LessonPlanEditorTests
         Assert.Contains(page.Page.Items, item => item.MaterialVersionId == replacement.Id);
     }
 
+    [Fact]
+    public async Task CurrentPublishedEligibleBlocksCanBeSelectedAndAppendedWithPlanKnowledge()
+    {
+        await using var db = CreateDbContext();
+        var fixture = await CreatePlanAsync(db);
+        var structure = new EfLessonStructureService(db, new FixedTimeProvider());
+        var applied = await structure.ApplyBaselineAsync(fixture.Teacher.Id, fixture.Plan.Id,
+            Convert.ToBase64String(new byte[8]), CancellationToken.None);
+        var service = new EfLessonPlanEditorService(db, structure, new FixedTimeProvider());
+
+        var candidates = await service.GetActivityCandidatesAsync(fixture.Teacher.Id,
+            fixture.Plan.Id, "Interaktivni", 30, CancellationToken.None);
+
+        var candidate = Assert.Single(candidates.Items!);
+        Assert.Equal("KB-005", candidate.Code);
+        Assert.Equal(1, candidate.ExistingActivityCount);
+
+        var result = await service.AddActivityAsync(fixture.Teacher.Id, fixture.Plan.Id,
+            candidate.KnowledgeBlockVersionId, applied.View!.RowVersion, CancellationToken.None);
+
+        Assert.Equal(LessonPlanEditorFailure.None, result.Failure);
+        var added = result.View!.Activities.Single(item => item.SortOrder == 5);
+        Assert.Equal("Interaktivni zadaci", added.Name);
+        Assert.Equal(20, added.DurationMinutes);
+        Assert.Equal("KB-005", added.KnowledgeBlockCode);
+        Assert.Equal([fixture.Component.Id], added.KnowledgeComponentIds);
+    }
+
+    [Fact]
+    public async Task DraftHomeworkRequiredAndForeignCandidatesAreNotExposed()
+    {
+        await using var db = CreateDbContext();
+        var fixture = await CreatePlanAsync(db);
+        var homeworkRoot = new KnowledgeBlock(Guid.NewGuid(), "KB-003", Now);
+        var homeworkVersion = new KnowledgeBlockVersion(Guid.NewGuid(), homeworkRoot.Id, 1,
+            "Pregled domaće zadaće", Now,
+            homeworkMode: KnowledgeBlockHomeworkMode.RequiresHomeworkContext);
+        homeworkVersion.Publish(5, 10, 20, Now);
+        homeworkRoot.SetCurrentPublishedVersion(homeworkVersion);
+        var draftRoot = new KnowledgeBlock(Guid.NewGuid(), "KB-006", Now);
+        var draftVersion = new KnowledgeBlockVersion(Guid.NewGuid(), draftRoot.Id, 1,
+            "Mini provjera razumijevanja", Now);
+        db.AddRange(homeworkRoot, homeworkVersion, draftRoot, draftVersion);
+        await db.SaveChangesAsync();
+        var service = new EfLessonPlanEditorService(db,
+            new EfLessonStructureService(db, new FixedTimeProvider()), new FixedTimeProvider());
+
+        var candidates = await service.GetActivityCandidatesAsync(fixture.Teacher.Id,
+            fixture.Plan.Id, null, null, CancellationToken.None);
+        var foreign = await service.GetActivityCandidatesAsync(Guid.NewGuid(), fixture.Plan.Id,
+            null, null, CancellationToken.None);
+        var unavailable = await service.AddActivityAsync(fixture.Teacher.Id, fixture.Plan.Id,
+            homeworkVersion.Id, Convert.ToBase64String(new byte[8]), CancellationToken.None);
+
+        Assert.Equal(["KB-001", "KB-002", "KB-004", "KB-005"],
+            candidates.Items!.Select(item => item.Code));
+        Assert.Equal(LessonPlanEditorFailure.NotFound, foreign.Failure);
+        Assert.Equal(LessonPlanEditorFailure.KnowledgeBlockUnavailable, unavailable.Failure);
+    }
+
     private static async Task<PlanFixture> CreatePlanAsync(Plus5DbContext db)
     {
         var teacher = new UserAccount(Guid.NewGuid(), "owner@plus5.local", "OWNER@PLUS5.LOCAL", Now);

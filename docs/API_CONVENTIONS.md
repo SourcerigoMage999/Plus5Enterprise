@@ -174,3 +174,15 @@ Teacher sesiju, CSRF i parent `LessonPlanVersion.RowVersion`; attachment se mije
 stale write vraća `409 concurrency_conflict`. Missing/foreign/archived aggregatei dijele isti
 404. Response ne sadrži storage key, signed/public URL, scan detalje ni binary. Detalji su u
 `LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.
+
+## Phase 9.7 Activity / Knowledge Block selection API
+
+`GET /api/v1/lesson-plans/{lessonPlanId}/editor/activity-candidates` vraća samo current
+Published verzije Active blokova koji odgovaraju participant i homework kontekstu Draft
+plana. Search je bounded na 120 znakova, a opcionalni duration filter na 1–480 minuta.
+
+`POST /api/v1/lesson-plans/{lessonPlanId}/editor/activities` prihvaća exact
+`knowledgeBlockVersionId` i parent `rowVersion`, zahtijeva CSRF te atomarno dodaje novu
+server-authoritative aktivnost na kraj Draft timelinea. Missing/foreign/archived dijele isti
+404; lifecycle-nevaljan blok vraća `409 lesson_knowledge_block_unavailable`, a stale parent
+`409 concurrency_conflict`. Detalji su u `LESSON_ACTIVITY_KNOWLEDGE_BLOCK_SELECTION.md`.

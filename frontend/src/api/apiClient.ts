@@ -217,6 +217,10 @@ function friendlyMessage(code?: string): string {
       return 'Nije moguće dodati ovog učitelja.'
     case 'lesson_goal_invalid_request':
       return 'Odaberite sudionika, unesite cilj sata i odaberite barem jednu komponentu znanja.'
+    case 'lesson_activity_selection_invalid_request':
+      return 'Provjerite pretragu i odabrani raspon trajanja.'
+    case 'lesson_knowledge_block_unavailable':
+      return 'Odabrani Knowledge Block više nije dostupan. Osvježite popis.'
     case 'lesson_goal_participant_unavailable':
       return 'Odabrani učenik ili grupa više nisu dostupni.'
     case 'lesson_goal_session_mismatch':

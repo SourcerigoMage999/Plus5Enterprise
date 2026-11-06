@@ -12,6 +12,7 @@ import {
   type LessonPlanEditorActivity,
 } from './lessonPlanningApi.ts'
 import './LessonPlanEditorPage.css'
+import './LessonPlanEditorPhase97.css'
 
 export function LessonPlanEditorPage() {
   const { lessonPlanId = '' } = useParams()
@@ -101,7 +102,7 @@ export function LessonPlanEditorPage() {
             onAttach={(versionId) => void attach(activity.id, versionId)}
             onDetach={(versionId) => void detach(activity.id, versionId)}
           />)}
-          <button className="lesson-editor-future-action" type="button" disabled>+ Dodaj aktivnost — Phase 9.7</button>
+          <Link className="lesson-editor-add-activity" to={`/lesson-plans/${lessonPlanId}/activity-selection`}>+ Dodaj aktivnost</Link>
         </main>
 
         <section className="lesson-editor-side">
@@ -117,7 +118,7 @@ export function LessonPlanEditorPage() {
         <aside className="lesson-editor-side">
           <article className="lesson-editor-card"><h2>Fokus sata</h2><p>{view.goal}</p><div className="lesson-editor-chips">{view.knowledgeComponents.map((item) => <span key={item.id}>{item.name}<small>{item.modelCode} · {item.modelVersion}</small></span>)}</div></article>
           <article className="lesson-editor-card"><h2>Provjera balansa</h2><div className="lesson-editor-balance">{view.balance.map((area) => <BalanceRow key={area.code} area={area} />)}</div></article>
-          <article className="lesson-editor-card lesson-editor-next"><h2>Sljedeći korak</h2><p>Odabir novih aktivnosti i Knowledge Blockova dolazi u Phase 9.7.</p><button type="button" disabled>Spremi i nastavi</button></article>
+          <article className="lesson-editor-card lesson-editor-next"><h2>Sljedeći korak</h2><p>Dodajte aktivnosti iz odobrenog Knowledge Block kataloga. Potvrda plana dolazi u Phase 9.9.</p><button type="button" disabled>Spremi i nastavi</button></article>
         </aside>
       </div>
     </section>

@@ -1,0 +1,13 @@
+.lesson-editor-add-activity {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px dashed #7ca7c4;
+  border-radius: 9px;
+  padding: 11px;
+  background: #fff;
+  color: #215a83;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 900;
+}
