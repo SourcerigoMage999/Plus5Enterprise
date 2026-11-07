@@ -25,3 +25,10 @@
 .ds-status[data-tone='positive'] { color: var(--ds-status-positive-text); background: var(--ds-status-positive-bg); }
 .ds-status[data-tone='warning'] { color: var(--ds-status-warning-text); background: var(--ds-status-warning-bg); }
 .ds-status[data-tone='neutral'] { color: var(--ds-status-neutral-text); background: var(--ds-status-neutral-bg); }
+
+/* Keep page actions below the floating notification/profile zone in the business shell. */
+@media (min-width: 56.3125rem) {
+  .shell-content--students .ds-page-actions--below-global-profile {
+    margin-top: 3.75rem;
+  }
+}

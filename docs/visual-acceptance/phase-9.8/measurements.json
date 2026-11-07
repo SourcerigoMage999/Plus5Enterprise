@@ -1,0 +1,30 @@
+{
+  "phase": "9.8",
+  "capturedAt": "2026-11-07",
+  "canonicalSha256": "F94BCFD41AEF109C5E863693FB72C5D9E852472077D3CB9A8449A8FE9A118511",
+  "desktop": {
+    "viewportWidth": 1536,
+    "viewportHeight": 1024,
+    "clientWidth": 1521,
+    "scrollWidth": 1521,
+    "documentHorizontalOverflow": false,
+    "actionsProfileOverlap": false,
+    "verticalClearancePx": 57.21875,
+    "errorStateVisible": false
+  },
+  "mobile": {
+    "viewportWidth": 390,
+    "viewportHeight": 844,
+    "clientWidth": 375,
+    "scrollWidth": 375,
+    "documentHorizontalOverflow": false,
+    "actionsProfileOverlap": false,
+    "verticalClearancePx": 164.59375,
+    "errorStateVisible": false
+  },
+  "browserErrors": 0,
+  "businessWritesDuringCapture": 0,
+  "activityDetailHttpStatus": 200,
+  "aiEnabled": false,
+  "externalProviderCalls": 0
+}

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Plus5.Infrastructure.Identity;
 using Plus5.Infrastructure.Materials;
+using Plus5.Infrastructure.LessonPlanning;
 
 namespace Plus5.Api.Configuration;
 
@@ -30,6 +31,7 @@ public static class ConfigurationExtensions
         builder.Services.AddSingleton<
             IValidateOptions<PresentationAiOptions>,
             PresentationAiOptionsValidator>();
+        builder.Services.AddSingleton<IValidateOptions<LessonBuilderAiOptions>, LessonBuilderAiOptionsValidator>();
         builder.Services
             .AddOptions<FrontendOptions>()
             .Bind(builder.Configuration.GetSection(FrontendOptions.SectionName))
@@ -45,6 +47,10 @@ public static class ConfigurationExtensions
         builder.Services
             .AddOptions<PresentationAiOptions>()
             .Bind(builder.Configuration.GetSection(PresentationAiOptions.SectionName))
+            .ValidateOnStart();
+        builder.Services
+            .AddOptions<LessonBuilderAiOptions>()
+            .Bind(builder.Configuration.GetSection(LessonBuilderAiOptions.SectionName))
             .ValidateOnStart();
 
         return builder;

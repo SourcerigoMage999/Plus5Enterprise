@@ -268,3 +268,95 @@ export function detachLessonMaterial(
     { rowVersion },
   )
 }
+
+export interface LessonBuilderAiStatus {
+  readonly enabled: boolean
+  readonly paidExternalService: boolean
+  readonly automaticCalls: boolean
+  readonly inAppBilling: boolean
+}
+
+export interface LessonActivityDetail {
+  readonly lessonPlanId: string
+  readonly lessonPlanVersionId: string
+  readonly rowVersion: string
+  readonly participantName: string
+  readonly participantType: ParticipantType
+  readonly session: LessonPlanEditorSession | null
+  readonly goal: string
+  readonly targetDurationMinutes: number
+  readonly activityId: string
+  readonly sortOrder: number
+  readonly name: string
+  readonly purpose: string
+  readonly durationMinutes: number
+  readonly workMode: 'Individual' | 'Pair' | 'Group'
+  readonly description: string | null
+  readonly purposeDescription: string | null
+  readonly teacherInstructions: string | null
+  readonly studentInstructions: string | null
+  readonly notes: string | null
+  readonly showTeacherInstructionsOnBoard: boolean
+  readonly showStudentInstructionsOnBoard: boolean
+  readonly showProgressOnBoard: boolean
+  readonly knowledgeBlockVersionId: string | null
+  readonly knowledgeBlockCode: string | null
+  readonly knowledgeBlockName: string | null
+  readonly availableKnowledgeComponents: LessonStructureKnowledge[]
+  readonly selectedKnowledgeComponentIds: string[]
+  readonly materials: LessonActivityMaterialAttachment[]
+  readonly aiStatus: LessonBuilderAiStatus
+}
+
+export interface LessonActivityAiSuggestion {
+  readonly id: string
+  readonly status: string
+  readonly contentJson: string | null
+  readonly provider: string
+  readonly model: string
+  readonly promptTemplateVersion: string
+  readonly generatedAtUtc: string
+  readonly expiresAtUtc: string
+  readonly replacesSuggestionId: string | null
+}
+
+export interface LessonActivityAiResult {
+  readonly outcome: string
+  readonly suggestion: LessonActivityAiSuggestion | null
+  readonly detail: LessonActivityDetail | null
+}
+
+export function getLessonActivityDetail(lessonPlanId: string, activityId: string, signal?: AbortSignal) {
+  return getJson<LessonActivityDetail>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}`, signal)
+}
+
+export function updateLessonActivity(lessonPlanId: string, activityId: string, input: Omit<LessonActivityDetail,
+  'lessonPlanId' | 'lessonPlanVersionId' | 'participantName' | 'participantType' | 'session' | 'goal' |
+  'targetDurationMinutes' | 'activityId' | 'sortOrder' | 'knowledgeBlockVersionId' | 'knowledgeBlockCode' |
+  'knowledgeBlockName' | 'availableKnowledgeComponents' | 'selectedKnowledgeComponentIds' | 'materials' | 'aiStatus'>) {
+  return putJson<LessonActivityDetail>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}`, input)
+}
+
+export function updateLessonActivityKnowledge(lessonPlanId: string, activityId: string, rowVersion: string, knowledgeComponentIds: string[]) {
+  return putJson<LessonActivityDetail>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/knowledge-components`, { rowVersion, knowledgeComponentIds })
+}
+
+export function duplicateLessonActivity(lessonPlanId: string, activityId: string, rowVersion: string) {
+  return postJson<LessonPlanEditor>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/duplicate`, { rowVersion })
+}
+
+export function deleteLessonActivity(lessonPlanId: string, activityId: string, rowVersion: string) {
+  return deleteJson<LessonPlanEditor>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}`, { rowVersion })
+}
+
+export function reorderLessonActivities(lessonPlanId: string, rowVersion: string, activityIds: string[]) {
+  return putJson<LessonPlanEditor>(`/lesson-plans/${lessonPlanId}/editor/activities/reorder`, { rowVersion, activityIds })
+}
+
+export function createLessonActivityAiSuggestion(lessonPlanId: string, activityId: string, rowVersion: string, replacesSuggestionId: string | null = null) {
+  return postJson<LessonActivityAiResult>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/ai/suggestions`, { rowVersion, replacesSuggestionId })
+}
+
+export function resolveLessonActivityAiSuggestion(lessonPlanId: string, activityId: string, suggestionId: string, rowVersion: string, decision: 'Accept' | 'Edit' | 'Reject', editedContentJson: string | null = null) {
+  return postJson<LessonActivityAiResult>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/ai/suggestions/${suggestionId}/resolve`, { rowVersion, decision, editedContentJson })
+}

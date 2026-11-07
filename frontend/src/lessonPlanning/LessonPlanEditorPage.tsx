@@ -10,6 +10,7 @@ import {
   type LessonMaterialCandidate,
   type LessonPlanEditor,
   type LessonPlanEditorActivity,
+  reorderLessonActivities,
 } from './lessonPlanningApi.ts'
 import './LessonPlanEditorPage.css'
 import './LessonPlanEditorPhase97.css'
@@ -68,6 +69,18 @@ export function LessonPlanEditorPage() {
     finally { setSavingKey(null) }
   }
 
+  async function move(activityId: string, offset: number) {
+    if (!view || savingKey) return
+    const ids = view.activities.map(item => item.id)
+    const current = ids.indexOf(activityId); const target = current + offset
+    if (current < 0 || target < 0 || target >= ids.length) return
+    ;[ids[current], ids[target]] = [ids[target], ids[current]]
+    setSavingKey(activityId)
+    try { setView(await reorderLessonActivities(lessonPlanId, view.rowVersion, ids)) }
+    catch (requestError) { setError(message(requestError, 'Redoslijed aktivnosti nije spremljen.')) }
+    finally { setSavingKey(null) }
+  }
+
   if (loading) return <section className="lesson-editor-state"><p>Učitavanje plana sata…</p></section>
   if (!view) return <section className="lesson-editor-state"><h1>Plan sata nije dostupan</h1>{error && <p role="alert">{error}</p>}<Link to="/lesson-plans">Povratak na pripremu sata</Link></section>
 
@@ -84,9 +97,10 @@ export function LessonPlanEditorPage() {
 
       <div className="lesson-editor-layout">
         <main className="lesson-editor-activities">
-          <div className="lesson-editor-section-heading"><div><h2>Planirane aktivnosti ({view.targetDurationMinutes} min)</h2><p>Phase 9.6 čuva postojeći redoslijed i sadržaj; uređivanje aktivnosti dolazi u sljedećim fazama.</p></div></div>
+          <div className="lesson-editor-section-heading"><div><h2>Planirane aktivnosti ({view.targetDurationMinutes} min)</h2><p>Prilagodite redoslijed ili otvorite detalje aktivnosti za uređivanje sadržaja.</p></div></div>
           {view.activities.map((activity) => <ActivityCard
             key={activity.id}
+            lessonPlanId={lessonPlanId}
             activity={activity}
             pickerOpen={pickerActivityId === activity.id}
             candidates={candidates}
@@ -101,6 +115,9 @@ export function LessonPlanEditorPage() {
             }}
             onAttach={(versionId) => void attach(activity.id, versionId)}
             onDetach={(versionId) => void detach(activity.id, versionId)}
+            onMove={(offset) => void move(activity.id, offset)}
+            canMoveUp={activity.sortOrder > 0}
+            canMoveDown={activity.sortOrder < view.activities.length - 1}
           />)}
           <Link className="lesson-editor-add-activity" to={`/lesson-plans/${lessonPlanId}/activity-selection`}>+ Dodaj aktivnost</Link>
         </main>
@@ -135,6 +152,7 @@ function PlanSummary({ view }: { readonly view: LessonPlanEditor }) {
 }
 
 function ActivityCard(props: {
+  readonly lessonPlanId: string
   readonly activity: LessonPlanEditorActivity
   readonly pickerOpen: boolean
   readonly candidates: LessonMaterialCandidate[]
@@ -145,12 +163,20 @@ function ActivityCard(props: {
   readonly onTogglePicker: () => void
   readonly onAttach: (versionId: string) => void
   readonly onDetach: (versionId: string) => void
+  readonly onMove: (offset: number) => void
+  readonly canMoveUp: boolean
+  readonly canMoveDown: boolean
 }) {
   const { activity } = props
   return <article className="lesson-editor-activity">
     <div className="lesson-editor-order">{activity.sortOrder + 1}</div>
     <div className="lesson-editor-activity-body">
       <div className="lesson-editor-activity-title"><div><h3>{activity.name}</h3><p>{purposeLabel(activity.purpose)}{activity.knowledgeBlockCode ? ` · ${activity.knowledgeBlockCode}` : ''}</p></div><strong>{activity.durationMinutes} min</strong></div>
+      <div className="lesson-editor-activity-tools">
+        <button type="button" disabled={!props.canMoveUp || props.savingKey === activity.id} onClick={() => props.onMove(-1)} aria-label="Pomakni aktivnost gore">↑</button>
+        <button type="button" disabled={!props.canMoveDown || props.savingKey === activity.id} onClick={() => props.onMove(1)} aria-label="Pomakni aktivnost dolje">↓</button>
+        <Link to={`/lesson-plans/${props.lessonPlanId}/activities/${activity.id}`}>Uredi detalje</Link>
+      </div>
       <div className="lesson-editor-activity-materials">
         {activity.materials.map((material) => <span key={material.materialVersionId}><span><strong>{material.title}</strong><small>v{material.versionNumber} · {material.matchingKnowledgeComponentCount} KC podudaranja</small></span><button type="button" aria-label={`Ukloni ${material.title}`} disabled={props.savingKey === material.materialVersionId} onClick={() => props.onDetach(material.materialVersionId)}>×</button></span>)}
         <button type="button" onClick={props.onTogglePicker}>{props.pickerOpen ? 'Zatvori materijale' : '+ Dodaj materijal'}</button>

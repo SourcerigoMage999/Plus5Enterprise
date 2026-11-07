@@ -112,6 +112,11 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
   veže immutable exact current Active/Clean MaterialVersion i ostavlja historical verziju
   pinned bez auto-upgradea. Detalji: `LESSON_BUILDER_TIMELINE_BALANCE.md` i
   `LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.
+- **RIJEŠENO 2026-11-07 — Phase 9.8, ADR-0032:** Lesson Activity detail/edit, deep duplicate,
+  Draft-only delete, atomic contiguous reorder i activity KC subset koriste parent
+  rowversion. AI regeneration ostaje defaultno isključen suggestion workflow, mijenja samo
+  šest dopuštenih tekst/work-mode polja, nikad ne prima Notes i nema PLUS 5 naplatu.
+  Detalji: `LESSON_ACTIVITY_DETAIL_EDITING_AI.md`.
 - PLUS 5 Ploča: Lesson Session persistence, autosave/recovery i Evidence emission/invalidation contract
 - Povijest sati: immutable historical Task/Material version references i void/audit semantics
 - Domaće zadaće: Assignment/Submission, participant access, versioning i Evidence contract

@@ -1030,6 +1030,10 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<int>("DurationMinutes")
                         .HasColumnType("int");
 
@@ -1044,10 +1048,38 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                         .HasMaxLength(160)
                         .HasColumnType("nvarchar(160)");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<int>("Purpose")
                         .HasColumnType("int");
 
+                    b.Property<string>("PurposeDescription")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<bool>("ShowProgressOnBoard")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ShowStudentInstructionsOnBoard")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ShowTeacherInstructionsOnBoard")
+                        .HasColumnType("bit");
+
                     b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudentInstructions")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("TeacherInstructions")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("WorkMode")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1068,6 +1100,92 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                             t.HasCheckConstraint("CK_LessonActivities_Purpose", "[Purpose] BETWEEN 1 AND 6");
 
                             t.HasCheckConstraint("CK_LessonActivities_SortOrder", "[SortOrder] >= 0");
+
+                            t.HasCheckConstraint("CK_LessonActivities_WorkMode", "[WorkMode] BETWEEN 1 AND 3");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivityAiSuggestion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("BasedOnRowVersion")
+                        .IsRequired()
+                        .HasColumnType("binary(8)");
+
+                    b.Property<string>("ContentJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<DateTimeOffset>("GeneratedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<Guid>("LessonActivityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LessonPlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("LessonPlanVersionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("PromptTemplateVersion")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<Guid?>("ReplacesSuggestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ResolvedAtUtc")
+                        .HasPrecision(7)
+                        .HasColumnType("datetimeoffset(7)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TeacherAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReplacesSuggestionId");
+
+                    b.HasIndex("LessonActivityId", "Status");
+
+                    b.HasIndex("LessonPlanId", "LessonPlanVersionId");
+
+                    b.HasIndex("TeacherAccountId", "LessonPlanId");
+
+                    b.HasIndex("TeacherAccountId", "Status", "GeneratedAtUtc");
+
+                    b.ToTable("LessonActivityAiSuggestions", null, t =>
+                        {
+                            t.HasTrigger("TR_LessonActivityAiSuggestions_Validate");
+
+                            t.HasCheckConstraint("CK_LessonActivityAiSuggestions_ContentLifecycle", "([Status] = 1 AND [ContentJson] IS NOT NULL AND ISJSON([ContentJson]) = 1 AND [ResolvedAtUtc] IS NULL) OR ([Status] BETWEEN 2 AND 6 AND [ContentJson] IS NULL AND [ResolvedAtUtc] IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_LessonActivityAiSuggestions_Expiry", "[ExpiresAtUtc] > [GeneratedAtUtc]");
+
+                            t.HasCheckConstraint("CK_LessonActivityAiSuggestions_Status", "[Status] BETWEEN 1 AND 6");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -3281,6 +3399,34 @@ namespace Plus5.Infrastructure.Persistence.Migrations
                     b.HasOne("Plus5.Domain.LessonPlanning.LessonPlanVersion", null)
                         .WithMany()
                         .HasForeignKey("LessonPlanVersionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Plus5.Domain.LessonPlanning.LessonActivityAiSuggestion", b =>
+                {
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonActivityAiSuggestion", null)
+                        .WithMany()
+                        .HasForeignKey("ReplacesSuggestionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Plus5.Domain.Identity.UserAccount", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonPlanVersion", null)
+                        .WithMany()
+                        .HasForeignKey("LessonPlanId", "LessonPlanVersionId")
+                        .HasPrincipalKey("LessonPlanId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Plus5.Domain.LessonPlanning.LessonPlan", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherAccountId", "LessonPlanId")
+                        .HasPrincipalKey("TeacherAccountId", "Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

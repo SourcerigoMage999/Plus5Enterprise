@@ -1007,14 +1007,29 @@ lažni ActivityTemplate katalog. Contract: `LESSON_ACTIVITY_KNOWLEDGE_BLOCK_SELE
 architecture, stvarni SQL runtime i minimalni desktop/mobile visual gate prolaze. Full
 regression, dependency audit i Docker infrastructure validation su N/A prema STRICT
 VALIDATION BUDGET-u.
-## 9.8 Lesson Activity detail/edit and regeneration — TODO
+## 9.8 Lesson Activity detail/edit and regeneration — FINAL LOCKED
+
+**Implementirano 2026-11-07:** `/lesson-plans/:lessonPlanId/activities/:activityId` prikazuje
+owner-scoped Screen 5.5 i omogućuje rowversion-safe manualni edit, activity KC subset, deep
+duplicate, Draft-only delete i atomarni contiguous reorder. Default-disabled AI suggestion
+smije predložiti samo šest zaključanih content/work-mode polja; Notes, trajanje, Purpose,
+KB/KC, materijali/taskovi, redoslijed i Board flags ostaju authority manualnog Draft graph-a.
+Nema automatskih provider poziva, PLUS 5 AI billing/credits ni in-app naplate. Contract:
+`LESSON_ACTIVITY_DETAIL_EDITING_AI.md`; odluka: ADR-0032.
+
+**Acceptance 9.8: FINAL LOCKED — odobreno 2026-11-07.** Release build, targeted backend 6/6,
+stvarni SQL migration/backfill/trigger 1/1, EF model drift, architecture 4/4, frontend
+targeted 4/4, lint/typecheck/build i minimalni desktop/mobile visual gate prolaze. Full
+regression i dependency audit su N/A prema STRICT VALIDATION BUDGET-u. Compose konfiguracija
+je valjana; puni image build nije phase gate i zasebno je zabilježen postojeći dependency
+advisory maintenance finding koji nije uveden diffom.
 ## 9.9 Confirmed Lesson Plan / ready state — TODO
 
 **Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog, Phase 9.4
 goal-selection runtime, Phase 9.5 structure/timeline runtime i Phase 9.6 editor/material
-attachment runtime i Phase 9.7 Activity / Knowledge Block selection su FINAL LOCKED. Phase 9.8 je
-sljedeći izvršni korak. Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge
-Model.
+attachment runtime i Phase 9.7 Activity / Knowledge Block selection su FINAL LOCKED. Phase
+9.8 je FINAL LOCKED; sljedeći izvršni korak je Phase 9.9.
+Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
 
 ---
 

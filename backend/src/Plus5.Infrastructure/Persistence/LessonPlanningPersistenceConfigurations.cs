@@ -148,15 +148,61 @@ internal sealed class LessonActivityConfiguration : IEntityTypeConfiguration<Les
             table.HasCheckConstraint("CK_LessonActivities_SortOrder", "[SortOrder] >= 0");
             table.HasCheckConstraint("CK_LessonActivities_Purpose", "[Purpose] BETWEEN 1 AND 6");
             table.HasCheckConstraint("CK_LessonActivities_Duration", "[DurationMinutes] BETWEEN 1 AND 480");
+            table.HasCheckConstraint("CK_LessonActivities_WorkMode", "[WorkMode] BETWEEN 1 AND 3");
             table.HasTrigger("TR_LessonActivities_ValidateDraftAndKnowledgeBlock");
         });
         builder.HasKey(item => item.Id);
         builder.HasAlternateKey(item => new { item.LessonPlanVersionId, item.Id });
         builder.Property(item => item.Name).HasMaxLength(LessonActivity.NameMaxLength).IsRequired();
         builder.Property(item => item.Purpose).HasConversion<int>().IsRequired();
+        builder.Property(item => item.WorkMode).HasConversion<int>().IsRequired();
+        builder.Property(item => item.Description).HasMaxLength(LessonActivity.DescriptionMaxLength);
+        builder.Property(item => item.PurposeDescription).HasMaxLength(LessonActivity.PurposeDescriptionMaxLength);
+        builder.Property(item => item.TeacherInstructions).HasMaxLength(LessonActivity.InstructionsMaxLength);
+        builder.Property(item => item.StudentInstructions).HasMaxLength(LessonActivity.InstructionsMaxLength);
+        builder.Property(item => item.Notes).HasMaxLength(LessonActivity.NotesMaxLength);
         builder.HasOne<LessonPlanVersion>().WithMany().HasForeignKey(item => item.LessonPlanVersionId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<KnowledgeBlockVersion>().WithMany().HasForeignKey(item => item.KnowledgeBlockVersionId).OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(item => new { item.LessonPlanVersionId, item.SortOrder }).IsUnique();
+    }
+}
+
+internal sealed class LessonActivityAiSuggestionConfiguration
+    : IEntityTypeConfiguration<LessonActivityAiSuggestion>
+{
+    public void Configure(EntityTypeBuilder<LessonActivityAiSuggestion> builder)
+    {
+        builder.ToTable("LessonActivityAiSuggestions", table =>
+        {
+            table.HasCheckConstraint("CK_LessonActivityAiSuggestions_Status", "[Status] BETWEEN 1 AND 6");
+            table.HasCheckConstraint("CK_LessonActivityAiSuggestions_Expiry", "[ExpiresAtUtc] > [GeneratedAtUtc]");
+            table.HasCheckConstraint("CK_LessonActivityAiSuggestions_ContentLifecycle",
+                "([Status] = 1 AND [ContentJson] IS NOT NULL AND ISJSON([ContentJson]) = 1 AND [ResolvedAtUtc] IS NULL) OR ([Status] BETWEEN 2 AND 6 AND [ContentJson] IS NULL AND [ResolvedAtUtc] IS NOT NULL)");
+            table.HasTrigger("TR_LessonActivityAiSuggestions_Validate");
+        });
+        builder.HasKey(item => item.Id);
+        builder.Property(item => item.BasedOnRowVersion).HasColumnType("binary(8)").IsRequired();
+        builder.Property(item => item.Status).HasConversion<int>().IsRequired();
+        builder.Property(item => item.Provider).HasMaxLength(LessonActivityAiSuggestion.ProviderMaxLength).IsRequired();
+        builder.Property(item => item.Model).HasMaxLength(LessonActivityAiSuggestion.ModelMaxLength).IsRequired();
+        builder.Property(item => item.PromptTemplateVersion).HasMaxLength(LessonActivityAiSuggestion.TemplateVersionMaxLength).IsRequired();
+        builder.Property(item => item.ContentJson).HasColumnType("nvarchar(max)");
+        builder.Property(item => item.GeneratedAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(item => item.ExpiresAtUtc).HasPrecision(7).IsRequired();
+        builder.Property(item => item.ResolvedAtUtc).HasPrecision(7);
+        builder.HasOne<UserAccount>().WithMany().HasForeignKey(item => item.TeacherAccountId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<LessonPlan>().WithMany()
+            .HasForeignKey(item => new { item.TeacherAccountId, item.LessonPlanId })
+            .HasPrincipalKey(item => new { item.TeacherAccountId, item.Id })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<LessonPlanVersion>().WithMany()
+            .HasForeignKey(item => new { item.LessonPlanId, item.LessonPlanVersionId })
+            .HasPrincipalKey(item => new { item.LessonPlanId, item.Id })
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<LessonActivityAiSuggestion>().WithMany()
+            .HasForeignKey(item => item.ReplacesSuggestionId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(item => new { item.TeacherAccountId, item.Status, item.GeneratedAtUtc });
+        builder.HasIndex(item => new { item.LessonActivityId, item.Status });
     }
 }
 

@@ -15,6 +15,8 @@ using Plus5.Infrastructure.Materials;
 using Plus5.Application.Materials;
 using Plus5.Api.Dashboard;
 using Plus5.Api.LessonPlanning;
+using Plus5.Infrastructure.LessonPlanning;
+using Plus5.Application.LessonPlanning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +49,12 @@ builder.Services.AddOptions<MalwareScannerOptions>()
 builder.Services.AddHttpClient<IPresentationAiAssistant, OpenAiPresentationAiAssistant>((services, client) =>
 {
     var options = services.GetRequiredService<Microsoft.Extensions.Options.IOptions<PresentationAiOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
+    client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+});
+builder.Services.AddHttpClient<ILessonBuilderAiAssistant, OpenAiLessonBuilderAiAssistant>((services, client) =>
+{
+    var options = services.GetRequiredService<Microsoft.Extensions.Options.IOptions<LessonBuilderAiOptions>>().Value;
     client.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
     client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
 });

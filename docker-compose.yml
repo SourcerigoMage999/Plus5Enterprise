@@ -120,6 +120,8 @@ services:
       MalwareScanner__TimeoutSeconds: 120
       PresentationAi__Enabled: ${PLUS5_PRESENTATION_AI_ENABLED:-false}
       PresentationAi__ApiKey: ${PLUS5_OPENAI_API_KEY:-}
+      LessonBuilderAi__Enabled: ${PLUS5_LESSON_BUILDER_AI_ENABLED:-false}
+      LessonBuilderAi__ApiKey: ${PLUS5_OPENAI_API_KEY:-}
     ports:
       - "8080:8080"
     healthcheck:

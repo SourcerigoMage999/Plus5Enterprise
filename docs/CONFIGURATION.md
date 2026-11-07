@@ -48,6 +48,12 @@ ASP.NET Core defaultni redoslijed izvora ostaje canonical: bazni `appsettings.js
 | `MalwareScanner:Host` | `MalwareScanner__Host` | da | ne | ClamAV-compatible scanner host |
 | `MalwareScanner:Port` | `MalwareScanner__Port` | da | ne | port 1–65535, default 3310 |
 | `MalwareScanner:TimeoutSeconds` | `MalwareScanner__TimeoutSeconds` | da | ne | 10–300 sekundi; timeout je fail-closed |
+| `LessonBuilderAi:Enabled` | `LessonBuilderAi__Enabled` / Compose `PLUS5_LESSON_BUILDER_AI_ENABLED` | ne | ne | default `false`; bez eksplicitnog uključivanja nema provider poziva ni AI troška |
+| `LessonBuilderAi:BaseUrl` | `LessonBuilderAi__BaseUrl` | samo kada je AI uključen | ne | zaključani `https://eu.api.openai.com/v1/` |
+| `LessonBuilderAi:Model` | `LessonBuilderAi__Model` | samo kada je AI uključen | ne | zaključani `gpt-6.1-sol` |
+| `LessonBuilderAi:ApiKey` | `LessonBuilderAi__ApiKey` / Compose `PLUS5_OPENAI_API_KEY` | samo kada je AI uključen | **da** | server-side provider ključ; nikad frontend ili Git |
+| `LessonBuilderAi:PromptTemplateVersion` | `LessonBuilderAi__PromptTemplateVersion` | da | ne | server-owned versionirani prompt, početno `lesson-activity-regeneration-v1` |
+| `LessonBuilderAi:TimeoutSeconds` | `LessonBuilderAi__TimeoutSeconds` | da | ne | najviše 30 sekundi |
 | `ASPNETCORE_ENVIRONMENT` | isto | da | ne | `Development`, `Staging` ili `Production` |
 | ASP.NET Core hosting URL/port | `ASPNETCORE_URLS` / `ASPNETCORE_HTTP_PORTS` | prema hostu | ne | runtime/deployment vrijednost, ne hardcodirati production URL u source |
 
@@ -63,6 +69,13 @@ odvojene persistentne quarantine/clean buckete i ClamAV container. Production ko
 Cloudflare R2/S3-compatible endpoint i deployment secrets; credentiali, object keyevi i scan
 detalji ne smiju završiti u browseru, logu, appsettings datoteci ili Gitu. Scanner timeout,
 nedostupnost ili neprepoznat rezultat ne smiju aktivirati materijal.
+
+Lesson Builder AI options su tipizirani i validiraju se pri startupu. Integracija je
+defaultno isključena; tada API ne poziva provider i manualno uređivanje ostaje potpuno
+dostupno. Uključivanje zahtijeva zaključani EU endpoint/model i serverski API key. PLUS 5 ne
+uvodi AI credits, naplatu ni in-app kupnju. Detaljni privacy, confirmation, retention i
+regeneration contract je u `LESSON_BUILDER_AI.md` i
+`LESSON_ACTIVITY_DETAIL_EDITING_AI.md`.
 
 ASP.NET Core Data Protection key ring dijeli se kroz bazu kako bi auth i CSRF cookieji ostali valjani nakon restarta i između više API instanci. Development smije spremiti nezaštićeni key XML u lokalnu bazu. Staging/Production moraju montirati PKCS#12 certifikat i dostaviti njegov password kroz secrets sloj; startup se prekida ako certifikat nedostaje, nije dostupan ili se ne može učitati. Certifikat i password nikada se ne spremaju u image, Git ili appsettings datoteke.
 

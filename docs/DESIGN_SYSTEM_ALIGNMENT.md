@@ -66,6 +66,11 @@ Takva zamjena proizvela bi djelomičan restyle s neujednačenim ekranima.
   smije očuvati domenske labele; ne spajati domenske enumove zbog istih boja.
 - Kontrast provjeriti za stvarne parove teksta/podloge, focus i enabled kontrole;
   brand swatch sam po sebi nije dokaz pristupačnosti. Boja nije jedini signal.
+- Na business ekranima s plutajućom globalnom notification/profile zonom, desno poravnate
+  page-level akcije moraju ostati ispod nje. Koristiti standardnu
+  `ds-page-actions--below-global-profile` spacing granicu; ne rješavati preklapanje većim
+  `z-indexom`, negativnim marginama ili overlayem. Na užim viewportima akcije se moraju
+  složiti ispod zaglavlja, a visual acceptance mora potvrditi da nema preklapanja.
 
 ## Prihvaćeni prioritet i popis iznimaka
 

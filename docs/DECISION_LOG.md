@@ -1,5 +1,28 @@
 # DECISION_LOG
 
+### ADR-0032 — Rowversion-safe Lesson Activity editing and bounded AI regeneration
+- **Datum:** 2026-11-07
+- **Status:** Accepted — Phase 9.8 FINAL LOCKED.
+- **Kontekst:** Screen 5.5 treba uređivati jednu Draft aktivnost, ali canonical source ne
+  zaključava concurrency, duplicate/delete/reorder atomiku ni granicu između manualnog
+  authoringa i Phase 9.2 AI suggestiona.
+- **Manualni authority:** owner-scoped Draft aktivnost dobiva bounded detail polja,
+  `WorkMode`, Board flags i privatne Notes. Update, KC subset, duplicate, delete i reorder
+  zahtijevaju CSRF i aktualni parent rowversion; duplicate duboko kopira exact KB/KC/
+  MaterialVersion reference, a delete/reorder čuvaju contiguous redoslijed.
+- **AI granica:** suggestion smije predložiti samo Name, PurposeDescription, Description,
+  TeacherInstructions, StudentInstructions i WorkMode. Trajanje, Purpose enum, KB/KC,
+  materijali/taskovi, redoslijed, parent, Board flags i Notes ostaju nepromjenjivi. Notes i
+  identiteti nisu provider context. Pending traje 24 sata; Accept/Edit/Reject/Regenerate su
+  eksplicitni i stale accept/edit vraća `409`.
+- **Cost/privacy:** AI je defaultno isključen; manualni workflow nema provider poziv ni
+  trošak. Nema PLUS 5 AI billing/credits/in-app naplate. Opcionalni deployment koristi
+  zaključani EU Responses endpoint/model, `store=false`, serverski ključ, 10/10 min i
+  50/dan/Teacher.
+- **Persistence:** `LessonActivityAiSuggestion` čuva bounded lifecycle/audit, briše content
+  nakon resolve/expiry i SQL triggerom 51340 štiti owner-scoped Draft target. Detalji:
+  `LESSON_ACTIVITY_DETAIL_EDITING_AI.md`.
+
 ### ADR-0031 — Deterministic no-cost Lesson structure baseline and balance read model
 - **Datum:** 2026-11-01
 - **Status:** Accepted — Phase 9.5 IMPLEMENTED / REVIEW READY.

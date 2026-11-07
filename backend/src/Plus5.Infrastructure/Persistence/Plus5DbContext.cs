@@ -101,6 +101,9 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
     public DbSet<LessonActivityMaterialVersion> LessonActivityMaterialVersions =>
         Set<LessonActivityMaterialVersion>();
 
+    public DbSet<LessonActivityAiSuggestion> LessonActivityAiSuggestions =>
+        Set<LessonActivityAiSuggestion>();
+
     public DbSet<MasteryEstimate> MasteryEstimates => Set<MasteryEstimate>();
 
     public DbSet<KnowledgeAreaReadinessEstimate> KnowledgeAreaReadinessEstimates =>

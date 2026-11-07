@@ -70,6 +70,15 @@ Ne uvoditi global store za sve. Global state library zahtijeva stvarnu cross-cut
 - route/code splitting uvoditi tamo gdje bundle mjerenje pokaže potrebu
 - optimizacije rendera (`memo`, `useMemo`, `useCallback`) nisu default dekoracija; koristiti kada postoji razlog
 
+## 9.1 Business shell action-zone safety
+
+- page-level action cluster ne smije ulaziti u plutajuću globalnu notification/profile zonu
+- na business shell ekranima desno poravnate akcije koriste standardnu
+  `ds-page-actions--below-global-profile` spacing granicu
+- preklapanje se ne rješava `z-indexom`, negativnim marginama ili skrivanjem kontrole
+- na užim viewportima akcije se slažu ispod zaglavlja i ostaju potpuno dostupne
+- minimalni visual gate mora potvrditi odsutnost preklapanja i document overflowa
+
 ## 10. Dependency policy
 
 Nova npm biblioteka mora imati jasan benefit i security/maintenance review. Ne uvoditi više biblioteka za isti problem.
