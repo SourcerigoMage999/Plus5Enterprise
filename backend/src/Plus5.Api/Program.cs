@@ -119,6 +119,7 @@ app.MapTeacherDashboard();
 app.MapLessonGoalSelection();
 app.MapLessonStructure();
 app.MapLessonPlanEditor();
+app.MapLessonPlanConfirmation();
 
 app.Run();
 

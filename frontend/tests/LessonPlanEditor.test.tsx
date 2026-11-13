@@ -83,6 +83,8 @@ describe('lesson plan editor material attachments', () => {
     expect(screen.getByRole('link', { name: /Dodaj aktivnost/ })).toHaveAttribute(
       'href', `/lesson-plans/${planId}/activity-selection`,
     )
-    expect(screen.getByRole('button', { name: 'Spremi i nastavi' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Spremi i nastavi' })).toHaveAttribute(
+      'href', `/lesson-plans/${planId}/confirmation`,
+    )
   })
 })

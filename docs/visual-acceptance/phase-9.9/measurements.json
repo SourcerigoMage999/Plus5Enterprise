@@ -1,0 +1,53 @@
+{
+  "phase": "9.9",
+  "capturedAt": "2026-11-12",
+  "realApi": true,
+  "realSql": true,
+  "authBypass": false,
+  "apiIntercept": false,
+  "domMutation": false,
+  "canonicalSource": "5.6 Potvrđena priprema.png",
+  "setupBusinessWrites": [
+    "POST /api/v1/lesson-plans/{id}/confirmation/confirm"
+  ],
+  "businessWritesDuringCapture": [],
+  "screens": [
+    {
+      "name": "confirmed-lesson-plan-ready",
+      "size": "desktop",
+      "capture": "viewport",
+      "viewportWidth": 1536,
+      "viewportHeight": 1024,
+      "clientWidth": 1536,
+      "scrollWidth": 1536,
+      "scrollHeight": 1257,
+      "actionsProfileOverlap": false,
+      "errorStateVisible": false
+    },
+    {
+      "name": "confirmed-lesson-plan-ready",
+      "size": "mobile",
+      "capture": "viewport",
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 2681,
+      "actionsProfileOverlap": false,
+      "errorStateVisible": false
+    }
+  ],
+  "apiResponses": [
+    {
+      "size": "desktop",
+      "path": "/api/v1/lesson-plans/87C4DD51-2E44-48C8-A2D2-733E490122B7/confirmation/",
+      "status": 200
+    },
+    {
+      "size": "mobile",
+      "path": "/api/v1/lesson-plans/87C4DD51-2E44-48C8-A2D2-733E490122B7/confirmation/",
+      "status": 200
+    }
+  ],
+  "errors": []
+}

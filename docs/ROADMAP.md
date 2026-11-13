@@ -1023,13 +1023,24 @@ targeted 4/4, lint/typecheck/build i minimalni desktop/mobile visual gate prolaz
 regression i dependency audit su N/A prema STRICT VALIDATION BUDGET-u. Compose konfiguracija
 je valjana; puni image build nije phase gate i zasebno je zabilježen postojeći dependency
 advisory maintenance finding koji nije uveden diffom.
-## 9.9 Confirmed Lesson Plan / ready state — TODO
+## 9.9 Confirmed Lesson Plan / ready state — FINAL LOCKED
 
 **Gate:** Phase 9.1 domain, Phase 9.2 AI/privacy, Phase 9.3 KB catalog, Phase 9.4
 goal-selection runtime, Phase 9.5 structure/timeline runtime i Phase 9.6 editor/material
 attachment runtime i Phase 9.7 Activity / Knowledge Block selection su FINAL LOCKED. Phase
-9.8 je FINAL LOCKED; sljedeći izvršni korak je Phase 9.9.
-Planiranje ne stvara `Attempt`, `EvidenceEvent` niti mijenja Knowledge Model.
+9.8 je FINAL LOCKED. Phase 9.9 implementira owner-scoped potvrdu cijelog Draft grapha,
+atomarni `Draft → Ready` / prethodni `Ready → Superseded`, `CurrentReadyVersionId`, SQL
+integrity guard, immutable Ready snapshot i deep-clone Ready → novi Draft za naknadno
+uređivanje. `/lesson-plans/:lessonPlanId/confirmation` prikazuje canonical pregled, a Board
+CTA ostaje disabled do Phase 10. Planiranje ne stvara `LessonSession`, `Attempt`,
+`EvidenceEvent` niti mijenja Knowledge Model.
+
+**Acceptance 9.9: FINAL LOCKED — odobreno 2026-11-13.** Release build, targeted backend 4/4 sa
+stvarnim SQL migration/lifecycle testovima, EF model drift/idempotent script, architecture
+4/4, frontend targeted 4/4, lint/typecheck/build i minimalni desktop/mobile visual gate
+prolaze. Full regression, dependency audit i Docker infrastructure validation su N/A prema
+STRICT VALIDATION BUDGET-u; dependency graph, Dockerfile, Compose i runtime identity nisu
+promijenjeni.
 
 ---
 

@@ -55,6 +55,20 @@ public sealed class LessonPlanVersion
         UpdatedAtUtc = updatedAtUtc;
     }
 
+    public void MarkReady()
+    {
+        if (Status != LessonPlanVersionStatus.Draft)
+            throw new InvalidOperationException("Only a Draft lesson plan version can become Ready.");
+        Status = LessonPlanVersionStatus.Ready;
+    }
+
+    public void MarkSuperseded()
+    {
+        if (Status != LessonPlanVersionStatus.Ready)
+            throw new InvalidOperationException("Only a Ready lesson plan version can become Superseded.");
+        Status = LessonPlanVersionStatus.Superseded;
+    }
+
     private void EnsureDraft(DateTimeOffset updatedAtUtc)
     {
         if (Status != LessonPlanVersionStatus.Draft)

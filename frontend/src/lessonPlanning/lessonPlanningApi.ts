@@ -360,3 +360,49 @@ export function createLessonActivityAiSuggestion(lessonPlanId: string, activityI
 export function resolveLessonActivityAiSuggestion(lessonPlanId: string, activityId: string, suggestionId: string, rowVersion: string, decision: 'Accept' | 'Edit' | 'Reject', editedContentJson: string | null = null) {
   return postJson<LessonActivityAiResult>(`/lesson-plans/${lessonPlanId}/editor/activities/${activityId}/ai/suggestions/${suggestionId}/resolve`, { rowVersion, decision, editedContentJson })
 }
+
+export interface LessonPlanConfirmationActivity {
+  readonly id: string
+  readonly sortOrder: number
+  readonly name: string
+  readonly purpose: string
+  readonly workMode: string
+  readonly durationMinutes: number
+  readonly assessableTaskCount: number
+  readonly materials: LessonActivityMaterialAttachment[]
+}
+
+export interface LessonPlanConfirmation {
+  readonly lessonPlanId: string
+  readonly lessonPlanVersionId: string
+  readonly versionNumber: number
+  readonly status: 'Draft' | 'Ready' | 'Superseded'
+  readonly planRowVersion: string
+  readonly versionRowVersion: string
+  readonly participantName: string
+  readonly participantType: ParticipantType
+  readonly session: LessonPlanEditorSession | null
+  readonly goal: string
+  readonly targetDurationMinutes: number
+  readonly plannedDurationMinutes: number
+  readonly knowledgeComponents: LessonStructureKnowledge[]
+  readonly activities: LessonPlanConfirmationActivity[]
+  readonly materials: LessonActivityMaterialAttachment[]
+  readonly balance: LessonBalanceArea[]
+  readonly validationMessages: string[]
+  readonly canConfirm: boolean
+  readonly canEdit: boolean
+  readonly canStartBoard: boolean
+}
+
+export function getLessonPlanConfirmation(lessonPlanId: string, signal?: AbortSignal) {
+  return getJson<LessonPlanConfirmation>(`/lesson-plans/${lessonPlanId}/confirmation/`, signal)
+}
+
+export function confirmLessonPlan(lessonPlanId: string, planRowVersion: string, versionRowVersion: string) {
+  return postJson<LessonPlanConfirmation>(`/lesson-plans/${lessonPlanId}/confirmation/confirm`, { planRowVersion, versionRowVersion })
+}
+
+export function createEditableLessonPlanDraft(lessonPlanId: string, planRowVersion: string) {
+  return postJson<LessonPlanConfirmation>(`/lesson-plans/${lessonPlanId}/confirmation/edit`, { planRowVersion })
+}

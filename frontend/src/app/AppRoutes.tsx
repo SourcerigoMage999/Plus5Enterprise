@@ -31,6 +31,7 @@ import { LessonStructurePage } from '../lessonPlanning/LessonStructurePage.tsx'
 import { LessonPlanEditorPage } from '../lessonPlanning/LessonPlanEditorPage.tsx'
 import { LessonActivitySelectionPage } from '../lessonPlanning/LessonActivitySelectionPage.tsx'
 import { LessonActivityDetailPage } from '../lessonPlanning/LessonActivityDetailPage.tsx'
+import { LessonPlanConfirmationPage } from '../lessonPlanning/LessonPlanConfirmationPage.tsx'
 
 const moduleItems = navigationItems.slice(1).filter((item) => item.id !== 'students' && item.id !== 'schedule' && item.id !== 'materials' && item.id !== 'lesson-plans')
 
@@ -73,6 +74,7 @@ export function AppRoutes() {
           <Route path="lesson-plans/:lessonPlanId/editor" element={<LessonPlanEditorPage />} />
           <Route path="lesson-plans/:lessonPlanId/activities/:activityId" element={<LessonActivityDetailPage />} />
           <Route path="lesson-plans/:lessonPlanId/activity-selection" element={<LessonActivitySelectionPage />} />
+          <Route path="lesson-plans/:lessonPlanId/confirmation" element={<LessonPlanConfirmationPage />} />
           {moduleItems.map((item) => (
             <Route
               key={item.id}

@@ -38,6 +38,14 @@ public sealed class LessonPlan
     public DateTimeOffset? ArchivedAtUtc { get; private set; }
     public byte[] RowVersion { get; private set; } = [];
 
+    public void SetCurrentReadyVersion(Guid versionId)
+    {
+        EnsureIdentifier(versionId, nameof(versionId));
+        if (LifecycleStatus != LessonPlanLifecycleStatus.Active)
+            throw new InvalidOperationException("An archived lesson plan cannot change its Ready version.");
+        CurrentReadyVersionId = versionId;
+    }
+
     private static void EnsureParticipant(Guid? studentId, Guid? groupId)
     {
         if (studentId == Guid.Empty || groupId == Guid.Empty || studentId.HasValue == groupId.HasValue)

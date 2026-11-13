@@ -135,7 +135,7 @@ export function LessonPlanEditorPage() {
         <aside className="lesson-editor-side">
           <article className="lesson-editor-card"><h2>Fokus sata</h2><p>{view.goal}</p><div className="lesson-editor-chips">{view.knowledgeComponents.map((item) => <span key={item.id}>{item.name}<small>{item.modelCode} · {item.modelVersion}</small></span>)}</div></article>
           <article className="lesson-editor-card"><h2>Provjera balansa</h2><div className="lesson-editor-balance">{view.balance.map((area) => <BalanceRow key={area.code} area={area} />)}</div></article>
-          <article className="lesson-editor-card lesson-editor-next"><h2>Sljedeći korak</h2><p>Dodajte aktivnosti iz odobrenog Knowledge Block kataloga. Potvrda plana dolazi u Phase 9.9.</p><button type="button" disabled>Spremi i nastavi</button></article>
+          <article className="lesson-editor-card lesson-editor-next"><h2>Sljedeći korak</h2><p>Pregledajte cilj, aktivnosti, točne verzije materijala i balans prije potvrde plana.</p><Link to={`/lesson-plans/${lessonPlanId}/confirmation`}>Spremi i nastavi</Link></article>
         </aside>
       </div>
     </section>
