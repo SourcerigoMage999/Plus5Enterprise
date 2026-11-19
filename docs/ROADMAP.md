@@ -1049,13 +1049,34 @@ promijenjeni.
 ## 10.0 Detailed specification 6.1–6.5 — DOCUMENTED
 Source: `source_specs/6.0_PLUS5_Ploca.md` i 6.1–6.5 runtime specovi.
 
-## 10.1 Teacher board and Lesson Session lifecycle — TODO
+## 10.1 Teacher board and Lesson Session lifecycle — IMPLEMENTED / REVIEW READY
+
+**Canonical contract:** `LESSON_SESSION_RUNTIME.md`; ADR-0033. Zaključani su exact Ready
+version anchoring, multi-active owner-scoped recovery, atomic calendar start, runtime
+activity materialization, idempotent committed-save i revision concurrency. Phase 10.1 ne
+implementira activity execution, Attempt/Evidence, live diagnostic, summary ni closure.
+
+**Dovršeno 2026-11-19:** implementirani su exact Ready-version `LessonSession` aggregate,
+atomarni scheduled/unscheduled start, owner-scoped recovery, Pending runtime timeline,
+exact MaterialVersion/AssessableTaskVersion reference, committed operation ledger, revision
+concurrency i Teacher Board na `/board`. Ciljani backend i stvarni SQL testovi 7/7,
+architecture 4/4, frontend 4/4, Release build, EF drift/idempotent script,
+lint/typecheck/build te desktop/mobile visual acceptance prolaze.
+
+**Acceptance 10.1: IMPLEMENTED / REVIEW READY.** Start i retry su idempotentni, calendar
+sync i runtime materialization su atomski, stale mutation vraća konflikt, recovery read ne
+mijenja stanje, a Phase 10.2–10.5 funkcije ostaju jasno odgođene.
 ## 10.2 Universal activity runtime and Attempt capture — TODO
 ## 10.3 Live student diagnostic — TODO
 ## 10.4 Live lesson summary and plan-vs-executed view — TODO
 ## 10.5 Lesson closure, Evidence finalization and follow-up — TODO
 
-**Gate:** formalizirati `LessonSession` persistence, runtime recovery/autosave, `TaskVersion`/`MaterialVersion` references, teacher-assessed Evidence i invalidation/audit pravila. `Completion`, `Accuracy` i `Mastery` ostaju odvojeni koncepti; `Attempt` nije automatski Evidence.
+**Preostali Phase 10 gateovi:** Phase 10.1 zaključao je `LessonSession` persistence,
+recovery/idempotency i exact `AssessableTaskVersion`/`MaterialVersion` reference. Phase 10.2
+mora formalizirati universal activity runtime, `Attempt` capture i granicu prema
+teacher-assessed Evidenceu; Phase 10.5/11 zaključavaju završetak, void te Evidence
+finalization/invalidation audit. `Completion`, `Accuracy` i `Mastery` ostaju odvojeni
+koncepti; `Attempt` nije automatski Evidence.
 
 ---
 

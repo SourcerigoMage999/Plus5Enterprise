@@ -117,7 +117,11 @@ Ovo nisu pitanja koja AI smije sam riješiti pretpostavkom. Svako pitanje koje u
   rowversion. AI regeneration ostaje defaultno isključen suggestion workflow, mijenja samo
   šest dopuštenih tekst/work-mode polja, nikad ne prima Notes i nema PLUS 5 naplatu.
   Detalji: `LESSON_ACTIVITY_DETAIL_EDITING_AI.md`.
-- PLUS 5 Ploča: Lesson Session persistence, autosave/recovery i Evidence emission/invalidation contract
+- **RIJEŠENO 2026-11-15 — Phase 10.1, ADR-0033:** LessonSession persistence, exact Ready
+  version anchoring, atomic start, multi-active uniqueness, committed-save idempotency,
+  revision concurrency i recovery zaključani su u `LESSON_SESSION_RUNTIME.md`. Activity/
+  Attempt runtime ostaje Phase 10.2; Completed void, Evidence finalization/invalidation i
+  closure audit ostaju otvoreni Phase 10.5/11 gate.
 - Povijest sati: immutable historical Task/Material version references i void/audit semantics
 - Domaće zadaće: Assignment/Submission, participant access, versioning i Evidence contract
 - Poruke: participants, permissions, private broadcast replies, attachments, retention i delivery

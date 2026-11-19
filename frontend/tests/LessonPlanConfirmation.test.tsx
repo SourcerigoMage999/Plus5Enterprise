@@ -17,23 +17,27 @@ const base = {
 }
 
 function json(value: unknown) { return new Response(JSON.stringify(value), { status: 200, headers: { 'Content-Type': 'application/json' } }) }
-function open() { return render(<MemoryRouter initialEntries={[`/lesson-plans/${planId}/confirmation`]}><Routes><Route path="lesson-plans/:lessonPlanId/confirmation" element={<LessonPlanConfirmationPage />} /></Routes></MemoryRouter>) }
+function open() { return render(<MemoryRouter initialEntries={[`/lesson-plans/${planId}/confirmation`]}><Routes><Route path="lesson-plans/:lessonPlanId/confirmation" element={<LessonPlanConfirmationPage />} /><Route path="board/sessions/:lessonSessionId" element={<h1>PLUS 5 Ploča runtime</h1>} /></Routes></MemoryRouter>) }
 
 describe('confirmed lesson plan', () => {
-  it('confirms the draft and exposes a truthful Ready snapshot without starting Board', async () => {
+  it('confirms the draft and starts Board from the exact Ready version', async () => {
     vi.mocked(fetch).mockImplementation(async (input, init) => {
       const url = String(input)
       if (url.endsWith('/auth/csrf')) return json({ token: 'csrf' })
-      if (url.endsWith('/confirm') && init?.method === 'POST') return json({ ...base, status: 'Ready', canConfirm: false })
+      if (url.endsWith('/confirm') && init?.method === 'POST') return json({ ...base, status: 'Ready', canConfirm: false, canStartBoard: true })
+      if (url.endsWith('/lesson-sessions/start') && init?.method === 'POST') return json({ id: 'session-101' })
       return json(base)
     })
     open()
     fireEvent.click(await screen.findByRole('button', { name: 'Potvrdi pripremu' }))
     await waitFor(() => expect(screen.getByRole('heading', { name: 'Sat je spreman' })).toBeInTheDocument())
-    expect(screen.getByRole('button', { name: /Pokreni sat na PLUS 5 Ploči/ })).toBeDisabled()
     expect(screen.getByText(/Nema jedinstvene ukupne procjene/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /Pokreni sat na PLUS 5 Ploči/ }))
+    expect(await screen.findByRole('heading', { name: 'PLUS 5 Ploča runtime' })).toBeInTheDocument()
     const write = vi.mocked(fetch).mock.calls.find(([url]) => String(url).endsWith('/confirm'))
     expect(JSON.parse(String(write?.[1]?.body))).toEqual({ planRowVersion: base.planRowVersion, versionRowVersion: base.versionRowVersion })
+    const start = vi.mocked(fetch).mock.calls.find(([url]) => String(url).endsWith('/lesson-sessions/start'))
+    expect(JSON.parse(String(start?.[1]?.body))).toMatchObject({ lessonPlanVersionId: base.lessonPlanVersionId, calendarSessionId: null })
   })
 
   it('shows blocking validation without fabricating readiness', async () => {

@@ -235,6 +235,18 @@ function friendlyMessage(code?: string): string {
       return 'Odabrani materijal već je povezan s ovom aktivnosti.'
     case 'lesson_material_attachment_not_found':
       return 'Povezani materijal više nije dostupan. Osvježite plan sata.'
+    case 'lesson_session_plan_not_ready':
+      return 'Sat je moguće pokrenuti samo iz trenutačne potvrđene verzije plana.'
+    case 'lesson_session_calendar_unavailable':
+      return 'Odabrani termin nije dostupan za pokretanje sata.'
+    case 'lesson_session_active_conflict':
+      return 'Za ovaj termin ili plan već postoji aktivan sat.'
+    case 'lesson_session_operation_mismatch':
+      return 'Zahtjev za spremanje ne odgovara prethodnom pokušaju. Osvježite stanje.'
+    case 'lesson_session_concurrency_conflict':
+      return 'Sat je promijenjen u drugom prozoru. Pregledajte najnovije stanje.'
+    case 'lesson_session_invalid_mutation':
+      return 'Promjenu runtime timelinea nije moguće primijeniti.'
     default:
       return 'Zahtjev trenutačno nije moguće izvršiti.'
   }

@@ -65,7 +65,7 @@ public sealed class LessonPlanConfirmationTests
                 Convert.ToBase64String(plan.RowVersion), Convert.ToBase64String(version.RowVersion), CancellationToken.None);
             Assert.Equal(LessonPlanConfirmationFailure.None, confirmed.Failure);
             Assert.Equal("Ready", confirmed.View!.Status);
-            Assert.False(confirmed.View.CanStartBoard);
+            Assert.True(confirmed.View.CanStartBoard);
 
             db.ChangeTracker.Clear();
             var persistedPlan = await db.LessonPlans.AsNoTracking().SingleAsync(item => item.Id == plan.Id);

@@ -4,6 +4,7 @@ using Plus5.Domain.Evidence;
 using Plus5.Domain.Groups;
 using Plus5.Domain.Identity;
 using Plus5.Domain.LessonPlanning;
+using Plus5.Domain.LessonSessions;
 using Plus5.Domain.Materials;
 using Plus5.Domain.Readiness;
 using Plus5.Domain.Scheduling;
@@ -103,6 +104,20 @@ public sealed class Plus5DbContext(DbContextOptions<Plus5DbContext> options)
 
     public DbSet<LessonActivityAiSuggestion> LessonActivityAiSuggestions =>
         Set<LessonActivityAiSuggestion>();
+
+    public DbSet<LessonSession> LessonSessions => Set<LessonSession>();
+
+    public DbSet<LessonSessionActivity> LessonSessionActivities => Set<LessonSessionActivity>();
+
+    public DbSet<LessonSessionActivityMaterialVersion> LessonSessionActivityMaterialVersions =>
+        Set<LessonSessionActivityMaterialVersion>();
+
+    public DbSet<LessonSessionActivityAssessableTaskVersion> LessonSessionActivityAssessableTaskVersions =>
+        Set<LessonSessionActivityAssessableTaskVersion>();
+
+    public DbSet<LessonSessionOperation> LessonSessionOperations => Set<LessonSessionOperation>();
+
+    public DbSet<LessonSessionAuditEvent> LessonSessionAuditEvents => Set<LessonSessionAuditEvent>();
 
     public DbSet<MasteryEstimate> MasteryEstimates => Set<MasteryEstimate>();
 

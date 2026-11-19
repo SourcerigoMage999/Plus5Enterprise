@@ -15,6 +15,7 @@ using Plus5.Infrastructure.Materials;
 using Plus5.Application.Materials;
 using Plus5.Api.Dashboard;
 using Plus5.Api.LessonPlanning;
+using Plus5.Api.LessonSessions;
 using Plus5.Infrastructure.LessonPlanning;
 using Plus5.Application.LessonPlanning;
 
@@ -120,6 +121,7 @@ app.MapLessonGoalSelection();
 app.MapLessonStructure();
 app.MapLessonPlanEditor();
 app.MapLessonPlanConfirmation();
+app.MapLessonSessions();
 
 app.Run();
 

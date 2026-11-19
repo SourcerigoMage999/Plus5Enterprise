@@ -364,3 +364,20 @@ nearhivirani Material, najmanje jednu Clean datoteku te owner ili Shared+Use pri
 koji posjeduje plan; kršenje vraća `51321`. Detach historical verzije ostaje dopušten na
 Draftu, dok Ready/Superseded graph ostaje immutable. Detalji su u
 `LESSON_PLAN_EDITOR_MATERIAL_ATTACHMENTS.md`.
+
+## Phase 10.1 Lesson Session runtime
+
+Migracija `AddLessonSessionRuntime` dodaje `LessonSessions`, materializirane
+`LessonSessionActivities`, exact MaterialVersion/AssessableTaskVersion junctione,
+`LessonSessionOperations` i append-only `LessonSessionAuditEvents`. Runtime je vezan uz exact
+Ready `LessonPlanVersion`, Teacher ownera i Student XOR Group participant; optional
+`CalendarSessionId` čuva nepromjenjivi schedule snapshot.
+
+Composite owner FK-ovi, restrictive deleteovi, lifecycle/participant CHECK constrainti i
+filtered unique indeksi štite non-voided calendar occurrence te aktivni unscheduled
+Teacher/plan/participant kontekst. SQL triggeri štite terminalni runtime snapshot, exact
+reference junctione, immutable operation ledger i append-only audit. Start u jednoj
+serializable transakciji materializira Pending aktivnosti i exact reference te scheduled
+`Session` prebacuje u `InProgress`. Revision i DB-backed operation fingerprint daju
+optimistic concurrency i idempotentni committed-save. Detalji su u
+`LESSON_SESSION_RUNTIME.md`.

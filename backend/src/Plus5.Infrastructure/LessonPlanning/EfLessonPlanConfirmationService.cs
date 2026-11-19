@@ -208,7 +208,8 @@ public sealed class EfLessonPlanConfirmationService(Plus5DbContext db)
             participantName, plan.StudentId.HasValue ? "student" : "group", session, version.Goal,
             version.TargetDurationMinutes, planned, knowledge, activities, allMaterials, balance,
             validation, version.Status == LessonPlanVersionStatus.Draft && validation.Count == 0,
-            version.Status is LessonPlanVersionStatus.Draft or LessonPlanVersionStatus.Ready, false);
+            version.Status is LessonPlanVersionStatus.Draft or LessonPlanVersionStatus.Ready,
+            version.Status == LessonPlanVersionStatus.Ready);
     }
 
     private async Task<List<string>> ValidateAsync(LessonPlanVersion version, CancellationToken cancellationToken)

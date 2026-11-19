@@ -9,6 +9,7 @@ import {
   type LessonPlanConfirmation,
 } from './lessonPlanningApi.ts'
 import './LessonPlanConfirmationPage.css'
+import { startLessonSession } from '../board/boardApi.ts'
 
 export function LessonPlanConfirmationPage() {
   const { lessonPlanId = '' } = useParams()
@@ -47,6 +48,18 @@ export function LessonPlanConfirmationPage() {
       navigate(`/lesson-plans/${lessonPlanId}/editor`)
     } catch (requestError) { setError(message(requestError, 'Novi nacrt nije moguće otvoriti.')) }
     finally { setSaving(false) }
+  }
+
+  async function startBoard() {
+    if (!view || saving || !view.canStartBoard) return
+    setSaving(true); setError(null)
+    try {
+      const session = await startLessonSession(lessonPlanId, view.lessonPlanVersionId,
+        view.session?.id ?? null, crypto.randomUUID())
+      navigate(`/board/sessions/${session.id}`)
+    } catch (requestError) {
+      setError(message(requestError, 'Sat nije moguće pokrenuti. Osvježite stranicu i pokušajte ponovno.'))
+    } finally { setSaving(false) }
   }
 
   if (loading) return <section className="lesson-confirmation-state"><p>Učitavanje pripreme…</p></section>
@@ -88,7 +101,7 @@ export function LessonPlanConfirmationPage() {
     {view.validationMessages.length > 0 && <section className="lesson-confirmation-validation" role="alert"><strong>Prije potvrde dovršite:</strong><ul>{view.validationMessages.map(item => <li key={item}>{item}</li>)}</ul></section>}
     <footer className="lesson-confirmation-actions ds-page-actions--below-global-profile">
       <button type="button" className="lesson-confirmation-secondary" onClick={() => void edit()} disabled={!view.canEdit || saving}>{ready ? 'Uredi pripremu' : 'Povratak na uređivanje'}</button>
-      {ready ? <button type="button" className="lesson-confirmation-primary" disabled title="Pokretanje sata dolazi u Phase 10">Pokreni sat na PLUS 5 Ploči · Phase 10</button> : <button type="button" className="lesson-confirmation-primary" onClick={() => void confirm()} disabled={!view.canConfirm || saving}>{saving ? 'Potvrđivanje…' : 'Potvrdi pripremu'}</button>}
+      {ready ? <button type="button" className="lesson-confirmation-primary" onClick={() => void startBoard()} disabled={!view.canStartBoard || saving}>{saving ? 'Pokretanje…' : 'Pokreni sat na PLUS 5 Ploči'}</button> : <button type="button" className="lesson-confirmation-primary" onClick={() => void confirm()} disabled={!view.canConfirm || saving}>{saving ? 'Potvrđivanje…' : 'Potvrdi pripremu'}</button>}
     </footer>
   </section>
 }

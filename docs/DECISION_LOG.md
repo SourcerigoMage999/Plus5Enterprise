@@ -1,5 +1,24 @@
 # DECISION_LOG
 
+### ADR-0033 — Durable version-anchored LessonSession runtime and committed-save semantics
+- **Datum:** 2026-11-15
+- **Status:** Accepted — Phase 10.1 canonical contract.
+- **Kontekst:** Screen 6.1 treba pokrenuti i oporaviti stvarni sat bez mutacije immutable
+  LessonPlanVersiona, bez dupliciranih startova i bez lažnog `Saved` stanja.
+- **Version anchoring:** svaki LessonSession referencira exact Ready LessonPlanVersion i
+  materializira vlastite runtime aktivnosti te exact Material/Task reference. Plan ostaje
+  nepromijenjen; jedan Ready snapshot može imati više zasebnih izvođenja.
+- **Concurrency:** više aktivnih sati dopušteno je samo za različite calendar occurrencee ili
+  različite unscheduled kontekste. Unique SQL granice, serializable start i idempotency ledger
+  sprječavaju duplikate.
+- **Calendar granica:** povezani Scheduled Session atomarno prelazi u InProgress. Kasnija
+  promjena kalendara ne briše niti završava runtime; closure/reconciliation pripada Phase 10.5.
+- **Save authority:** `Saved` nastaje samo nakon DB commita. OperationId + fingerprint,
+  monotoni Revision i rowversion štite retry, stale write i recovery. External cache nije
+  correctness authority.
+- **Granice:** Phase 10.1 nema Complete/Void, Attempt, Evidence, Mastery, attendance ili
+  billing write. Detalji: `LESSON_SESSION_RUNTIME.md`.
+
 ### ADR-0032 — Rowversion-safe Lesson Activity editing and bounded AI regeneration
 - **Datum:** 2026-11-07
 - **Status:** Accepted — Phase 9.8 FINAL LOCKED.

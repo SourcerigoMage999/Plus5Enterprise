@@ -25,6 +25,8 @@ using Plus5.Application.Dashboard;
 using Plus5.Infrastructure.Dashboard;
 using Plus5.Application.LessonPlanning;
 using Plus5.Infrastructure.LessonPlanning;
+using Plus5.Application.LessonSessions;
+using Plus5.Infrastructure.LessonSessions;
 
 namespace Plus5.Infrastructure.Persistence;
 
@@ -52,6 +54,8 @@ public static class PersistenceServiceCollectionExtensions
                     sqlServerOptions.CommandTimeout(CommandTimeoutSeconds);
                     sqlServerOptions.MigrationsAssembly(typeof(Plus5DbContext).Assembly.FullName);
                 }));
+
+        services.AddScoped<ILessonSessionService, EfLessonSessionService>();
 
         var dataProtection = services.AddDataProtection()
             .SetApplicationName("Plus5Enterprise")
