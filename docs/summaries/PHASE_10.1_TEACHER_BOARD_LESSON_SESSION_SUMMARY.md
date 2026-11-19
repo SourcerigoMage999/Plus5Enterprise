@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED / REVIEW READY — 2026-11-19.**
+**FINAL LOCKED — odobreno 2026-11-19.**
 
 ## Cilj faze
 

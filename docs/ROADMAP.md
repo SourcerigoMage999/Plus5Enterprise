@@ -1049,7 +1049,7 @@ promijenjeni.
 ## 10.0 Detailed specification 6.1–6.5 — DOCUMENTED
 Source: `source_specs/6.0_PLUS5_Ploca.md` i 6.1–6.5 runtime specovi.
 
-## 10.1 Teacher board and Lesson Session lifecycle — IMPLEMENTED / REVIEW READY
+## 10.1 Teacher board and Lesson Session lifecycle — FINAL LOCKED
 
 **Canonical contract:** `LESSON_SESSION_RUNTIME.md`; ADR-0033. Zaključani su exact Ready
 version anchoring, multi-active owner-scoped recovery, atomic calendar start, runtime
@@ -1063,7 +1063,7 @@ concurrency i Teacher Board na `/board`. Ciljani backend i stvarni SQL testovi 7
 architecture 4/4, frontend 4/4, Release build, EF drift/idempotent script,
 lint/typecheck/build te desktop/mobile visual acceptance prolaze.
 
-**Acceptance 10.1: IMPLEMENTED / REVIEW READY.** Start i retry su idempotentni, calendar
+**Acceptance 10.1: FINAL LOCKED — odobreno 2026-11-19.** Start i retry su idempotentni, calendar
 sync i runtime materialization su atomski, stale mutation vraća konflikt, recovery read ne
 mijenja stanje, a Phase 10.2–10.5 funkcije ostaju jasno odgođene.
 ## 10.2 Universal activity runtime and Attempt capture — TODO
